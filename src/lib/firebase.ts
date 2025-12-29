@@ -13,23 +13,18 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-let app;
+// Initialize Firebase (client-side only)
+let app: any;
 let auth: any;
 let db: any;
+let analytics: any;
 
-if (firebaseConfig.apiKey) {
+if (typeof window !== "undefined" && firebaseConfig.apiKey) {
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   auth = getAuth(app);
   db = getFirestore(app);
-} else {
-  // Dummy initialization for build time
-  console.warn("Firebase API Key missing. Skipping initialization.");
-}
-
-
-let analytics;
-if (typeof window !== "undefined") {
+  
+  // Initialize analytics
   isSupported().then((supported) => {
     if (supported) {
       analytics = getAnalytics(app);
