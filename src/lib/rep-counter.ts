@@ -1,4 +1,10 @@
-import { Keypoint } from "@tensorflow-models/pose-detection";
+// Local type definition to avoid importing from @tensorflow-models/pose-detection
+export interface Keypoint {
+  x: number;
+  y: number;
+  score?: number;
+  name?: string;
+}
 
 export interface RepState {
   count: number;

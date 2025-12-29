@@ -1,18 +1,18 @@
 "use client"
 
 import React, { useRef, useEffect, useState } from "react";
-import * as poseDetection from "@tensorflow-models/pose-detection";
-import * as tf from "@tensorflow/tfjs-core";
-import "@tensorflow/tfjs-backend-webgl";
 import { Button } from "@/components/ui/button";
-import { countPushups, countSquats, countLunges, checkPlank, RepState } from "@/lib/rep-counter";
+import { countPushups, countSquats, countLunges, checkPlank, RepState, Keypoint } from "@/lib/rep-counter";
 import { db, auth } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+
+// Pose detector type (loaded dynamically)
+type PoseDetector = any;
 
 export default function CameraView() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [detector, setDetector] = useState<poseDetection.PoseDetector | null>(null);
+  const [detector, setDetector] = useState<PoseDetector | null>(null);
   const [repState, setRepState] = useState<RepState>({ count: 0, stage: "up", feedback: "Get ready" });
   const repStateRef = useRef<RepState>({ count: 0, stage: "up", feedback: "Get ready" });
   const [isCameraReady, setIsCameraReady] = useState(false);
@@ -20,6 +20,8 @@ export default function CameraView() {
   const [restTime, setRestTime] = useState(30);
   const [exerciseType, setExerciseType] = useState<"pushups" | "squats" | "lunges" | "plank">("pushups");
   const exerciseTypeRef = useRef(exerciseType);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     exerciseTypeRef.current = exerciseType;
@@ -43,13 +45,26 @@ export default function CameraView() {
 
   useEffect(() => {
     const initTF = async () => {
-      await tf.ready();
-      const model = poseDetection.SupportedModels.MoveNet;
-      const detectorConfig = {
-        modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
-      };
-      const detector = await poseDetection.createDetector(model, detectorConfig);
-      setDetector(detector);
+      try {
+        setIsLoading(true);
+        // Dynamic imports to avoid SSR issues
+        const tf = await import("@tensorflow/tfjs-core");
+        await import("@tensorflow/tfjs-backend-webgl");
+        const poseDetection = await import("@tensorflow-models/pose-detection");
+        
+        await tf.ready();
+        const model = poseDetection.SupportedModels.MoveNet;
+        const detectorConfig = {
+          modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+        };
+        const detectorInstance = await poseDetection.createDetector(model, detectorConfig);
+        setDetector(detectorInstance);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error initializing TensorFlow:", err);
+        setError("Failed to load AI model. Please refresh the page.");
+        setIsLoading(false);
+      }
     };
     initTF();
   }, []);
@@ -69,6 +84,7 @@ export default function CameraView() {
         }
       } catch (err) {
         console.error("Error accessing camera:", err);
+        setError("Camera access denied. Please enable camera permissions.");
       }
     };
     startCamera();
@@ -102,7 +118,7 @@ export default function CameraView() {
             ctx.font = "20px Inter, sans-serif";
             ctx.fillText("Catch your breath!", canvas.width / 2, canvas.height / 2 + 40);
           } else if (poses.length > 0) {
-            const keypoints = poses[0].keypoints;
+            const keypoints = poses[0].keypoints as Keypoint[];
             
             keypoints.forEach((kp) => {
                 if ((kp.score || 0) > 0.3) {
@@ -170,6 +186,24 @@ export default function CameraView() {
       console.error("Error saving workout:", err);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground">Loading AI Trainer...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <p className="text-destructive">{error}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center space-y-4">

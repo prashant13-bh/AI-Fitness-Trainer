@@ -1,7 +1,20 @@
 "use client"
 
+import dynamic from 'next/dynamic';
 import { Navbar } from "@/components/navbar"
-import BodyAnalysis from "@/components/trainer/BodyAnalysis"
+
+const BodyAnalysis = dynamic(
+  () => import("@/components/trainer/BodyAnalysis"),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground">Loading Body Analysis...</p>
+      </div>
+    )
+  }
+);
 
 export default function AnalysisPage() {
   return (
