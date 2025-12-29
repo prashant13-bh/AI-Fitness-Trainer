@@ -1,0 +1,5 @@
+AI-powered workout form analysis interface. Main area: webcam view showing person doing a push-up exercise from side angle. Overlay: skeleton tracking with bright cyan/purple joint detection points connected by lines (TensorFlow/MediaPipe style). Right sidebar: real-time feedback panel with glassmorphism effect showing "Form Score: 92%", rep counter "12/15", and AI suggestions "Keep back straight". Neon highlights on correct posture points. Dark background, futuristic HUD elements, professional fitness tech interface, high-quality rendering.
+
+STYLE: AI analysis, skeleton tracking, dark interface, real-time feedback, futuristic HUD
+SIZE: 600x400px
+COLORS: Background #0a0e1a, Cyan joints #00ffff, Purple highlights #b000ff

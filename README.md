@@ -74,9 +74,9 @@ Follow these steps to set up the project locally.
 
 _(Add your screenshots here. Create a `public/screenshots` folder and link them)_
 
-|                                  Dashboard                                   |                              Workout Analysis                              |
-| :--------------------------------------------------------------------------: | :------------------------------------------------------------------------: |
-| ![Dashboard](https://via.placeholder.com/600x400.png?text=Dashboard+Preview) | ![Analysis](https://via.placeholder.com/600x400.png?text=Workout+Analysis) |
+|                                              Dashboard                                               |                                          Workout Analysis                                           |
+| :--------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
+| ![Dashboard](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80) | ![Analysis](https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop&q=80) |
 
 ## 🤝 Contributing
 

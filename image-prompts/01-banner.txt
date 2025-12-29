@@ -1,0 +1,5 @@
+Create a professional web banner for an AI Fitness Trainer application. Dark background with deep navy blue and black gradient. Neon cyan and purple accents creating a futuristic atmosphere. Center: silhouette of an athletic person in a workout pose (push-up or plank) with glowing AI scanning lines and holographic overlay showing body joint detection points. Floating UI elements around showing heart rate monitor, calorie counter, and workout metrics in glassmorphism style. Text "AI FITNESS TRAINER" in bold modern sans-serif font with subtle neon glow effect. Cyberpunk aesthetic, high-tech, professional quality, 16:9 aspect ratio, sleek and premium look.
+
+STYLE: Cyberpunk, futuristic, dark mode, neon accents, glassmorphism, professional, high-tech
+SIZE: 1200x400px or 16:9 aspect ratio
+COLORS: Background #0a0e1a, Cyan #00ffff, Purple #b000ff

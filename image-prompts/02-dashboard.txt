@@ -1,0 +1,5 @@
+Modern fitness dashboard web interface mockup. Dark theme (black/navy background) with glassmorphism cards. Top section: user profile card with avatar on the right showing name and streak counter. Center: large circular progress ring showing daily calorie goal (purple to cyan gradient). Left panel: weekly activity bar chart with neon purple and cyan gradient bars showing 7 days. Right panel: body metrics cards (weight, BMI, body fat %) with glassmorphic background. Bottom: recent workouts list with icons. All text in white/cyan. Floating shadows, modern UI design, sleek and professional, dark mode aesthetic.
+
+STYLE: Dark UI, glassmorphism, neon gradients, dashboard, metrics, modern web design
+SIZE: 600x400px
+COLORS: Background #0a0e1a, Cyan #00ffff, Purple #b000ff, Text #ffffff

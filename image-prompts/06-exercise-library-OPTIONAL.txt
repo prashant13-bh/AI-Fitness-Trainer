@@ -1,0 +1,6 @@
+Exercise library interface grid. Dark background. Grid of 6 exercise cards showing: push-ups, squats, plank, burpees, lunges, mountain climbers. Each card has illustration of person doing the exercise (simple line art style in neon cyan/purple), exercise name in bold white text, and difficulty badge. Glassmorphism card backgrounds. Clean, organized, modern fitness app interface.
+
+STYLE: Exercise cards, illustration, grid layout, dark UI
+SIZE: 600x400px
+COLORS: Background #0a0e1a, Line art cyan/purple gradient, Text #ffffff
+NOTE: This is OPTIONAL - only generate if needed

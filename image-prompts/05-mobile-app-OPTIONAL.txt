@@ -1,0 +1,6 @@
+Mobile phone mockup showing AI Fitness Trainer app. Dark theme interface on phone screen. Top: dashboard with circular progress ring and "Today's Goal" text. Middle: horizontal scrolling workout cards with exercise thumbnails and durations. Bottom: navigation bar with icons for Dashboard, Workout, Diet, Profile. Phone has thin bezels, modern design. Neon cyan and purple accent colors throughout. Professional product mockup, floating on dark background with subtle glow.
+
+STYLE: Mobile mockup, app interface, dark mode, product shot
+SIZE: 400x800px (portrait)
+COLORS: Background #0a0e1a, Accent cyan #00ffff, Accent purple #b000ff
+NOTE: This is OPTIONAL - only generate if needed

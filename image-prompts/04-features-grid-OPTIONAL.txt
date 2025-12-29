@@ -1,0 +1,6 @@
+Grid layout showing 4 features of AI fitness app. Dark background. Top-left: icon with AI brain and dumbbell representing "AI Personalization". Top-right: camera icon with body outline for "Form Correction". Bottom-left: chart icon with upward trend for "Progress Tracking". Bottom-right: fire icon with meal plate for "Diet Plans". Each quadrant has glassmorphism card background, neon purple/cyan icons, white text labels. Modern, minimalist, professional design.
+
+STYLE: Feature grid, icons, glassmorphism, dark theme, minimalist
+SIZE: 800x600px
+COLORS: Background #0a0e1a, Icons gradient cyan to purple, Text #ffffff
+NOTE: This is OPTIONAL - only generate if needed
