@@ -1,6 +1,6 @@
 # AI Fitness Trainer
 
-![AI Fitness Trainer Banner](https://via.placeholder.com/1200x400.png?text=AI+Fitness+Trainer)
+![AI Fitness Trainer Banner](https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=400&fit=crop&q=80)
 
 **AI Fitness Trainer** is a cutting-edge web application designed to revolutionize your fitness journey. Powered by advanced Artificial Intelligence and Computer Vision, it provides personalized workout plans, diet schedules, and real-time form correction to help you achieve your health goals safely and effectively.
 
