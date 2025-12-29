@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDqT8pehUMFOwSSdiQqDsZt0-wdE8AbQOA",
-  authDomain: "ai-fitness-trainer-37e23.firebaseapp.com",
-  projectId: "ai-fitness-trainer-37e23",
-  storageBucket: "ai-fitness-trainer-37e23.firebasestorage.app",
-  messagingSenderId: "33538115582",
-  appId: "1:33538115582:web:aa2637c6d2c2c3e0dfe2af",
-  measurementId: "G-843GPKDQ1B"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
