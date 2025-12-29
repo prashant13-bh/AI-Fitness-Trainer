@@ -1,87 +1,233 @@
-# AI Fitness Trainer
+<div align="center">
 
-![AI Fitness Trainer Banner](https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=400&fit=crop&q=80)
+# 🏋️ AI FITNESS TRAINER
 
-**AI Fitness Trainer** is a cutting-edge web application designed to revolutionize your fitness journey. Powered by advanced Artificial Intelligence and Computer Vision, it provides personalized workout plans, diet schedules, and real-time form correction to help you achieve your health goals safely and effectively.
+### _Your Personal AI-Powered Fitness Coach_
 
-## 🚀 Features
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow.js-4-orange?style=for-the-badge&logo=tensorflow)](https://www.tensorflow.org/js)
+[![Firebase](https://img.shields.io/badge/Firebase-10-yellow?style=for-the-badge&logo=firebase)](https://firebase.google.com/)
 
-- **🤖 AI-Powered Personalization**: Generates custom workout routines and diet plans based on your body type, goals, and fitness level using Gemini AI.
-- **📷 Real-Time Form Correction**: Utilizes TensorFlow.js and MoveNet to analyze your exercise form via webcam and provide instant feedback to prevent injuries.
-- **📊 Smart Analytics**: Tracks your progress with detailed charts and insights, monitoring reps, sets, and overall performance.
-- **🔐 Secure Authentication**: Robust user management and data security powered by Firebase Authentication and Firestore.
-- **🎨 Modern UI/UX**: A sleek, responsive, and dark-themed interface built with Next.js, Tailwind CSS, and Shadcn/UI for a premium user experience.
+![AI Fitness Trainer](./public/screenshots/banner.png)
 
-## 🛠️ Tech Stack
+**Transform your fitness journey with cutting-edge AI technology**
 
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [Shadcn/UI](https://ui.shadcn.com/)
-- **AI & ML**: [TensorFlow.js](https://www.tensorflow.org/js), [MediaPipe](https://developers.google.com/mediapipe), [Google Gemini API](https://ai.google.dev/)
-- **Backend & Auth**: [Firebase](https://firebase.google.com/)
+[Live Demo](#) • [Documentation](#-getting-started) • [Report Bug](https://github.com/prashant13-bh/AI-Fitness-Trainer/issues) • [Request Feature](https://github.com/prashant13-bh/AI-Fitness-Trainer/issues)
 
-## 🏁 Getting Started
+</div>
 
-Follow these steps to set up the project locally.
+---
+
+## 📖 Overview
+
+**AI Fitness Trainer** is a revolutionary web application that combines **Artificial Intelligence**, **Computer Vision**, and **Real-time Analytics** to provide you with a personalized fitness experience like never before. Get custom workout plans, real-time form correction, diet recommendations, and comprehensive progress tracking—all in one sleek, dark-themed interface.
+
+## ✨ Key Features
+
+<div align="center">
+
+![Features Overview](./public/screenshots/features.png)
+
+</div>
+
+### 🤖 AI-Powered Personalization
+
+Generate custom workout routines and diet plans tailored to your unique body type, fitness goals, and experience level using advanced **Google Gemini AI**.
+
+### 📷 Real-Time Form Correction
+
+Leverage **TensorFlow.js** and **MoveNet** pose detection to analyze your exercise form through your webcam. Get instant feedback and corrections to prevent injuries and maximize results.
+
+### 📊 Smart Progress Analytics
+
+Track every metric that matters—reps, sets, calories burned, workout duration, and more. Visualize your progress with beautiful charts and insights.
+
+### 🔐 Secure & Private
+
+Your data is protected with **Firebase Authentication** and **Firestore**, ensuring enterprise-grade security for your personal health information.
+
+### 🎨 Premium UI/UX
+
+Experience a modern, responsive interface with dark mode, glassmorphism effects, and neon accents that make fitness tracking enjoyable.
+
+---
+
+## 🖼️ Screenshots
+
+### 📱 Mobile Experience
+
+<div align="center">
+
+![Mobile App](./public/screenshots/mobile.jpg)
+
+_Seamless mobile experience with intuitive navigation and real-time tracking_
+
+</div>
+
+### 💻 Dashboard
+
+<div align="center">
+
+![Dashboard](./public/screenshots/dashboard.jpg)
+
+_Comprehensive dashboard with weekly activity, body metrics, and workout history_
+
+</div>
+
+### 🏃 Exercise Library
+
+<div align="center">
+
+![Exercise Library](./public/screenshots/exercises.jpg)
+
+_Extensive exercise library with visual guides and difficulty levels_
+
+</div>
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+- **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [Shadcn/UI](https://ui.shadcn.com/)
+
+### AI & Machine Learning
+
+- **Pose Detection:** [TensorFlow.js](https://www.tensorflow.org/js) + [MoveNet](https://www.tensorflow.org/hub/tutorials/movenet)
+- **AI Generation:** [Google Gemini API](https://ai.google.dev/)
+- **MediaPipe:** Real-time body tracking
+
+### Backend & Database
+
+- **Authentication:** [Firebase Auth](https://firebase.google.com/docs/auth)
+- **Database:** [Cloud Firestore](https://firebase.google.com/docs/firestore)
+- **Storage:** Firebase Storage
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm or pnpm
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (v18 or higher)
+- **npm** or **pnpm**
+- **Git**
 
 ### Installation
 
-1.  **Clone the repository**
+1️⃣ **Clone the repository**
 
-    ```bash
-    git clone https://github.com/prashant13-bh/AI-Fitness-Trainer.git
-    cd AI-Fitness-Trainer
-    ```
+```bash
+git clone https://github.com/prashant13-bh/AI-Fitness-Trainer.git
+cd AI-Fitness-Trainer
+```
 
-2.  **Install dependencies**
+2️⃣ **Install dependencies**
 
-    ```bash
-    npm install
-    ```
+```bash
+npm install
+# or
+pnpm install
+```
 
-3.  **Configure Environment Variables**
-    Create a `.env.local` file in the root directory and add your API keys.
-    **Note:** Never commit your actual keys to GitHub.
+3️⃣ **Configure Environment Variables**
 
-    ```env
-    # Firebase Configuration
-    NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-    NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
+Create a `.env.local` file in the root directory:
 
-    # AI Gateway / Gemini API
-    AI_GATEWAY_API_KEY=your_ai_gateway_key
-    ```
+```env
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-4.  **Run the development server**
+# AI Gateway / Gemini API
+AI_GATEWAY_API_KEY=your_ai_gateway_api_key
+```
 
-    ```bash
-    npm run dev
-    ```
+> ⚠️ **Important:** Never commit your `.env.local` file to GitHub. It's already included in `.gitignore`.
 
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4️⃣ **Run the development server**
 
-## 📸 Screenshots
+```bash
+npm run dev
+```
 
-_(Add your screenshots here. Create a `public/screenshots` folder and link them)_
+5️⃣ **Open your browser**
 
-|                                              Dashboard                                               |                                          Workout Analysis                                           |
-| :--------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
-| ![Dashboard](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80) | ![Analysis](https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop&q=80) |
+Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
+
+---
+
+## 📁 Project Structure
+
+```
+ai-fitness-trainer/
+├── public/
+│   └── screenshots/       # Application screenshots
+├── src/
+│   ├── app/              # Next.js app router pages
+│   ├── components/       # React components
+│   │   ├── ui/          # Shadcn/UI components
+│   │   └── trainer/     # Fitness-specific components
+│   └── lib/             # Utility functions & config
+├── .env.local           # Environment variables (create this)
+├── next.config.ts       # Next.js configuration
+├── tailwind.config.ts   # Tailwind CSS configuration
+└── package.json         # Project dependencies
+```
+
+---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions, issues, and feature requests are welcome!
 
-## 📄 License
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-This project is licensed under the MIT License.
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👨‍💻 Author
+
+**Prashant B Hiremath**
+
+- GitHub: [@prashant13-bh](https://github.com/prashant13-bh)
+- Project Link: [https://github.com/prashant13-bh/AI-Fitness-Trainer](https://github.com/prashant13-bh/AI-Fitness-Trainer)
+
+---
+
+## 🙏 Acknowledgments
+
+- [TensorFlow.js](https://www.tensorflow.org/js) for pose detection capabilities
+- [Google Gemini](https://ai.google.dev/) for AI-powered personalization
+- [Shadcn/UI](https://ui.shadcn.com/) for beautiful UI components
+- [Firebase](https://firebase.google.com/) for backend infrastructure
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if you found it helpful!**
+
+Made with ❤️ and 🤖 AI
+
+</div>
