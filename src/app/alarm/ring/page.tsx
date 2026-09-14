@@ -29,15 +29,21 @@ export default function AlarmRingPage() {
   const sliderRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
 
-  const savedCfg = useMemo(() => {
-    if (typeof window === 'undefined') return { snoozeLimit: 1, challengeDay: 14 };
-    const raw = localStorage.getItem('winterarch_alarm');
-    return raw ? JSON.parse(raw) : { snoozeLimit: 1, challengeDay: 14 };
-  }, []);
-  const snoozeMax: number = savedCfg.snoozeLimit ?? 1;
-  const challengeDay: number = savedCfg.challengeDay ?? 14;
+  const [snoozeMax, setSnoozeMax] = useState(1);
+  const [challengeDay, setChallengeDay] = useState(14);
+  const [quote, setQuote] = useState(QUOTES[0]);
 
-  const quote = QUOTES[new Date().getDay() % QUOTES.length];
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('winterarch_alarm');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.snoozeLimit !== undefined) setSnoozeMax(parsed.snoozeLimit);
+        if (parsed.challengeDay !== undefined) setChallengeDay(parsed.challengeDay);
+      }
+    } catch {}
+    setQuote(QUOTES[new Date().getDay() % QUOTES.length]);
+  }, []);
 
   // Live clock
   useEffect(() => {

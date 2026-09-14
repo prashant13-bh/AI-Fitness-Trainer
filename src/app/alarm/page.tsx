@@ -64,23 +64,17 @@ function ToggleSwitch({ value, onChange }: { value: boolean; onChange: (v: boole
 }
 
 export default function AlarmPage() {
-  const [alarm, setAlarm] = useState<AlarmConfig>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('winterarch_alarm');
-      if (saved) return JSON.parse(saved);
-    }
-    return {
-      enabled: false,
-      hour: 5,
-      minute: 30,
-      ampm: 'AM',
-      days: [1, 2, 3, 4, 5],
-      sound: 'winter',
-      vibrate: true,
-      morningSteps: ['bath', 'stretch', 'sprint', 'workout', 'nutrition'],
-      snoozeLimit: 1,
-      challengeDay: 14,
-    };
+  const [alarm, setAlarm] = useState<AlarmConfig>({
+    enabled: false,
+    hour: 5,
+    minute: 30,
+    ampm: 'AM',
+    days: [1, 2, 3, 4, 5],
+    sound: 'winter',
+    vibrate: true,
+    morningSteps: ['bath', 'stretch', 'sprint', 'workout', 'nutrition'],
+    snoozeLimit: 1,
+    challengeDay: 14,
   });
 
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -88,6 +82,10 @@ export default function AlarmPage() {
   const [notifGranted, setNotifGranted] = useState(false);
 
   useEffect(() => {
+    const savedAlarm = localStorage.getItem('winterarch_alarm');
+    if (savedAlarm) {
+      try { setAlarm(JSON.parse(savedAlarm)); } catch {}
+    }
     if (typeof Notification !== 'undefined') {
       setNotifGranted(Notification.permission === 'granted');
     }
