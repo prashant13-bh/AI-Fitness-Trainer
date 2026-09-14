@@ -171,6 +171,15 @@ h6 {
     box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
   }
 
+  /* When desktop sidebar is NOT present (Auth & Landing pages), center layout */
+  .app-container:not(:has(.desktop-sidebar)) {
+    padding-left: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: var(--bg-base) !important;
+  }
+
   .desktop-sidebar {
     position: fixed;
     top: 0;

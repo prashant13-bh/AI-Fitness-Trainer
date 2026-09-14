@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BottomNav from '@/components/layout/BottomNav';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const ALARM_SOUNDS = [
-  { id: 'winter', label: '❄️ Winter Arch', file: null },
+  { id: 'winter', label: '❄️ Winter Arch Anthem', file: null },
   { id: 'beep', label: '📳 Classic Beep', file: null },
   { id: 'nature', label: '🌊 Nature Waves', file: null },
-  { id: 'power', label: '⚡ Power Up', file: null },
+  { id: 'power', label: '⚡ Power Up Synth', file: null },
 ];
 
 const MORNING_STEPS = [
@@ -27,7 +27,6 @@ const QUOTES = [
   "The winter is cold. Your excuses are colder. Get up.",
   "Every champion was once a contender who refused to give up.",
   "Rise before the world wakes. That's your edge.",
-  "The warrior who fights himself is the strongest of all.",
 ];
 
 type AlarmConfig = {
@@ -75,7 +74,7 @@ export default function AlarmPage() {
       hour: 5,
       minute: 30,
       ampm: 'AM',
-      days: [1, 2, 3, 4, 5], // Mon–Fri
+      days: [1, 2, 3, 4, 5],
       sound: 'winter',
       vibrate: true,
       morningSteps: ['bath', 'stretch', 'sprint', 'workout', 'nutrition'],
@@ -84,12 +83,10 @@ export default function AlarmPage() {
     };
   });
 
-  const [activeTab, setActiveTab] = useState<'alarm' | 'routine' | 'preview'>('alarm');
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notifGranted, setNotifGranted] = useState(false);
 
-  // Check notification permission
   useEffect(() => {
     if (typeof Notification !== 'undefined') {
       setNotifGranted(Notification.permission === 'granted');
@@ -98,7 +95,6 @@ export default function AlarmPage() {
 
   const saveAlarm = () => {
     localStorage.setItem('winterarch_alarm', JSON.stringify(alarm));
-    scheduleNotifications(alarm);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -107,17 +103,6 @@ export default function AlarmPage() {
     if (typeof Notification !== 'undefined') {
       const perm = await Notification.requestPermission();
       setNotifGranted(perm === 'granted');
-    }
-  };
-
-  const scheduleNotifications = (cfg: AlarmConfig) => {
-    if (!notifGranted || !cfg.enabled) return;
-    // Schedule via service worker (postMessage)
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: 'SCHEDULE_ALARM',
-        alarm: cfg,
-      });
     }
   };
 
@@ -161,9 +146,9 @@ export default function AlarmPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '1.25rem' }} className="animate-fadeInUp">
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Morning</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Disciplined Waking</p>
           <h1 className="font-display" style={{ fontSize: '1.7rem', fontWeight: 900 }}>
-            <span className="gradient-text">Alarm & Routine</span>
+            <span className="gradient-text">Morning Alarm & Routine</span>
           </h1>
         </div>
 
@@ -172,31 +157,17 @@ export default function AlarmPage() {
           <div style={{ flex: 1 }}>
             <div className="font-display" style={{ fontWeight: 700, fontSize: '1rem' }}>Winter Arch Alarm</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
-              {alarm.enabled ? `⏰ Rings at ${formatTime()} daily` : 'Alarm is off — warriors wake up first'}
+              {alarm.enabled ? `⏰ Rings at ${formatTime()} daily` : 'Alarm disabled — turn on to build your routine'}
             </div>
           </div>
           <ToggleSwitch value={alarm.enabled} onChange={v => updateAlarm('enabled', v)} />
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: '14px', padding: '4px', marginBottom: '1.25rem' }}>
-          {(['alarm', 'routine', 'preview'] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              flex: 1, padding: '0.6rem 0.25rem', borderRadius: '10px', border: 'none', cursor: 'pointer',
-              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.78rem', transition: 'all 0.3s',
-              background: activeTab === tab ? 'linear-gradient(135deg,rgba(0,212,255,0.2),rgba(123,47,190,0.2))' : 'transparent',
-              color: activeTab === tab ? 'var(--ice-blue)' : 'var(--text-muted)',
-            }}>
-              {tab === 'alarm' ? '⏰ Alarm' : tab === 'routine' ? '📋 Routine' : '👁 Preview'}
-            </button>
-          ))}
-        </div>
-
-        {/* ═══════ ALARM TAB ═══════ */}
-        {activeTab === 'alarm' && (
+        {/* 2-Column Desktop Grid Layout */}
+        <div className="desktop-grid-split">
+          {/* Left Column: Time & Alarm Settings */}
           <div className="animate-fadeInUp">
-
-            {/* Time Display */}
+            {/* Time Display Hero Card */}
             <div
               onClick={() => setShowTimePicker(true)}
               className="glass-card"
@@ -207,10 +178,10 @@ export default function AlarmPage() {
                 <span style={{ color: 'white' }}>{String(alarm.hour).padStart(2, '0')}:{String(alarm.minute).padStart(2, '0')}</span>
               </div>
               <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ice-blue)', marginTop: '0.25rem' }}>{alarm.ampm}</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Tap to change time</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>Tap to change wake up time</div>
             </div>
 
-            {/* Day Selector */}
+            {/* Repeat Days */}
             <div style={{ marginBottom: '1.25rem' }}>
               <div className="section-title" style={{ marginBottom: '0.75rem' }}>Repeat Days</div>
               <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'space-between' }}>
@@ -233,22 +204,9 @@ export default function AlarmPage() {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
-                {[
-                  { label: 'Everyday', days: [0,1,2,3,4,5,6] },
-                  { label: 'Weekdays', days: [1,2,3,4,5] },
-                  { label: 'Weekends', days: [0,6] },
-                ].map(preset => (
-                  <button key={preset.label}
-                    onClick={() => updateAlarm('days', preset.days)}
-                    style={{ padding: '0.3rem 0.75rem', borderRadius: '20px', border: '1px solid rgba(0,212,255,0.2)', background: 'rgba(0,212,255,0.05)', color: 'var(--ice-blue)', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-display)' }}>
-                    {preset.label}
-                  </button>
-                ))}
-              </div>
             </div>
 
-            {/* Sound */}
+            {/* Alarm Sound */}
             <div style={{ marginBottom: '1.25rem' }}>
               <div className="section-title" style={{ marginBottom: '0.75rem' }}>Alarm Sound</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -271,11 +229,11 @@ export default function AlarmPage() {
               </div>
             </div>
 
-            {/* Vibrate + Snooze */}
+            {/* Vibrate & Snooze Settings */}
             <div className="glass-card" style={{ borderRadius: '20px', overflow: 'hidden', marginBottom: '1.25rem' }}>
               {[
                 {
-                  icon: '📳', label: 'Vibration', sub: 'Vibrate with alarm',
+                  icon: '📳', label: 'Vibration', sub: 'Vibrate on trigger',
                   control: <ToggleSwitch value={alarm.vibrate} onChange={v => updateAlarm('vibrate', v)} />
                 },
                 {
@@ -305,39 +263,24 @@ export default function AlarmPage() {
               ))}
             </div>
 
-            {/* Notification Permission */}
-            {!notifGranted && (
-              <div className="glass-card-fire" style={{ padding: '1rem 1.25rem', borderRadius: '16px', marginBottom: '1.25rem' }}>
-                <div style={{ fontSize: '0.85rem', color: 'var(--fire-orange)', fontWeight: 700, marginBottom: '0.25rem' }}>⚠️ Notifications Required</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>Enable notifications to receive your morning alarm reminders</div>
-                <button onClick={requestNotifPermission} className="btn-fire" style={{ padding: '0.6rem', fontSize: '0.85rem' }}>
-                  🔔 Enable Notifications
-                </button>
-              </div>
-            )}
-
-            {notifGranted && (
-              <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', padding: '0.75rem 1rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ color: '#10B981' }}>✅</span>
-                <span style={{ fontSize: '0.82rem', color: '#10B981', fontWeight: 600 }}>Notifications enabled — alarm will ring!</span>
-              </div>
-            )}
+            {/* Save Button */}
+            <button
+              onClick={saveAlarm}
+              className="btn-primary"
+              style={{ fontSize: '1rem', background: saved ? 'linear-gradient(135deg, #10B981, #059669)' : undefined, marginBottom: '1.5rem' }}
+            >
+              {saved ? '✅ Alarm Saved!' : `⏰ Save Alarm — ${formatTime()}`}
+            </button>
           </div>
-        )}
 
-        {/* ═══════ ROUTINE TAB ═══════ */}
-        {activeTab === 'routine' && (
-          <div className="animate-fadeInUp">
-            <div style={{ marginBottom: '1rem', padding: '0.875rem 1.25rem', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.12)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {/* Right Column: Morning Routine Step Builder */}
+          <div className="animate-fadeInUp delay-100">
+            <div style={{ marginBottom: '1rem', padding: '1rem 1.25rem', background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.12)', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <div className="font-display" style={{ fontWeight: 700 }}>Total Morning Time</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Your full morning routine</div>
+                <div className="font-display" style={{ fontWeight: 700 }}>Total Morning Routine</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>5-Step discipline sequence</div>
               </div>
               <div className="font-mono" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--ice-blue)' }}>{totalRoutineTime}m</div>
-            </div>
-
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1rem', fontStyle: 'italic' }}>
-              Toggle steps to customize your morning routine:
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
@@ -354,7 +297,6 @@ export default function AlarmPage() {
                       borderRadius: '18px', cursor: 'pointer', transition: 'all 0.3s',
                     }}
                   >
-                    {/* Step number */}
                     <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: active ? 'linear-gradient(135deg,#00D4FF,#7B2FBE)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, color: active ? '#000' : 'var(--text-muted)', flexShrink: 0, fontFamily: 'var(--font-mono)' }}>
                       {i + 1}
                     </div>
@@ -369,157 +311,28 @@ export default function AlarmPage() {
               })}
             </div>
 
-            {/* Routine Timeline */}
-            <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '20px' }}>
-              <div className="section-title" style={{ marginBottom: '1rem' }}>Your Morning Timeline</div>
-              {(() => {
-                let currentTime = alarm.hour * 60 + alarm.minute;
-                if (alarm.ampm === 'PM' && alarm.hour !== 12) currentTime += 720;
-                return alarm.morningSteps.map(stepId => {
-                  const step = MORNING_STEPS.find(s => s.id === stepId);
-                  if (!step) return null;
-                  const startH = Math.floor(currentTime / 60) % 12 || 12;
-                  const startM = currentTime % 60;
-                  const startAmPm = currentTime < 720 ? 'AM' : 'PM';
-                  currentTime += step.duration;
-                  const endH = Math.floor(currentTime / 60) % 12 || 12;
-                  const endM = currentTime % 60;
-                  const endAmPm = currentTime < 720 ? 'AM' : 'PM';
-                  return (
-                    <div key={stepId} style={{ display: 'flex', gap: '0.875rem', marginBottom: '0.875rem', alignItems: 'flex-start' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
-                        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--ice-blue)', marginTop: '6px' }} />
-                        <div style={{ width: '1px', flex: 1, background: 'rgba(0,212,255,0.2)', minHeight: '24px', marginTop: '3px' }} />
-                      </div>
-                      <div style={{ flex: 1, paddingBottom: '0.5rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span className="font-display" style={{ fontWeight: 700, fontSize: '0.88rem' }}>{step.icon} {step.label}</span>
-                          <span className="font-mono" style={{ fontSize: '0.72rem', color: 'var(--ice-blue)' }}>
-                            {String(startH).padStart(2,'0')}:{String(startM).padStart(2,'0')} {startAmPm}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>{step.duration} minutes</div>
-                      </div>
-                    </div>
-                  );
-                });
-              })()}
-              <div style={{ display: 'flex', gap: '0.875rem', alignItems: 'center' }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10B981', flexShrink: 0, marginLeft: 0 }} />
-                <span className="font-display" style={{ fontWeight: 700, fontSize: '0.88rem', color: '#10B981' }}>🎉 Morning Complete!</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ═══════ PREVIEW TAB ═══════ */}
-        {activeTab === 'preview' && (
-          <div className="animate-fadeInUp">
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem', textAlign: 'center', fontStyle: 'italic' }}>
-              Preview of what users will see on alarm day
-            </div>
-
-            {/* Alarm Screen Preview */}
-            <div style={{ background: '#060A14', borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(0,212,255,0.15)', marginBottom: '1.25rem' }}>
-              {/* Status bar */}
-              <div style={{ padding: '0.5rem 1rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>
-                <span>5:30</span><span>●●●●</span>
-              </div>
-
-              {/* Snow particles simulation */}
-              <div style={{ textAlign: 'center', padding: '2rem 1.5rem', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 30%, rgba(0,212,255,0.08) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
-                {/* Snowflakes */}
-                {['❄','❅','❆','✦'].map((s, i) => (
-                  <span key={i} style={{ position: 'absolute', top: `${10 + i*15}%`, left: `${10 + i*20}%`, color: 'rgba(0,212,255,0.3)', fontSize: '0.8rem' }}>{s}</span>
-                ))}
-
-                <div style={{ fontSize: '4rem', marginBottom: '0.5rem' }} className="animate-float">❄️</div>
-
-                <div className="font-mono" style={{ fontSize: '4rem', fontWeight: 900, color: 'white', lineHeight: 1 }}>
-                  {String(alarm.hour).padStart(2,'0')}:{String(alarm.minute).padStart(2,'0')}
-                </div>
-                <div className="font-display" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ice-blue)', marginTop: '0.25rem' }}>{alarm.ampm}</div>
-
-                <div style={{ marginTop: '1.25rem', marginBottom: '0.5rem' }}>
-                  <div className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'white' }}>Rise, Warrior. 🔥</div>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                    Day {alarm.challengeDay} of your Winter Arch begins now
-                  </div>
-                </div>
-
-                <div style={{ padding: '0.75rem 1rem', margin: '1rem 0', background: 'rgba(0,212,255,0.06)', borderRadius: '14px', border: '1px solid rgba(0,212,255,0.12)' }}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>
-                    "{quote}"
-                  </div>
-                </div>
-
-                {/* Today's preview */}
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                  {alarm.morningSteps.map(stepId => {
-                    const s = MORNING_STEPS.find(x => x.id === stepId);
-                    return s ? (
-                      <div key={stepId} style={{ padding: '0.3rem 0.6rem', borderRadius: '20px', background: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.15)', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                        {s.icon} {s.label}
-                      </div>
-                    ) : null;
-                  })}
-                </div>
-
-                {/* Slide to wake up */}
-                <div style={{ position: 'relative', height: '56px', background: 'rgba(255,255,255,0.06)', borderRadius: '28px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', padding: '4px' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg,#00D4FF,#7B2FBE)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0, boxShadow: '0 0 20px rgba(0,212,255,0.4)' }}>
-                    ▶
-                  </div>
-                  <div style={{ flex: 1, textAlign: 'center', fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-display)' }}>
-                    slide to rise up  →
-                  </div>
-                </div>
-
-                {/* Snooze */}
-                <button style={{ marginTop: '0.875rem', background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', cursor: 'pointer' }}>
-                  😴 Snooze ({alarm.snoozeLimit}× max)
-                </button>
-              </div>
-            </div>
-
+            {/* Test Alarm Trigger Link */}
             <Link href="/alarm/ring" style={{ textDecoration: 'none' }}>
-              <button className="btn-secondary" style={{ fontSize: '0.88rem', marginBottom: '0.75rem' }}>
-                🔔 Test Alarm Screen
+              <button className="btn-secondary" style={{ width: '100%', padding: '0.875rem', borderRadius: '16px', fontSize: '0.9rem' }}>
+                🔔 Launch Live Alarm Ring Simulator
               </button>
             </Link>
           </div>
-        )}
-
-        {/* Save Button */}
-        <button
-          onClick={saveAlarm}
-          className="btn-primary"
-          style={{ marginTop: '0.5rem', fontSize: '1rem', background: saved ? 'linear-gradient(135deg, #10B981, #059669)' : undefined }}
-        >
-          {saved ? '✅ Alarm Saved!' : `⏰ Save Alarm — ${formatTime()}`}
-        </button>
-
-        {alarm.enabled && (
-          <p style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            Your alarm will ring every {alarm.days.map(d => DAYS[d]).join(', ')} at {formatTime()}
-          </p>
-        )}
+        </div>
       </div>
 
-      {/* Time Picker Modal */}
+      {/* Centered Desktop Time Picker Modal */}
       {showTimePicker && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 200, display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowTimePicker(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '430px', margin: '0 auto', background: 'var(--bg-surface)', borderRadius: '28px 28px 0 0', padding: '1.5rem', border: '1px solid rgba(255,255,255,0.08)' }} className="animate-fadeInUp">
-            <div className="font-display" style={{ fontWeight: 700, fontSize: '1.2rem', textAlign: 'center', marginBottom: '1.5rem' }}>Set Wake Up Time</div>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowTimePicker(false)}>
+          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: '440px', background: 'var(--bg-surface)', borderRadius: '24px', padding: '1.75rem', border: '1px solid rgba(0,212,255,0.15)' }} className="animate-scaleIn">
+            <div className="font-display" style={{ fontWeight: 800, fontSize: '1.3rem', textAlign: 'center', marginBottom: '1.5rem', color: 'white' }}>Set Wake Up Time</div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
               {/* Hour */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                <button onClick={() => updateAlarm('hour', alarm.hour === 12 ? 1 : alarm.hour + 1)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}>▲</button>
+                <button onClick={() => updateAlarm('hour', alarm.hour === 12 ? 1 : alarm.hour + 1)} style={{ background: 'none', border: 'none', color: 'var(--ice-blue)', fontSize: '1.5rem', cursor: 'pointer' }}>▲</button>
                 <div className="font-mono" style={{ fontSize: '3.5rem', fontWeight: 900, color: 'white', width: '80px', textAlign: 'center' }}>{String(alarm.hour).padStart(2, '0')}</div>
-                <button onClick={() => updateAlarm('hour', alarm.hour === 1 ? 12 : alarm.hour - 1)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}>▼</button>
+                <button onClick={() => updateAlarm('hour', alarm.hour === 1 ? 12 : alarm.hour - 1)} style={{ background: 'none', border: 'none', color: 'var(--ice-blue)', fontSize: '1.5rem', cursor: 'pointer' }}>▼</button>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>HOUR</div>
               </div>
 
@@ -527,9 +340,9 @@ export default function AlarmPage() {
 
               {/* Minute */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                <button onClick={() => updateAlarm('minute', alarm.minute === 59 ? 0 : alarm.minute + 1)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}>▲</button>
+                <button onClick={() => updateAlarm('minute', alarm.minute === 59 ? 0 : alarm.minute + 1)} style={{ background: 'none', border: 'none', color: 'var(--ice-blue)', fontSize: '1.5rem', cursor: 'pointer' }}>▲</button>
                 <div className="font-mono" style={{ fontSize: '3.5rem', fontWeight: 900, color: 'white', width: '80px', textAlign: 'center' }}>{String(alarm.minute).padStart(2, '0')}</div>
-                <button onClick={() => updateAlarm('minute', alarm.minute === 0 ? 59 : alarm.minute - 1)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}>▼</button>
+                <button onClick={() => updateAlarm('minute', alarm.minute === 0 ? 59 : alarm.minute - 1)} style={{ background: 'none', border: 'none', color: 'var(--ice-blue)', fontSize: '1.5rem', cursor: 'pointer' }}>▼</button>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>MINUTE</div>
               </div>
 
@@ -545,30 +358,6 @@ export default function AlarmPage() {
                   }}>{p}</button>
                 ))}
               </div>
-            </div>
-
-            {/* Quick presets */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              {[
-                { h: 4, m: 30, ap: 'AM', label: '4:30 AM' },
-                { h: 5, m: 0, ap: 'AM', label: '5:00 AM' },
-                { h: 5, m: 30, ap: 'AM', label: '5:30 AM' },
-                { h: 6, m: 0, ap: 'AM', label: '6:00 AM' },
-                { h: 6, m: 30, ap: 'AM', label: '6:30 AM' },
-                { h: 7, m: 0, ap: 'AM', label: '7:00 AM' },
-              ].map(t => (
-                <button key={t.label}
-                  onClick={() => { updateAlarm('hour', t.h); updateAlarm('minute', t.m); updateAlarm('ampm', t.ap as 'AM'|'PM'); }}
-                  style={{
-                    padding: '0.4rem 0.875rem', borderRadius: '20px',
-                    border: `1.5px solid ${alarm.hour === t.h && alarm.minute === t.m && alarm.ampm === t.ap ? 'rgba(0,212,255,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                    background: alarm.hour === t.h && alarm.minute === t.m && alarm.ampm === t.ap ? 'rgba(0,212,255,0.1)' : 'transparent',
-                    color: alarm.hour === t.h && alarm.minute === t.m ? 'var(--ice-blue)' : 'var(--text-muted)',
-                    fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer',
-                  }}>
-                  {t.label}
-                </button>
-              ))}
             </div>
 
             <button className="btn-primary" onClick={() => setShowTimePicker(false)}>
