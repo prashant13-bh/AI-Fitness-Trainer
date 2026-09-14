@@ -168,7 +168,7 @@ export default function AlarmPage() {
         </div>
 
         {/* Master Toggle */}
-        <div className="glass-card-primary" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }} className="animate-fadeInUp delay-100">
+        <div className="glass-card-primary animate-fadeInUp delay-100" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{ flex: 1 }}>
             <div className="font-display" style={{ fontWeight: 700, fontSize: '1rem' }}>Winter Arch Alarm</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
@@ -219,7 +219,7 @@ export default function AlarmPage() {
                     key={i}
                     onClick={() => toggleDay(i)}
                     style={{
-                      flex: 1, padding: '0.6rem 0', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                      flex: 1, padding: '0.6rem 0', borderRadius: '12px', cursor: 'pointer',
                       background: alarm.days.includes(i)
                         ? 'linear-gradient(135deg, rgba(0,212,255,0.25), rgba(123,47,190,0.25))'
                         : 'rgba(255,255,255,0.04)',

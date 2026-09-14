@@ -154,7 +154,7 @@ export default function TrainerPage() {
         {/* Ready countdown */}
         {phase === 'ready' && (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)' }}>
-            <div className="font-display" style={{ fontSize: '4rem', fontWeight: 900, color: 'var(--ice-blue)' }} className="animate-scaleIn">GO!</div>
+            <div className="font-display animate-scaleIn" style={{ fontSize: '4rem', fontWeight: 900, color: 'var(--ice-blue)' }}>GO!</div>
           </div>
         )}
       </div>

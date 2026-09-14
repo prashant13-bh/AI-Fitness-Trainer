@@ -71,7 +71,7 @@ export default function ChallengePage() {
         </div>
 
         {/* Challenge Card */}
-        <div className="challenge-card" style={{ padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }} className="animate-fadeInUp delay-100">
+        <div className="challenge-card animate-fadeInUp delay-100" style={{ padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center' }}>30-Day Transformation Challenge</div>
           <ChallengeRing day={currentDay} total={30} size={130} />
           <div style={{ textAlign: 'center' }}>
@@ -86,7 +86,7 @@ export default function ChallengePage() {
         </div>
 
         {/* Stats Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' }} className="animate-fadeInUp delay-200">
+        <div className="animate-fadeInUp delay-200" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
           {[
             { icon: '✅', value: completedCount, label: 'Completed', color: '#10B981' },
             { icon: '🔥', value: `${Math.round((completedCount/30)*100)}%`, label: 'Progress', color: '#FF6B35' },
@@ -101,7 +101,7 @@ export default function ChallengePage() {
         </div>
 
         {/* Day Grid */}
-        <div style={{ marginBottom: '1.25rem' }} className="animate-fadeInUp delay-200">
+        <div className="animate-fadeInUp delay-200" style={{ marginBottom: '1.25rem' }}>
           <div className="section-header">
             <div className="section-title">30-Day Journey</div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{completedCount}/30 days</span>
@@ -146,7 +146,7 @@ export default function ChallengePage() {
 
         {/* Selected Day Detail */}
         {selectedDay && (
-          <div className="glass-card-primary" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem' }} className="animate-scaleIn">
+          <div className="glass-card-primary animate-scaleIn" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem' }}>
             {(() => {
               const d = CHALLENGE_DAYS[selectedDay - 1];
               return (
@@ -173,7 +173,7 @@ export default function ChallengePage() {
         )}
 
         {/* Reward */}
-        <div className="glass-card-fire" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem' }} className="animate-fadeInUp delay-400">
+        <div className="glass-card-fire animate-fadeInUp delay-400" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <span style={{ fontSize: '2.5rem' }}>🏔️</span>
             <div>

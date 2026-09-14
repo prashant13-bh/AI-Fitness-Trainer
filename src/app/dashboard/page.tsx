@@ -115,7 +115,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ---- LEVEL + XP BAR ---- */}
-        <div className="glass-card" style={{ padding: '1rem 1.25rem', marginBottom: '1rem', borderRadius: '18px' }} className="animate-fadeInUp delay-100">
+        <div className="glass-card animate-fadeInUp delay-100" style={{ padding: '1rem 1.25rem', marginBottom: '1rem', borderRadius: '18px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '1.25rem' }}>

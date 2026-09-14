@@ -99,7 +99,7 @@ export default function NutritionPage() {
         </div>
 
         {/* Calorie Ring */}
-        <div className="glass-card-primary" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }} className="animate-fadeInUp delay-100">
+        <div className="glass-card-primary animate-fadeInUp delay-100" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           <div style={{ position: 'relative', flexShrink: 0 }}>
             {(() => {
               const size = 90, stroke = 10, r = (size-stroke)/2, circ = 2*Math.PI*r;
@@ -143,7 +143,7 @@ export default function NutritionPage() {
         </div>
 
         {/* Water Tracker */}
-        <div className="glass-card" style={{ padding: '1rem 1.25rem', borderRadius: '18px', marginBottom: '1.25rem', border: '1px solid rgba(0,212,255,0.1)' }} className="animate-fadeInUp delay-200">
+        <div className="glass-card animate-fadeInUp delay-200" style={{ padding: '1rem 1.25rem', borderRadius: '18px', marginBottom: '1.25rem', border: '1px solid rgba(0,212,255,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '1.25rem' }}>💧</span>
@@ -249,3 +249,4 @@ export default function NutritionPage() {
     </div>
   );
 }
+

@@ -71,7 +71,7 @@ export default function ProfilePage() {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '2.5rem', fontWeight: 800, color: 'white',
             fontFamily: 'var(--font-display)',
-          }} className="animate-pulse-glow">
+          }}>
             {displayName.charAt(0).toUpperCase()}
           </div>
 
@@ -86,7 +86,7 @@ export default function ProfilePage() {
         </div>
 
         {/* XP Bar */}
-        <div className="glass-card" style={{ padding: '1rem 1.25rem', borderRadius: '18px', marginBottom: '1.25rem' }} className="animate-fadeInUp delay-200">
+        <div className="glass-card animate-fadeInUp delay-200" style={{ padding: '1rem 1.25rem', borderRadius: '18px', marginBottom: '1.25rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Level Progress</span>
             <span className="font-mono" style={{ fontSize: '0.8rem', color: 'var(--ice-blue)' }}>{xp} / {nextLevelXP} XP</span>
@@ -100,7 +100,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Stats Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1.25rem' }} className="animate-fadeInUp delay-200">
+        <div className="animate-fadeInUp delay-200" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
           {profileStats.map((s, i) => (
             <div key={i} className="stat-card">
               <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{s.icon}</div>
@@ -112,7 +112,7 @@ export default function ProfilePage() {
 
         {/* Body Stats (from profile) */}
         {userData?.profile && (
-          <div className="glass-card" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem' }} className="animate-fadeInUp delay-300">
+          <div className="glass-card animate-fadeInUp delay-300" style={{ padding: '1.25rem', borderRadius: '20px', marginBottom: '1.25rem' }}>
             <div className="section-title" style={{ marginBottom: '0.875rem' }}>Body Stats</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
               {[
