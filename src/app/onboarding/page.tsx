@@ -1,253 +1,275 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { auth, db } from "@/lib/firebase"
-import { doc, setDoc } from "firebase/firestore"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { calculateAnalysis, UserStats } from "@/lib/analysis"
-import { motion } from "framer-motion"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { UserProfile, FitnessGoal, FitnessLevel, DietPreference } from '@/lib/types';
+
+const STEPS = 4;
+
+const GOALS: { value: FitnessGoal; label: string; emoji: string; desc: string }[] = [
+  { value: 'lose-weight', label: 'Lose Weight', emoji: '🔥', desc: 'Burn fat and slim down' },
+  { value: 'build-muscle', label: 'Build Muscle', emoji: '💪', desc: 'Gain strength and size' },
+  { value: 'get-fit', label: 'Get Fit', emoji: '⚡', desc: 'Overall health & fitness' },
+  { value: 'increase-strength', label: 'Get Stronger', emoji: '🏋️', desc: 'Increase max strength' },
+  { value: 'improve-endurance', label: 'Endurance', emoji: '🏃', desc: 'Run farther, longer' },
+];
+
+const LEVELS: { value: FitnessLevel; label: string; emoji: string; desc: string }[] = [
+  { value: 'beginner', label: 'Beginner', emoji: '🌱', desc: 'Just starting out' },
+  { value: 'intermediate', label: 'Intermediate', emoji: '💡', desc: '1-3 years experience' },
+  { value: 'advanced', label: 'Advanced', emoji: '🚀', desc: '3+ years, serious athlete' },
+];
+
+const DIETS: { value: DietPreference; label: string; emoji: string }[] = [
+  { value: 'standard', label: 'Anything', emoji: '🍽️' },
+  { value: 'vegetarian', label: 'Vegetarian', emoji: '🥗' },
+  { value: 'vegan', label: 'Vegan', emoji: '🌱' },
+  { value: 'keto', label: 'Keto', emoji: '🥩' },
+  { value: 'paleo', label: 'Paleo', emoji: '🍖' },
+];
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const [step, setStep] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [formData, setFormData] = useState<UserStats>({
-    age: 25,
-    weight: 65,
-    height: 170,
-    gender: "male",
-    activityLevel: "moderately_active",
-    goal: "build_muscle",
-  })
+  const router = useRouter();
+  const { saveProfile } = useAuth();
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState<Partial<UserProfile>>({
+    goal: 'get-fit',
+    fitnessLevel: 'beginner',
+    dietPreference: 'standard',
+    daysPerWeek: 4,
+    gender: 'male',
+  });
 
-  // Check if user is authenticated
-  useEffect(() => {
-    if (!auth) {
-      router.push("/login")
-      return
-    }
+  const next = () => setStep(s => Math.min(s + 1, STEPS - 1));
+  const prev = () => setStep(s => Math.max(s - 1, 0));
 
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        router.push("/login")
-      }
-    })
-
-    return () => unsubscribe()
-  }, [router])
-
-  const handleNext = () => setStep(step + 1)
-  const handleBack = () => setStep(step - 1)
-
-  const handleFinish = async () => {
-    if (!auth || !auth.currentUser || !db) {
-      setError("Firebase not initialized. Please refresh the page.")
-      return
-    }
-
-    setLoading(true)
-    setError("")
-
-    const analysis = calculateAnalysis(formData);
-    
+  const finish = async () => {
+    setLoading(true);
     try {
-      await setDoc(doc(db, "users", auth.currentUser.uid), {
-        email: auth.currentUser.email,
-        stats: formData,
-        analysis: analysis,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-      router.push("/dashboard")
-    } catch (err: any) {
-      console.error("Error saving profile:", err)
-      setError("Failed to save your profile. Please try again.")
+      await saveProfile(profile as UserProfile);
+      router.push('/dashboard');
+    } catch {
+      router.push('/dashboard');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute top-1/4 left-1/4 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 -z-10 h-96 w-96 rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-lg"
-      >
-        <Card className="border-primary/20 bg-card/50 backdrop-blur-md shadow-2xl">
-          <CardHeader>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex gap-2">
-                {[1, 2, 3].map((s) => (
+    <div style={{ minHeight: '100dvh', background: 'linear-gradient(180deg, #060A14 0%, #0A0E1A 100%)' }}>
+      <div style={{ maxWidth: '430px', margin: '0 auto', padding: '1.5rem', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+        {/* Progress dots */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', paddingTop: '2rem', marginBottom: '2rem' }}>
+          {Array.from({ length: STEPS }).map((_, i) => (
+            <div key={i} className={`step-dot ${i === step ? 'active' : i < step ? 'done' : ''}`} />
+          ))}
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }} className="animate-fadeInUp">
+          {/* STEP 0: Goal */}
+          {step === 0 && (
+            <div>
+              <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                What's your <span className="gradient-text">goal?</span>
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                We'll personalize everything for you
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {GOALS.map(g => (
                   <div
-                    key={s}
-                    className={`h-2 w-16 rounded-full transition-all ${
-                      s <= step ? 'bg-primary' : 'bg-muted'
-                    }`}
-                  />
+                    key={g.value}
+                    onClick={() => setProfile(p => ({ ...p, goal: g.value }))}
+                    style={{
+                      padding: '1rem 1.25rem',
+                      border: `1.5px solid ${profile.goal === g.value ? 'rgba(0,212,255,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                      borderRadius: '16px',
+                      background: profile.goal === g.value ? 'rgba(0,212,255,0.08)' : 'rgba(255,255,255,0.02)',
+                      cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: '1rem',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.5rem' }}>{g.emoji}</span>
+                    <div>
+                      <div className="font-display" style={{ fontWeight: 700, color: profile.goal === g.value ? 'var(--ice-blue)' : 'white' }}>{g.label}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{g.desc}</div>
+                    </div>
+                    {profile.goal === g.value && <span style={{ marginLeft: 'auto', color: 'var(--ice-blue)' }}>✓</span>}
+                  </div>
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">{step}/3</span>
             </div>
-            <CardTitle className="text-2xl font-bold text-primary">
-              Step {step} of 3: {step === 1 ? "Basic Info" : step === 2 ? "Your Body" : "Goals"}
-            </CardTitle>
-            <CardDescription>Let's build your custom plan.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 min-h-[280px]">
-            {step === 1 && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Age</Label>
-                    <Input 
-                      type="number" 
-                      value={formData.age} 
-                      onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})}
-                      className="bg-background/50 border-primary/20"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Gender</Label>
-                    <select 
-                      className="flex h-10 w-full rounded-md border border-primary/20 bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      value={formData.gender}
-                      onChange={(e) => setFormData({...formData, gender: e.target.value as any})}
-                    >
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </select>
-                  </div>
-                </div>
-              </motion.div>
-            )}
+          )}
 
-            {step === 2 && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Height (cm)</Label>
-                    <Input 
-                      type="number" 
-                      value={formData.height} 
-                      onChange={(e) => setFormData({...formData, height: parseInt(e.target.value) || 0})}
-                      className="bg-background/50 border-primary/20"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Weight (kg)</Label>
-                    <Input 
-                      type="number" 
-                      value={formData.weight} 
-                      onChange={(e) => setFormData({...formData, weight: parseInt(e.target.value) || 0})}
-                      className="bg-background/50 border-primary/20"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Activity Level</Label>
-                  <select 
-                    className="flex h-10 w-full rounded-md border border-primary/20 bg-background/50 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    value={formData.activityLevel}
-                    onChange={(e) => setFormData({...formData, activityLevel: e.target.value as any})}
+          {/* STEP 1: Fitness Level */}
+          {step === 1 && (
+            <div>
+              <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                Your <span className="gradient-text">fitness level</span>
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                Be honest — we'll adapt to you over time
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {LEVELS.map(l => (
+                  <div
+                    key={l.value}
+                    onClick={() => setProfile(p => ({ ...p, fitnessLevel: l.value }))}
+                    style={{
+                      padding: '1.25rem',
+                      border: `1.5px solid ${profile.fitnessLevel === l.value ? 'rgba(0,212,255,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                      borderRadius: '16px',
+                      background: profile.fitnessLevel === l.value ? 'rgba(0,212,255,0.08)' : 'rgba(255,255,255,0.02)',
+                      cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: '1rem',
+                      transition: 'all 0.2s',
+                    }}
                   >
-                    <option value="sedentary">Sedentary (Office Job)</option>
-                    <option value="lightly_active">Lightly Active (1-2 days/week)</option>
-                    <option value="moderately_active">Moderately Active (3-5 days/week)</option>
-                    <option value="very_active">Very Active (6-7 days/week)</option>
-                  </select>
-                </div>
-              </motion.div>
-            )}
-
-            {step === 3 && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-2"
-              >
-                <Label>Primary Goal</Label>
-                <div className="grid grid-cols-1 gap-3">
-                  {[
-                    { id: "lose_weight", label: "Lose Weight & Burn Fat" },
-                    { id: "build_muscle", label: "Build Muscle & Strength" },
-                    { id: "recomp", label: "Body Recomposition (Lose Fat + Build Muscle)" },
-                  ].map((g) => (
-                    <div 
-                      key={g.id}
-                      onClick={() => setFormData({...formData, goal: g.id as any})}
-                      className={`cursor-pointer rounded-md border p-4 transition-all hover:bg-accent ${formData.goal === g.id ? "border-primary bg-accent/50" : "border-primary/20"}`}
-                    >
-                      <p className="font-medium">{g.label}</p>
+                    <span style={{ fontSize: '2rem' }}>{l.emoji}</span>
+                    <div>
+                      <div className="font-display" style={{ fontWeight: 700, color: profile.fitnessLevel === l.value ? 'var(--ice-blue)' : 'white', fontSize: '1.05rem' }}>{l.label}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{l.desc}</div>
                     </div>
+                    {profile.fitnessLevel === l.value && <span style={{ marginLeft: 'auto', color: 'var(--ice-blue)', fontSize: '1.25rem' }}>✓</span>}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ marginTop: '1.5rem' }}>
+                <label className="input-label">Workout days per week</label>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                  {[2, 3, 4, 5, 6].map(d => (
+                    <button
+                      key={d}
+                      onClick={() => setProfile(p => ({ ...p, daysPerWeek: d }))}
+                      style={{
+                        flex: 1, padding: '0.75rem', borderRadius: '12px',
+                        border: `1.5px solid ${profile.daysPerWeek === d ? 'rgba(0,212,255,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                        background: profile.daysPerWeek === d ? 'rgba(0,212,255,0.1)' : 'transparent',
+                        color: profile.daysPerWeek === d ? 'var(--ice-blue)' : 'var(--text-secondary)',
+                        fontWeight: 700, cursor: 'pointer',
+                        fontFamily: 'var(--font-display)',
+                      }}
+                    >
+                      {d}
+                    </button>
                   ))}
                 </div>
-              </motion.div>
-            )}
+              </div>
+            </div>
+          )}
 
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-sm text-destructive bg-destructive/10 p-3 rounded-md border border-destructive/20"
-              >
-                {error}
-              </motion.p>
-            )}
-          </CardContent>
-          <CardFooter className="flex justify-between border-t border-primary/10 pt-6">
-            <Button 
-              variant="outline" 
-              onClick={handleBack} 
-              disabled={step === 1 || loading}
-              className="border-primary/20"
-            >
-              Back
-            </Button>
-            {step < 3 ? (
-              <Button 
-                onClick={handleNext}
-                className="bg-gradient-to-r from-primary to-secondary"
-              >
-                Next
-              </Button>
-            ) : (
-              <Button 
-                onClick={handleFinish} 
-                disabled={loading}
-                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
-              >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Generating...
+          {/* STEP 2: Body Stats */}
+          {step === 2 && (
+            <div>
+              <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                Your <span className="gradient-text">body stats</span>
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                Used only to personalize your AI plans
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label className="input-label">Gender</label>
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                    {[{v:'male', e:'♂️', l:'Male'},{v:'female', e:'♀️', l:'Female'},{v:'other', e:'⚧', l:'Other'}].map(g => (
+                      <button
+                        key={g.v}
+                        onClick={() => setProfile(p => ({ ...p, gender: g.v as any }))}
+                        style={{
+                          flex: 1, padding: '0.75rem 0.5rem', borderRadius: '12px',
+                          border: `1.5px solid ${profile.gender === g.v ? 'rgba(0,212,255,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                          background: profile.gender === g.v ? 'rgba(0,212,255,0.1)' : 'transparent',
+                          color: profile.gender === g.v ? 'var(--ice-blue)' : 'var(--text-secondary)',
+                          fontWeight: 600, cursor: 'pointer', fontSize: '0.85rem',
+                          fontFamily: 'var(--font-display)',
+                        }}
+                      >{g.e} {g.l}</button>
+                    ))}
                   </div>
-                ) : (
-                  "Generate My Plan"
-                )}
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
-      </motion.div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <label className="input-label">Age</label>
+                    <input type="number" className="input-field" placeholder="25" min={12} max={99}
+                      value={profile.age || ''}
+                      onChange={e => setProfile(p => ({ ...p, age: +e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="input-label">Height (cm)</label>
+                    <input type="number" className="input-field" placeholder="175" min={100} max={250}
+                      value={profile.height || ''}
+                      onChange={e => setProfile(p => ({ ...p, height: +e.target.value }))} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="input-label">Current Weight (kg)</label>
+                  <input type="number" className="input-field" placeholder="75" min={30} max={300}
+                    value={profile.weight || ''}
+                    onChange={e => setProfile(p => ({ ...p, weight: +e.target.value }))} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Diet */}
+          {step === 3 && (
+            <div>
+              <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                Diet <span className="gradient-text">preference</span>
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+                So we can generate the right meal plans for you
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '2rem' }}>
+                {DIETS.map(d => (
+                  <button
+                    key={d.value}
+                    onClick={() => setProfile(p => ({ ...p, dietPreference: d.value }))}
+                    className={`select-chip ${profile.dietPreference === d.value ? 'selected' : ''}`}
+                    style={{ fontSize: '0.9rem' }}
+                  >
+                    {d.emoji} {d.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Done summary */}
+              <div className="glass-card-primary" style={{ padding: '1.25rem', borderRadius: '20px' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🎉</div>
+                <div className="font-display" style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '0.25rem' }}>You're all set!</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  Your AI trainer is ready to transform you. The Winter Arch challenge awaits!
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div style={{ display: 'flex', gap: '0.75rem', paddingBottom: '2rem', marginTop: '1.5rem' }}>
+          {step > 0 && (
+            <button className="btn-secondary" onClick={prev} style={{ flex: '0 0 auto', width: '120px' }}>
+              ← Back
+            </button>
+          )}
+          {step < STEPS - 1 ? (
+            <button className="btn-primary" onClick={next} style={{ flex: 1 }}>
+              Continue →
+            </button>
+          ) : (
+            <button className="btn-primary" onClick={finish} disabled={loading} style={{ flex: 1, opacity: loading ? 0.7 : 1 }}>
+              {loading ? '⏳ Setting up...' : '🚀 Let\'s Go!'}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
-  )
+  );
 }

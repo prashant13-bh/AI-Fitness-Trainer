@@ -1,327 +1,181 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { motion } from "framer-motion"
-import { 
-  Dumbbell, Brain, TrendingUp, Calendar, Target, Zap, 
-  Activity, Trophy, Sparkles, ArrowRight, Check, Star
-} from "lucide-react"
-import Image from "next/image"
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+const snowflakes = ['❄', '❅', '❆', '✦', '⋆'];
+
+function SnowParticle({ delay, x }: { delay: number; x: number }) {
+  return (
+    <span
+      className="snow-particle"
+      style={{
+        left: `${x}%`,
+        top: '-20px',
+        animationDuration: `${3 + Math.random() * 4}s`,
+        animationDelay: `${delay}s`,
+        fontSize: `${0.5 + Math.random() * 0.8}rem`,
+      }}
+    >
+      {snowflakes[Math.floor(Math.random() * snowflakes.length)]}
+    </span>
+  );
+}
+
+const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  delay: Math.random() * 5,
+  x: Math.random() * 100,
+}));
+
+const features = [
+  { icon: '🤖', title: 'AI Trainer', desc: 'Live pose detection & rep counting' },
+  { icon: '✅', title: 'Habit Architect', desc: 'Build unbreakable daily habits' },
+  { icon: '📊', title: 'Smart Planner', desc: 'AI-generated weekly workout plans' },
+  { icon: '🔥', title: '30-Day Challenge', desc: 'Winter Arch transformation program' },
+];
 
 export default function LandingPage() {
-  const features = [
-    {
-      icon: Brain,
-      title: "AI Pose Detection",
-      description: "Real-time form correction using computer vision to ensure perfect technique",
-      color: "text-primary"
-    },
-    {
-      icon: Target,
-      title: "Personalized Plans",
-      description: "Custom workout and diet plans tailored to your body type and goals",
-      color: "text-secondary"
-    },
-    {
-      icon: TrendingUp,
-      title: "Progress Tracking",
-      description: "Visualize your transformation with detailed analytics and insights",
-      color: "text-accent"
-    },
-    {
-      icon: Calendar,
-      title: "Smart Scheduling",
-      description: "Adaptive daily schedules that fit your lifestyle and optimize results",
-      color: "text-primary"
-    }
-  ]
+  const router = useRouter();
+  const [activeFeature, setActiveFeature] = useState(0);
 
-  const steps = [
-    { number: "01", title: "Sign Up", description: "Create your account in seconds" },
-    { number: "02", title: "Set Goals", description: "Tell us about your fitness aspirations" },
-    { number: "03", title: "Start Training", description: "Begin your AI-guided workout journey" },
-    { number: "04", title: "Track Progress", description: "Watch your transformation unfold" }
-  ]
-
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Fitness Enthusiast",
-      content: "The AI form correction is a game-changer! My squat technique improved dramatically.",
-      rating: 5,
-      image: null
-    },
-    {
-      name: "Mike Chen",
-      role: "Busy Professional",
-      content: "Finally, a fitness app that adapts to my schedule. Lost 15 lbs in 2 months!",
-      rating: 5,
-      image: null
-    },
-    {
-      name: "Emily Davis",
-      role: "Marathon Runner",
-      content: "The personalized plans helped me achieve my first sub-4 hour marathon. Incredible!",
-      rating: 5,
-      image: null
-    }
-  ]
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature(prev => (prev + 1) % features.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 md:px-6 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute top-1/4 left-1/4 -z-10 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 -z-10 h-96 w-96 rounded-full bg-secondary/20 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-        
-        <div className="container text-center z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/10 mb-6"
-            >
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-primary">AI-Powered Fitness</span>
-            </motion.div>
+    <div style={{ minHeight: '100dvh', background: 'linear-gradient(180deg, #060A14 0%, #0A0E1A 50%, #10082A 100%)', position: 'relative', overflow: 'hidden' }}>
+      {/* Snow Particles */}
+      {PARTICLES.map(p => (
+        <SnowParticle key={p.id} delay={p.delay} x={p.x} />
+      ))}
 
-            <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl mb-6">
-              Your Personal{" "}
-              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-pulse">
-                AI Trainer
-              </span>
-            </h1>
+      {/* Background glow orbs */}
+      <div style={{
+        position: 'absolute', top: '15%', left: '50%', transform: 'translateX(-50%)',
+        width: '300px', height: '300px',
+        background: 'radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '30%', left: '-20%',
+        width: '250px', height: '250px',
+        background: 'radial-gradient(circle, rgba(123,47,190,0.15) 0%, transparent 70%)',
+        pointerEvents: 'none',
+      }} />
 
-            <p className="mx-auto max-w-[700px] text-muted-foreground text-lg md:text-xl mb-8">
-              Get customized workout plans, AI-powered form correction, and diet tracking. 
-              Transform your fitness journey with cutting-edge technology.
-            </p>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
-            >
-              <Link href="/signup">
-                <Button size="lg" className="group bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-lg shadow-primary/30 text-lg h-12 px-8">
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </ Link>
-              <Link href="/login">
-                <Button variant="outline" size="lg" className="border-primary/30 hover:bg-primary/10 text-lg h-12 px-8">
-                  Sign In
-                </Button>
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="flex items-center justify-center gap-6 text-sm text-muted-foreground"
-            >
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span>No credit card required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-primary" />
-                <span>Free forever plan</span>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-24 px-4 md:px-6 relative">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Powered by <span className="text-primary">Advanced AI</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-[600px] mx-auto">
-              Experience fitness training like never before with our intelligent features
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <Card className="border-primary/20 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20 h-full">
-                  <CardHeader>
-                    <div className={`inline-flex p-3 rounded-lg bg-background/50 w-fit mb-4`}>
-                      <feature.icon className={`h-6 w-6 ${feature.color}`} />
-                    </div>
-                    <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-base">{feature.description}</CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+      <div style={{ maxWidth: '430px', margin: '0 auto', padding: '0 1.5rem', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+        {/* Header Logo */}
+        <div style={{ paddingTop: '3rem', textAlign: 'center' }} className="animate-fadeInUp">
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '80px', height: '80px',
+            background: 'linear-gradient(135deg, rgba(0,212,255,0.2) 0%, rgba(123,47,190,0.3) 100%)',
+            border: '1px solid rgba(0,212,255,0.3)',
+            borderRadius: '28px',
+            fontSize: '2.5rem',
+            marginBottom: '1.5rem',
+          }} className="animate-pulse-glow">
+            ❄️
           </div>
+
+          <h1 className="font-display" style={{ fontSize: '3rem', fontWeight: 900, lineHeight: 1, marginBottom: '0.25rem' }}>
+            <span className="gradient-text">Winter</span>
+            <br />
+            <span style={{ color: 'white' }}>Arch</span>
+          </h1>
+
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '0.75rem', maxWidth: '260px', margin: '0.75rem auto 0' }}>
+            Your AI-powered fitness companion. Transform your body this winter.
+          </p>
         </div>
-      </section>
 
-      {/* How It Works Section */}
-      <section className="py-24 px-4 md:px-6 bg-primary/5">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              How It <span className="text-primary">Works</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-[600px] mx-auto">
-              Start your transformation in four simple steps
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15, duration: 0.5 }}
-                className="relative"
+        {/* Feature Carousel */}
+        <div style={{ marginTop: '2.5rem', flex: 1 }} className="animate-fadeInUp delay-200">
+          {/* Feature Cards */}
+          <div style={{ position: 'relative', height: '100px', marginBottom: '1rem' }}>
+            {features.map((f, i) => (
+              <div
+                key={i}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  opacity: activeFeature === i ? 1 : 0,
+                  transform: activeFeature === i ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.98)',
+                  transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                  pointerEvents: activeFeature === i ? 'auto' : 'none',
+                }}
               >
-                <div className="flex flex-col items-center text-center">
-                  <div className="text-6xl font-bold text-primary/20 mb-4">{step.number}</div>
-                  <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
+                <div className="glass-card-primary" style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', height: '100%' }}>
+                  <div style={{
+                    width: '52px', height: '52px', borderRadius: '16px', flexShrink: 0,
+                    background: 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(123,47,190,0.2))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '1.5rem',
+                  }}>
+                    {f.icon}
+                  </div>
+                  <div>
+                    <div className="font-display" style={{ fontWeight: 700, fontSize: '1.05rem', color: 'white' }}>{f.title}</div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>{f.desc}</div>
+                  </div>
                 </div>
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/4 -right-4 w-8 h-0.5 bg-primary/20" />
-                )}
-              </motion.div>
+              </div>
+            ))}
+          </div>
+
+          {/* Dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '1.5rem' }}>
+            {features.map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: activeFeature === i ? 'linear-gradient(90deg, #00D4FF, #7B2FBE)' : 'rgba(255,255,255,0.1)',
+                  width: activeFeature === i ? '24px' : '8px',
+                  transition: 'all 0.3s ease',
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Stats Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '2rem' }}>
+            {[
+              { value: '1,247', label: 'Athletes' },
+              { value: '30', label: 'Day Challenge' },
+              { value: '4.9★', label: 'Rated' },
+            ].map((stat, i) => (
+              <div key={i} className="glass-card" style={{ padding: '0.875rem 0.5rem', textAlign: 'center', borderRadius: '16px' }}>
+                <div className="font-mono" style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--ice-blue)' }}>{stat.value}</div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>{stat.label}</div>
+              </div>
             ))}
           </div>
         </div>
-      </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24 px-4 md:px-6">
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Loved by <span className="text-primary">Thousands</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-[600px] mx-auto">
-              See what our community has to say about their transformation
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-              >
-                <Card className="border-primary/20 bg-card/50 backdrop-blur-sm h-full">
-                  <CardHeader>
-                    <div className="flex gap-1 mb-2">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                      ))}
-                    </div>
-                    <CardDescription className="text-base italic">"{testimonial.content}"</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div>
-                      <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+        {/* CTA Buttons */}
+        <div style={{ paddingBottom: '3rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }} className="animate-fadeInUp delay-400">
+          <Link href="/signup" style={{ textDecoration: 'none' }}>
+            <button className="btn-primary" style={{ fontSize: '1.05rem' }}>
+              🚀 Start Winter Arch Challenge
+            </button>
+          </Link>
+          <Link href="/login" style={{ textDecoration: 'none' }}>
+            <button className="btn-secondary">
+              Already training? Sign In
+            </button>
+          </Link>
+          <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+            Free to join · No credit card required
+          </p>
         </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 px-4 md:px-6 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[500px] w-[500px] rounded-full bg-primary/20 blur-[150px]" />
-        
-        <div className="container">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-[800px] mx-auto"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Ready to Transform Your <span className="text-primary">Fitness Journey?</span>
-            </h2>
-            <p className="text-muted-foreground text-lg mb-8">
-              Join thousands of users who are achieving their fitness goals with AI-powered training
-            </p>
-            <Link href="/signup">
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg h-14 px-10">
-                Start Free Today
-                <Zap className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-primary/10 py-12 px-4 md:px-6">
-        <div className="container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Dumbbell className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">AI Fitness Trainer</span>
-            </div>
-            <div className="flex gap-8 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-primary transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
-              <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              © 2025 AI Fitness Trainer. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      </div>
     </div>
-  )
+  );
 }

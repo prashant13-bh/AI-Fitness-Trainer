@@ -1,235 +1,152 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
-import { auth } from "@/lib/firebase"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { motion } from "framer-motion"
-import { Dumbbell, Mail, Lock, Chrome, Check, X } from "lucide-react"
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignupPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const router = useRouter();
+  const { signup } = useAuth();
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
 
-  // Password strength indicators
-  const hasMinLength = password.length >= 8
-  const hasUpperCase = /[A-Z]/.test(password)
-  const hasLowerCase = /[a-z]/.test(password)
-  const hasNumber = /[0-9]/.test(password)
-  const passwordsMatch = password === confirmPassword && password.length > 0
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
 
-  const isPasswordStrong = hasMinLength && hasUpperCase && hasLowerCase && hasNumber
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+    if (!form.name || !form.email || !form.password) {
+      setError('Please fill all fields');
+      return;
+    }
+    if (form.password !== form.confirm) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (form.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
     }
 
-    if (!isPasswordStrong) {
-      setError("Please create a stronger password")
-      return
-    }
-
-    setLoading(true)
+    setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      router.push("/onboarding")
+      await signup(form.email, form.password, form.name);
+      router.push('/onboarding');
     } catch (err: any) {
-      if (err.code === 'auth/email-already-in-use') {
-        setError("Email already in use. Please sign in instead.")
-      } else if (err.code === 'auth/invalid-email') {
-        setError("Invalid email address.")
-      } else {
-        setError("Failed to create account. Please try again.")
-      }
+      const msg = err?.code === 'auth/email-already-in-use'
+        ? 'Email already in use. Try signing in.'
+        : err?.message || 'Signup failed';
+      setError(msg);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
-  const handleGoogleSignUp = async () => {
-    setError("")
-    setLoading(true)
-    try {
-      const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
-      router.push("/onboarding")
-    } catch (err: any) {
-      setError("Google sign-up failed. Please try again.")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const PasswordRequirement = ({ met, text }: { met: boolean; text: string }) => (
-    <div className={`flex items-center gap-2 text-xs transition-colors ${met ? 'text-green-500' : 'text-muted-foreground'}`}>
-      {met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-      <span>{text}</span>
-    </div>
-  )
+  };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute top-1/4 left-1/4 -z-10 h-96 w-96 rounded-full bg-primary/10 blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 -z-10 h-96 w-96 rounded-full bg-secondary/10 blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
-      >
-        <Card className="border-primary/20 bg-card/50 backdrop-blur-md shadow-2xl">
-          <CardHeader className="space-y-1 text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="mx-auto mb-2"
-            >
-              <Dumbbell className="h-12 w-12 text-primary" />
-            </motion.div>
-            <CardTitle className="text-3xl font-bold text-primary">Start Your Journey</CardTitle>
-            <CardDescription>
-              Create an account to unlock AI-powered fitness
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSignup} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-background/50 border-primary/20 focus:border-primary transition-colors"
-                  disabled={loading}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password" className="flex items-center gap-2">
-                  <Lock className="h-4 w-4" />
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-background/50 border-primary/20 focus:border-primary transition-colors"
-                  disabled={loading}
-                />
-                {password.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-1 p-3 bg-background/30 rounded-md border border-primary/10"
-                  >
-                    <PasswordRequirement met={hasMinLength} text="At least 8 characters" />
-                    <PasswordRequirement met={hasUpperCase} text="One uppercase letter" />
-                    <PasswordRequirement met={hasLowerCase} text="One lowercase letter" />
-                    <PasswordRequirement met={hasNumber} text="One number" />
-                  </motion.div>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="bg-background/50 border-primary/20 focus:border-primary transition-colors"
-                  disabled={loading}
-                />
-                {confirmPassword.length > 0 && (
-                  <div className={`flex items-center gap-2 text-xs ${passwordsMatch ? 'text-green-500' : 'text-destructive'}`}>
-                    {passwordsMatch ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
-                    <span>{passwordsMatch ? 'Passwords match' : 'Passwords do not match'}</span>
-                  </div>
-                )}
-              </div>
+    <div style={{ minHeight: '100dvh', background: 'linear-gradient(180deg, #060A14 0%, #0A0E1A 100%)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ maxWidth: '430px', margin: '0 auto', width: '100%', padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Back */}
+        <Link href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '1rem' }}>
+          ← Back
+        </Link>
 
-              {error && (
-                <motion.p
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-sm text-destructive bg-destructive/10 p-3 rounded-md border border-destructive/20"
-                >
-                  {error}
-                </motion.p>
-              )}
-              
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
-                disabled={loading}
+        {/* Header */}
+        <div style={{ marginTop: '2rem', marginBottom: '2rem' }} className="animate-fadeInUp">
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🚀</div>
+          <h1 className="font-display" style={{ fontSize: '2rem', fontWeight: 800, color: 'white' }}>
+            Join the<br /><span className="gradient-text">Winter Arch</span>
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+            Create your account and start your transformation
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }} className="animate-fadeInUp delay-100">
+          <div>
+            <label className="input-label">Full Name</label>
+            <input
+              type="text"
+              className="input-field"
+              placeholder="John Doe"
+              value={form.name}
+              onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+              autoComplete="name"
+            />
+          </div>
+          <div>
+            <label className="input-label">Email Address</label>
+            <input
+              type="email"
+              className="input-field"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+              autoComplete="email"
+            />
+          </div>
+          <div>
+            <label className="input-label">Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPass ? 'text' : 'password'}
+                className="input-field"
+                placeholder="Min. 6 characters"
+                value={form.password}
+                onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+                autoComplete="new-password"
+                style={{ paddingRight: '3rem' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(p => !p)}
+                style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1.1rem' }}
               >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Creating account...
-                  </div>
-                ) : (
-                  "Create Account"
-                )}
-              </Button>
-            </form>
-
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-primary/20" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-              </div>
+                {showPass ? '🙈' : '👁️'}
+              </button>
             </div>
+          </div>
+          <div>
+            <label className="input-label">Confirm Password</label>
+            <input
+              type="password"
+              className="input-field"
+              placeholder="Repeat password"
+              value={form.confirm}
+              onChange={e => setForm(p => ({ ...p, confirm: e.target.value }))}
+              autoComplete="new-password"
+            />
+          </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full border-primary/20 hover:bg-primary/10"
-              onClick={handleGoogleSignUp}
-              disabled={loading}
-            >
-              <Chrome className="h-4 w-4 mr-2" />
-              Google
-            </Button>
-          </CardContent>
-          <CardFooter className="flex justify-center border-t border-primary/10 pt-6">
-            <p className="text-sm text-muted-foreground">
-              Already have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline font-semibold">
-                Sign in
-              </Link>
-            </p>
-          </CardFooter>
-        </Card>
-      </motion.div>
+          {error && (
+            <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '0.75rem 1rem', color: '#EF4444', fontSize: '0.85rem' }}>
+              ⚠️ {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="btn-primary"
+            disabled={loading}
+            style={{ marginTop: '0.5rem', opacity: loading ? 0.7 : 1 }}
+          >
+            {loading ? '⏳ Creating account...' : '✨ Create Account & Start'}
+          </button>
+
+          <p style={{ textAlign: 'center', fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+            Already have an account?{' '}
+            <Link href="/login" style={{ color: 'var(--ice-blue)', fontWeight: 600, textDecoration: 'none' }}>
+              Sign In
+            </Link>
+          </p>
+
+          <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: 'auto', paddingBottom: '1rem' }}>
+            By signing up you agree to our Terms & Privacy Policy
+          </p>
+        </form>
+      </div>
     </div>
-  )
+  );
 }

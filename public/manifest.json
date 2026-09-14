@@ -1,11 +1,11 @@
 {
-  "name": "AI Fitness Trainer",
-  "short_name": "AI Trainer",
-  "description": "Your Personal AI Fitness Coach - Get customized workout plans, AI-powered form correction, and diet tracking",
+  "name": "Winter Arch — AI Fitness Trainer",
+  "short_name": "Winter Arch",
+  "description": "AI-powered fitness companion with habit tracking, pose detection, and seasonal challenges",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0f",
-  "theme_color": "#00d9ff",
+  "background_color": "#060A14",
+  "theme_color": "#060A14",
   "orientation": "portrait",
   "icons": [
     {
@@ -19,6 +19,23 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Start Workout",
+      "short_name": "Workout",
+      "description": "Go to workout library",
+      "url": "/workout",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Daily Challenge",
+      "short_name": "Challenge",
+      "description": "View Winter Arch challenge",
+      "url": "/challenge",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
