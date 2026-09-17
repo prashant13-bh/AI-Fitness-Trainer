@@ -1,31 +1,27 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: "Winter Arch — AI Fitness Trainer",
-  description: "Your personal AI-powered fitness companion. Habit tracking, AI workout planning, live pose training, and seasonal challenges to transform your body.",
-  manifest: "/manifest.json",
+  title: 'Winter Arc — Become who you said you\'d become',
+  description: '90 days. One promise. A different you. Track your Arc, build daily habits, and transform with AI coaching.',
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Winter Arch",
+    statusBarStyle: 'black-translucent',
+    title: 'Winter Arc',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#060A14",
-  width: "device-width",
+  themeColor: '#060A14',
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -33,6 +29,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body suppressHydrationWarning>
         <AuthProvider>

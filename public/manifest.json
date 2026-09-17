@@ -1,7 +1,7 @@
 {
-  "name": "Winter Arch — AI Fitness Trainer",
-  "short_name": "Winter Arch",
-  "description": "AI-powered fitness companion with habit tracking, pose detection, and seasonal challenges",
+  "name": "Winter Arc",
+  "short_name": "Winter Arc",
+  "description": "90 days. One promise. Become who you said you'd become.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#060A14",
@@ -12,30 +12,15 @@
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     }
   ],
   "categories": ["health", "fitness", "lifestyle"],
-  "shortcuts": [
-    {
-      "name": "Start Workout",
-      "short_name": "Workout",
-      "description": "Go to workout library",
-      "url": "/workout",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Daily Challenge",
-      "short_name": "Challenge",
-      "description": "View Winter Arch challenge",
-      "url": "/challenge",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
-    }
-  ]
+  "lang": "en"
 }

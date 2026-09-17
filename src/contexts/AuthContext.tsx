@@ -1,129 +1,172 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  updateProfile,
-  sendPasswordResetEmail,
-  User as FirebaseUser,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
-import { User, UserProfile, getUserLevel } from '@/lib/types';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { getSupabaseClient } from '@/lib/supabase/client';
+import type { Session, User, AuthError } from '@supabase/supabase-js';
+import type { UserRow, Database } from '@/lib/supabase/types';
 
+// ── Context value shape ────────────────────────────────────────
 interface AuthContextValue {
-  firebaseUser: FirebaseUser | null;
-  userData: User | null;
+  session: Session | null;
+  user: User | null;
+  userData: UserRow | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  updateUserData: (data: Partial<User>) => Promise<void>;
-  saveProfile: (profile: UserProfile) => Promise<void>;
+  updateUserData: (data: Omit<Partial<UserRow>, 'id'>) => Promise<void>;
+  refreshUserData: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
-  const [userData, setUserData] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const supabase = getSupabaseClient();
 
+  const [session, setSession]   = useState<Session | null>(null);
+  const [user, setUser]         = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserRow | null>(null);
+  const [loading, setLoading]   = useState(true);
+
+  // ── Fetch user profile from public.users ─────────────────────
+  const fetchUserData = useCallback(async (uid: string) => {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', uid)
+      .single();
+
+    if (error) {
+      // Row might not exist yet (trigger handles creation, but may race)
+      console.warn('[AuthContext] fetchUserData:', error.message);
+      return null;
+    }
+    return data as UserRow;
+  }, [supabase]);
+
+  // ── Bootstrap session on mount ────────────────────────────────
   useEffect(() => {
-    if (!auth) { setLoading(false); return; }
-    
-    const unsub = onAuthStateChanged(auth, async (fbUser) => {
-      setFirebaseUser(fbUser);
-      if (fbUser && db) {
-        const docRef = doc(db, 'users', fbUser.uid);
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-          setUserData(snap.data() as User);
-        }
-      } else {
-        setUserData(null);
-      }
-      setLoading(false);
-    });
+    let mounted = true;
 
-    return () => unsub();
-  }, []);
+    const init = async () => {
+      const { data: { session: existingSession } } = await supabase.auth.getSession();
+
+      if (!mounted) return;
+
+      setSession(existingSession);
+      setUser(existingSession?.user ?? null);
+
+      if (existingSession?.user) {
+        const profile = await fetchUserData(existingSession.user.id);
+        if (mounted) setUserData(profile);
+      }
+
+      setLoading(false);
+    };
+
+    init();
+
+    // Listen to auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, newSession) => {
+        if (!mounted) return;
+
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+
+        if (newSession?.user) {
+          const profile = await fetchUserData(newSession.user.id);
+          if (mounted) setUserData(profile);
+        } else {
+          setUserData(null);
+        }
+
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [fetchUserData, supabase]);
+
+  // ── Auth actions ──────────────────────────────────────────────
 
   const login = async (email: string, password: string) => {
-    if (!auth) throw new Error('Firebase not initialized');
-    await signInWithEmailAndPassword(auth, email, password);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    if (!auth || !db) throw new Error('Firebase not initialized');
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await updateProfile(cred.user, { displayName: name });
-
-    const newUser: User = {
-      uid: cred.user.uid,
+    const { error } = await supabase.auth.signUp({
       email,
-      displayName: name,
-      level: 'rookie',
-      xp: 0,
-      streak: 0,
-      longestStreak: 0,
-      joinedAt: new Date().toISOString(),
-      profile: {
-        age: 25,
-        gender: 'male',
-        height: 175,
-        weight: 75,
-        goal: 'get-fit',
-        fitnessLevel: 'beginner',
-        daysPerWeek: 4,
-        dietPreference: 'standard',
+      password,
+      options: {
+        data: { full_name: name, name },
       },
-    };
-
-    await setDoc(doc(db, 'users', cred.user.uid), {
-      ...newUser,
-      createdAt: serverTimestamp(),
     });
-    setUserData(newUser);
+    if (error) throw error;
+    // The DB trigger (handle_new_user) auto-creates the public.users row
+  };
+
+  const loginWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error;
   };
 
   const logout = async () => {
-    if (!auth) return;
-    await signOut(auth);
+    await supabase.auth.signOut();
     setUserData(null);
   };
 
   const resetPassword = async (email: string) => {
-    if (!auth) throw new Error('Firebase not initialized');
-    await sendPasswordResetEmail(auth, email);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    if (error) throw error;
   };
 
-  const updateUserData = async (data: Partial<User>) => {
-    if (!firebaseUser || !db) return;
-    const docRef = doc(db, 'users', firebaseUser.uid);
-    await setDoc(docRef, data, { merge: true });
+  const updateUserData = async (data: Omit<Partial<UserRow>, 'id'>) => {
+    if (!user) return;
+    const payload = { ...data, updated_at: new Date().toISOString() };
+    // Cast to untyped client to bypass supabase-js Update<> generic resolving to 'never'
+    // on manually-written (non-auto-generated) Database types. RLS still enforces security.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
+      .from('users')
+      .update(payload)
+      .eq('id', user.id);
+    if (error) throw error;
     setUserData(prev => prev ? { ...prev, ...data } : null);
   };
 
-  const saveProfile = async (profile: UserProfile) => {
-    await updateUserData({ profile });
+  const refreshUserData = async () => {
+    if (!user) return;
+    const profile = await fetchUserData(user.id);
+    setUserData(profile);
   };
 
   return (
     <AuthContext.Provider value={{
-      firebaseUser,
+      session,
+      user,
       userData,
       loading,
       login,
       signup,
+      loginWithGoogle,
       logout,
       resetPassword,
       updateUserData,
-      saveProfile,
+      refreshUserData,
     }}>
       {children}
     </AuthContext.Provider>
@@ -132,6 +175,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error('useAuth must be used within <AuthProvider>');
   return ctx;
 }

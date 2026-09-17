@@ -9,26 +9,27 @@
    ============================================ */
 
 :root {
-  /* Core Palette */
-  --ice-blue: #00d4ff;
-  --ice-blue-dim: rgba(0, 212, 255, 0.15);
-  --ice-blue-glow: rgba(0, 212, 255, 0.4);
+  /* Core Palette — Rich Obsidian & Cyber Emerald / Ice Blue */
+  --ice-blue: #00f5a0; /* Glowing Cyber Emerald / Mint */
+  --ice-blue-dim: rgba(0, 245, 160, 0.15);
+  --ice-blue-glow: rgba(0, 245, 160, 0.4);
   --deep-violet: #7b2fbe;
+  --electric-cyan: #00d2ff; /* High-voltage Ice Blue */
   --violet-dim: rgba(123, 47, 190, 0.2);
-  --fire-orange: #ff6b35;
-  --fire-dim: rgba(255, 107, 53, 0.15);
+  --fire-orange: #ff5e36; /* Sunset Fire Coral */
+  --fire-dim: rgba(255, 94, 54, 0.15);
 
-  /* Background */
-  --bg-base: #060a14;
-  --bg-surface: #0d1425;
-  --bg-card: rgba(13, 20, 37, 0.8);
-  --bg-glass: rgba(255, 255, 255, 0.04);
+  /* Backgrounds */
+  --bg-base: #07090e; /* Deepest Obsidian Void */
+  --bg-surface: #0e131f; /* Rich Midnight Surface */
+  --bg-card: rgba(14, 19, 31, 0.85);
+  --bg-glass: rgba(255, 255, 255, 0.035);
   --bg-glass-border: rgba(255, 255, 255, 0.08);
 
   /* Text */
-  --text-primary: #f0f4ff;
-  --text-secondary: #8899bb;
-  --text-muted: #4a5568;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   /* Status */
   --success: #10b981;
@@ -36,12 +37,17 @@
   --error: #ef4444;
 
   /* Gradients */
-  --grad-primary: linear-gradient(135deg, #00d4ff 0%, #7b2fbe 100%);
-  --grad-fire: linear-gradient(135deg, #ff6b35 0%, #ff0080 100%);
-  --grad-surface: linear-gradient(180deg, #0d1425 0%, #060a14 100%);
+  --grad-primary: linear-gradient(
+    135deg,
+    #00f5a0 0%,
+    #00d2ff 50%,
+    #7b2fbe 100%
+  );
+  --grad-fire: linear-gradient(135deg, #ff5e36 0%, #ff007a 100%);
+  --grad-surface: linear-gradient(180deg, #0e131f 0%, #07090e 100%);
   --grad-card: linear-gradient(
     145deg,
-    rgba(0, 212, 255, 0.08) 0%,
+    rgba(0, 245, 160, 0.08) 0%,
     rgba(123, 47, 190, 0.08) 100%
   );
 
@@ -83,15 +89,15 @@ body {
    SCROLLBAR
    ============================================ */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-base);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--ice-blue-dim);
-  border-radius: 2px;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--ice-blue);
@@ -123,9 +129,10 @@ h6 {
    LAYOUT COMPONENTS — RESPONSIVE
    ============================================ */
 
-/* Mobile: centered column at 430px max */
+/* Mobile (< 1024px): Full Width fluid application container */
 .app-container {
-  max-width: 430px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   min-height: 100dvh;
   position: relative;
