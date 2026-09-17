@@ -54,8 +54,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'linear-gradient(180deg, #060A14 0%, #0A0E1A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '400px', padding: '1.5rem' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+      <div className="glass-card" style={{ width: '100%', maxWidth: '420px', padding: '2.25rem 2rem', borderRadius: '24px' }}>
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }} className="animate-fadeInUp">

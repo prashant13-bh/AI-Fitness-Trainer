@@ -147,14 +147,14 @@ export default function OnboardingPage() {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: 'linear-gradient(180deg, #060A14 0%, #080D1A 50%, #0E162B 100%)',
+      background: 'var(--bg-base)',
       padding: '2rem 1.25rem 4rem',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center'
     }}>
-      <div style={{ width: '100%', maxWidth: '440px' }}>
+      <div className="glass-card" style={{ width: '100%', maxWidth: '580px', padding: 'clamp(1.5rem, 4vw, 2.5rem)', borderRadius: '24px' }}>
         {/* Progress Dots */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -165,7 +165,7 @@ export default function OnboardingPage() {
                   width: step === i + 1 ? '24px' : '8px',
                   height: '6px',
                   borderRadius: '999px',
-                  background: step >= i + 1 ? 'linear-gradient(90deg, #00D4FF, #7B2FBE)' : 'rgba(255,255,255,0.1)',
+                  background: step >= i + 1 ? 'var(--grad-primary)' : 'rgba(255,255,255,0.1)',
                   transition: 'all 0.3s ease'
                 }}
               />
@@ -200,13 +200,13 @@ export default function OnboardingPage() {
                       setCustomIdentity('');
                     }}
                     style={{
-                      background: isSelected ? 'rgba(0, 212, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                      border: `1px solid ${isSelected ? 'var(--ice-blue)' : 'rgba(255, 255, 255, 0.08)'}`,
+                      background: isSelected ? 'var(--ice-blue-dim)' : 'rgba(255, 255, 255, 0.02)',
+                      border: `1px solid ${isSelected ? 'var(--ice-blue)' : 'var(--border-subtle)'}`,
                       borderRadius: '16px',
                       padding: '1rem',
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      boxShadow: isSelected ? '0 4px 16px rgba(0,212,255,0.2)' : 'none'
+                      boxShadow: isSelected ? '0 4px 16px var(--ice-blue-glow)' : 'none'
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
@@ -265,8 +265,8 @@ export default function OnboardingPage() {
                   key={opt.days}
                   onClick={() => setArcDuration(opt.days)}
                   style={{
-                    background: arcDuration === opt.days ? 'rgba(0, 212, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                    border: `1px solid ${arcDuration === opt.days ? 'var(--ice-blue)' : 'rgba(255, 255, 255, 0.08)'}`,
+                    background: arcDuration === opt.days ? 'var(--ice-blue-dim)' : 'rgba(255, 255, 255, 0.02)',
+                    border: `1px solid ${arcDuration === opt.days ? 'var(--ice-blue)' : 'var(--border-subtle)'}`,
                     borderRadius: '16px',
                     padding: '1.1rem',
                     cursor: 'pointer',
@@ -317,8 +317,8 @@ export default function OnboardingPage() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: isSelected ? 'rgba(0, 212, 255, 0.12)' : 'rgba(255, 255, 255, 0.03)',
-                      border: `1px solid ${isSelected ? 'var(--ice-blue)' : 'rgba(255, 255, 255, 0.08)'}`,
+                      background: isSelected ? 'var(--ice-blue-dim)' : 'rgba(255, 255, 255, 0.02)',
+                      border: `1px solid ${isSelected ? 'var(--ice-blue)' : 'var(--border-subtle)'}`,
                       borderRadius: '14px',
                       padding: '0.9rem 1.1rem',
                       cursor: 'pointer',
@@ -363,8 +363,8 @@ export default function OnboardingPage() {
                   key={h.id}
                   onClick={() => toggleHabit(h.id)}
                   style={{
-                    background: h.selected ? 'rgba(0, 212, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-                    border: `1px solid ${h.selected ? 'rgba(0, 212, 255, 0.4)' : 'rgba(255, 255, 255, 0.06)'}`,
+                    background: h.selected ? 'var(--ice-blue-dim)' : 'rgba(255, 255, 255, 0.02)',
+                    border: `1px solid ${h.selected ? 'rgba(56, 189, 248, 0.4)' : 'var(--border-subtle)'}`,
                     borderRadius: '14px',
                     padding: '0.85rem 1rem',
                     display: 'flex',
@@ -376,14 +376,14 @@ export default function OnboardingPage() {
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'white' }}>{h.name}</div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
-                      Target: <span style={{ color: 'var(--ice-blue)' }}>{h.target}</span> · Minimum: <span style={{ color: 'var(--sun-yellow)' }}>{h.min}</span>
+                      Target: <span style={{ color: 'var(--ice-blue)' }}>{h.target}</span> · Minimum: <span style={{ color: 'var(--amber)' }}>{h.min}</span>
                     </div>
                   </div>
                   <div style={{
                     width: '26px', height: '26px', borderRadius: '8px',
                     background: h.selected ? 'var(--ice-blue)' : 'rgba(255,255,255,0.06)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#060A14', fontWeight: 900, fontSize: '0.85rem'
+                    color: '#08090d', fontWeight: 900, fontSize: '0.85rem'
                   }}>
                     {h.selected ? '✓' : ''}
                   </div>
@@ -415,10 +415,9 @@ export default function OnboardingPage() {
             <div className="glass-card" style={{
               padding: '1.5rem',
               borderRadius: '20px',
-              background: 'linear-gradient(135deg, rgba(14,24,48,0.9) 0%, rgba(6,10,20,0.95) 100%)',
-              border: '1px solid rgba(0,212,255,0.35)',
+              border: '1px solid var(--border-active)',
               marginBottom: '1.5rem',
-              boxShadow: '0 8px 32px rgba(0,212,255,0.15)'
+              boxShadow: '0 8px 32px var(--ice-blue-glow)'
             }}>
               <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
                 <span style={{ fontSize: '2rem' }}>📜</span>
@@ -465,8 +464,6 @@ export default function OnboardingPage() {
                   flex: 2,
                   padding: '1rem',
                   fontSize: '1rem',
-                  background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
-                  boxShadow: '0 6px 24px rgba(0,212,255,0.4)',
                   opacity: !signature.trim() ? 0.6 : 1
                 }}
               >

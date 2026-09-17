@@ -43,8 +43,8 @@ export default function BottomNav() {
               >
                 <span style={{ 
                   fontSize: '1.25rem',
-                  filter: active ? 'drop-shadow(0 0 8px rgba(0,212,255,0.6))' : 'none',
-                  transform: active ? 'scale(1.1)' : 'scale(1)',
+                  filter: active ? 'drop-shadow(0 0 8px var(--ice-blue-glow))' : 'none',
+                  transform: active ? 'scale(1.08)' : 'scale(1)',
                   transition: 'transform 0.2s ease, filter 0.2s ease'
                 }}>
                   {item.icon}
@@ -63,13 +63,13 @@ export default function BottomNav() {
         </div>
       </nav>
 
-      {/* ── Desktop Sidebar (fixed position on left for ≥ 1024px) ── */}
+      {/* ── Desktop Sidebar (sticky on left for ≥ 1024px) ── */}
       <aside className="desktop-sidebar" aria-label="Winter Arc desktop navigation">
         {/* Brand */}
         <div className="sidebar-brand">
-          <div style={{ fontSize: '1.75rem', filter: 'drop-shadow(0 0 12px rgba(0,212,255,0.7))' }}>❄️</div>
+          <div style={{ fontSize: '1.6rem', filter: 'drop-shadow(0 0 10px var(--ice-blue-glow))' }}>❄️</div>
           <div>
-            <span className="font-display" style={{ fontWeight: 900, fontSize: '1.15rem', background: 'linear-gradient(135deg,#00D4FF,#7B2FBE)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em' }}>
+            <span className="font-display gradient-text" style={{ fontWeight: 900, fontSize: '1.15rem', letterSpacing: '-0.02em' }}>
               WINTER ARC
             </span>
             <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary)', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
@@ -79,23 +79,23 @@ export default function BottomNav() {
         </div>
 
         {/* User Card */}
-        <div style={{ padding: '0.85rem 1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', margin: '0.75rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ padding: '0.85rem 1rem', background: 'var(--bg-glass)', border: '1px solid var(--border-subtle)', borderRadius: '14px', margin: '0.25rem 0 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{
-            width: '40px', height: '40px', borderRadius: '12px',
-            background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
+            width: '38px', height: '38px', borderRadius: '10px',
+            background: 'var(--grad-primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.05rem', fontWeight: 800, color: 'white',
+            fontSize: '1rem', fontWeight: 800, color: '#090a0f',
             fontFamily: 'var(--font-display)', flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(0,212,255,0.25)'
+            boxShadow: '0 4px 12px var(--ice-blue-glow)'
           }}>
             {displayName.charAt(0).toUpperCase()}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="font-display" style={{ fontWeight: 700, fontSize: '0.9rem', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div className="font-display" style={{ fontWeight: 700, fontSize: '0.88rem', color: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {displayName}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.15rem' }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--fire-orange)', fontWeight: 700 }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--amber)', fontWeight: 700 }}>
                 🔥 {streak}d Streak
               </span>
               <span style={{ fontSize: '0.68rem', color: 'var(--ice-blue)', fontWeight: 600 }}>
@@ -119,10 +119,10 @@ export default function BottomNav() {
                 className={`sidebar-item ${active ? 'active' : ''}`}
                 aria-label={item.label}
               >
-                <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{item.icon}</span>
+                <span style={{ fontSize: '1.15rem', flexShrink: 0 }}>{item.icon}</span>
                 <span style={{ fontWeight: active ? 700 : 500 }}>{item.label}</span>
                 {item.href === '/today' && (
-                  <span className="pill pill-blue" style={{ marginLeft: 'auto', fontSize: '0.58rem', padding: '0.1rem 0.4rem' }}>
+                  <span className="pill pill-blue" style={{ marginLeft: 'auto', fontSize: '0.55rem', padding: '0.1rem 0.35rem' }}>
                     EXECUTE
                   </span>
                 )}
@@ -142,12 +142,12 @@ export default function BottomNav() {
         </div>
 
         {/* Footer info */}
-        <div style={{ padding: '0.5rem 0', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '0.5rem 0', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
             Winter Arc V1
           </div>
           <span className="pill pill-blue" style={{ fontSize: '0.6rem', padding: '0.15rem 0.4rem' }}>
-            90-DAY PROTOCOL
+            PROTOCOL
           </span>
         </div>
       </aside>

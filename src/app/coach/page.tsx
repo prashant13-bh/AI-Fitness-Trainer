@@ -116,197 +116,205 @@ export default function CoachPage() {
           </h1>
         </header>
 
-        {/* ── Context Insight Card ── */}
-        <section className="glass-card" style={{
-          padding: '1rem 1.25rem',
-          borderRadius: '16px',
-          background: 'linear-gradient(135deg, rgba(14,24,48,0.7) 0%, rgba(6,10,20,0.85) 100%)',
-          border: '1px solid rgba(0,212,255,0.25)',
-          marginBottom: '1rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem'
-        }}>
-          <div>
-            <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              CURRENT STATE MONITOR
-            </div>
-            <div style={{ fontSize: '0.88rem', color: 'white', fontWeight: 700, marginTop: '0.15rem' }}>
-              Day 17 / 90 · 82% Arc Consistency
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
-              4 of 5 habits on track · Minimum Day enabled
-            </div>
-          </div>
-          <div style={{
-            width: '42px', height: '42px', borderRadius: '12px',
-            background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.25rem', flexShrink: 0
+        {/* ── Chat Container (Comfortable Max Width on Desktop) ── */}
+        <div style={{ maxWidth: '860px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', flex: 1 }}>
+          {/* ── Context Insight Card ── */}
+          <section className="glass-card" style={{
+            padding: '1rem 1.25rem',
+            borderRadius: '16px',
+            marginBottom: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
+            borderLeft: '4px solid var(--ice-blue)'
           }}>
-            🤖
-          </div>
-        </section>
+            <div>
+              <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                CURRENT STATE MONITOR
+              </div>
+              <div style={{ fontSize: '0.88rem', color: 'white', fontWeight: 700, marginTop: '0.15rem' }}>
+                Day 17 / 90 · 82% Arc Consistency
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+                4 of 5 habits on track · Minimum Day enabled
+              </div>
+            </div>
+            <div style={{
+              width: '42px', height: '42px', borderRadius: '12px',
+              background: 'var(--grad-primary)',
+              color: '#08090d',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.25rem', flexShrink: 0,
+              boxShadow: '0 4px 12px var(--ice-blue-glow)'
+            }}>
+              🤖
+            </div>
+          </section>
 
-        {/* ── Quick Action Prompt Chips ── */}
-        <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1rem', scrollbarWidth: 'none' }}>
-          {QUICK_ACTIONS.map((action, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleSendMessage(action.prompt)}
-              disabled={isLoading}
-              style={{
-                whiteSpace: 'nowrap',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                color: 'white',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '999px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-                flexShrink: 0,
-              }}
-            >
-              {action.label}
-            </button>
-          ))}
-        </div>
-
-        {/* ── Chat Messages Stream ── */}
-        <section style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          marginBottom: '1rem',
-          minHeight: '300px'
-        }}>
-          {messages.map((msg) => {
-            const isUser = msg.sender === 'user';
-            return (
-              <div
-                key={msg.id}
+          {/* ── Quick Action Prompt Chips ── */}
+          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1rem', scrollbarWidth: 'none' }}>
+            {QUICK_ACTIONS.map((action, idx) => (
+              <button
+                key={idx}
+                onClick={() => handleSendMessage(action.prompt)}
+                disabled={isLoading}
                 style={{
-                  display: 'flex',
-                  justifyContent: isUser ? 'flex-end' : 'flex-start',
-                  alignItems: 'flex-start',
-                  gap: '0.65rem'
+                  whiteSpace: 'nowrap',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--text-secondary)',
+                  padding: '0.45rem 0.85rem',
+                  borderRadius: '999px',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0,
                 }}
               >
-                {!isUser && (
-                  <div style={{
-                    width: '32px', height: '32px', borderRadius: '10px',
-                    background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '0.9rem', flexShrink: 0, marginTop: '2px'
-                  }}>
-                    ❄️
-                  </div>
-                )}
+                {action.label}
+              </button>
+            ))}
+          </div>
 
-                <div style={{
-                  maxWidth: '82%',
-                  padding: '0.9rem 1.1rem',
-                  borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                  background: isUser
-                    ? 'linear-gradient(135deg, #00D4FF, #0072FF)'
-                    : 'rgba(255, 255, 255, 0.04)',
-                  border: isUser ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-                  color: 'white',
-                  fontSize: '0.9rem',
-                  lineHeight: 1.5,
-                  boxShadow: isUser ? '0 4px 16px rgba(0,212,255,0.25)' : 'none'
-                }}>
-                  <div style={{ whiteSpace: 'pre-wrap' }}>
-                    {msg.text}
-                  </div>
+          {/* ── Chat Messages Stream ── */}
+          <section style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+            marginBottom: '1rem',
+            minHeight: '300px'
+          }}>
+            {messages.map((msg) => {
+              const isUser = msg.sender === 'user';
+              return (
+                <div
+                  key={msg.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: isUser ? 'flex-end' : 'flex-start',
+                    alignItems: 'flex-start',
+                    gap: '0.65rem'
+                  }}
+                >
+                  {!isUser && (
+                    <div style={{
+                      width: '32px', height: '32px', borderRadius: '10px',
+                      background: 'var(--grad-primary)',
+                      color: '#08090d',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '0.9rem', flexShrink: 0, marginTop: '2px',
+                      fontWeight: 800
+                    }}>
+                      ❄️
+                    </div>
+                  )}
+
                   <div style={{
-                    fontSize: '0.62rem',
-                    color: isUser ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
-                    textAlign: 'right',
-                    marginTop: '0.4rem'
+                    maxWidth: '82%',
+                    padding: '0.9rem 1.1rem',
+                    borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                    background: isUser
+                      ? 'var(--grad-primary)'
+                      : 'var(--bg-card)',
+                    border: isUser ? 'none' : '1px solid var(--border-subtle)',
+                    color: isUser ? '#08090d' : 'white',
+                    fontWeight: isUser ? 600 : 400,
+                    fontSize: '0.9rem',
+                    lineHeight: 1.5,
+                    boxShadow: isUser ? '0 4px 16px var(--ice-blue-glow)' : 'none'
                   }}>
-                    {msg.timestamp}
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                      {msg.text}
+                    </div>
+                    <div style={{
+                      fontSize: '0.62rem',
+                      color: isUser ? 'rgba(8, 9, 13, 0.7)' : 'var(--text-muted)',
+                      textAlign: 'right',
+                      marginTop: '0.4rem'
+                    }}>
+                      {msg.timestamp}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
 
-          {isLoading && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '10px',
-                background: 'linear-gradient(135deg, #00D4FF, #7B2FBE)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.9rem'
-              }}>
-                ❄️
+            {isLoading && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <div style={{
+                  width: '32px', height: '32px', borderRadius: '10px',
+                  background: 'var(--grad-primary)',
+                  color: '#08090d',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.9rem'
+                }}>
+                  ❄️
+                </div>
+                <div style={{
+                  padding: '0.75rem 1rem',
+                  borderRadius: '16px',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-subtle)',
+                  color: 'var(--ice-blue)',
+                  fontSize: '0.85rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <span>Coach is formulating tactical advice...</span>
+                </div>
               </div>
-              <div style={{
-                padding: '0.75rem 1rem',
-                borderRadius: '16px',
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                color: 'var(--ice-blue)',
-                fontSize: '0.85rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                <span className="pulse-glow">Coach is formulating tactical advice...</span>
-              </div>
-            </div>
-          )}
+            )}
 
-          <div ref={messagesEndRef} />
-        </section>
+            <div ref={messagesEndRef} />
+          </section>
 
-        {/* ── Input Bar ── */}
-        <section style={{
-          position: 'sticky',
-          bottom: '4.5rem',
-          background: 'rgba(6, 10, 20, 0.95)',
-          backdropFilter: 'blur(10px)',
-          padding: '0.75rem 0',
-          borderTop: '1px solid rgba(255, 255, 255, 0.06)'
-        }}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-            style={{ display: 'flex', gap: '0.6rem' }}
-          >
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask your coach anything..."
-              className="input-field"
-              style={{ flex: 1, borderRadius: '14px', fontSize: '0.9rem' }}
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !inputValue.trim()}
-              className="btn-primary"
-              style={{
-                borderRadius: '14px',
-                padding: '0.75rem 1.25rem',
-                fontSize: '1.1rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                opacity: !inputValue.trim() ? 0.6 : 1
+          {/* ── Input Bar ── */}
+          <section style={{
+            position: 'sticky',
+            bottom: 0,
+            background: 'var(--bg-base)',
+            padding: '0.85rem 0',
+            borderTop: '1px solid var(--border-subtle)',
+            zIndex: 40
+          }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage();
               }}
+              style={{ display: 'flex', gap: '0.6rem' }}
             >
-              ↑
-            </button>
-          </form>
-        </section>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Ask your coach anything..."
+                className="input-field"
+                style={{ flex: 1, borderRadius: '14px', fontSize: '0.9rem' }}
+              />
+              <button
+                type="submit"
+                disabled={isLoading || !inputValue.trim()}
+                className="btn-primary"
+                style={{
+                  borderRadius: '14px',
+                  padding: '0.75rem 1.25rem',
+                  fontSize: '1.1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: !inputValue.trim() ? 0.6 : 1
+                }}
+              >
+                ↑
+              </button>
+            </form>
+          </section>
+        </div>
       </main>
     </div>
   );

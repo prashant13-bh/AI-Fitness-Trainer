@@ -26,9 +26,9 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'linear-gradient(180deg, #060A14 0%, #0A0E1A 100%)' }}>
-      <div style={{ maxWidth: '430px', margin: '0 auto', padding: '1.5rem', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-        <Link href="/login" style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '1rem', display: 'inline-block' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+      <div className="glass-card" style={{ width: '100%', maxWidth: '420px', padding: '2.25rem 2rem', borderRadius: '24px' }}>
+        <Link href="/login" style={{ textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'inline-block' }}>
           ← Back to Login
         </Link>
         <div style={{ marginTop: '2.5rem', marginBottom: '2rem' }}>

@@ -51,16 +51,16 @@ function LoginForm() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '1.5rem',
-      background: 'linear-gradient(180deg, #060A14 0%, #0A0E1A 50%, #10082A 100%)',
+      background: 'var(--bg-base)',
     }}>
-      <div style={{ width: '100%', maxWidth: '400px' }}>
+      <div className="glass-card" style={{ width: '100%', maxWidth: '420px', padding: '2.25rem 2rem', borderRadius: '24px' }}>
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: '64px', height: '64px', borderRadius: '20px',
-            background: 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(123,47,190,0.3))',
-            border: '1px solid rgba(0,212,255,0.3)',
+            width: '58px', height: '58px', borderRadius: '18px',
+            background: 'var(--ice-blue-dim)',
+            border: '1px solid rgba(56, 189, 248, 0.25)',
             fontSize: '1.8rem', marginBottom: '0.75rem',
           }}>
             ❄️
