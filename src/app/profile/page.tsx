@@ -163,7 +163,7 @@ export default function ProfilePage() {
         </section>
 
         {/* ── Active Arc Overview ── */}
-        <section className="glass-card" style={{ padding: '1.25rem', borderRadius: '18px', marginBottom: '1.5rem' }}>
+        <section className="glass-card" style={{ padding: '1.25rem', borderRadius: '18px', marginBottom: '1.25rem' }}>
           <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem' }}>
             ACTIVE ARC SUMMARY
           </div>
@@ -181,6 +181,79 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* ── Notification Protocol (Section 5 Spec) ── */}
+        <section className="glass-card" style={{ padding: '1.25rem', borderRadius: '18px', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              NOTIFICATION PROTOCOL
+            </span>
+            <span className="pill pill-blue" style={{ fontSize: '0.65rem' }}>
+              QUIET HOURS ACTIVE
+            </span>
+          </div>
+
+          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 1rem', lineHeight: 1.4 }}>
+            Reminders keep the wire connected. Quiet hours automatically silence alerts between 10:30 PM and 6:30 AM.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>🌅 Morning Reminder (7:00 AM)</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>"Your Arc starts now. ❄️"</div>
+              </div>
+              <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>⚡ Habit Reminders</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>"Keep the promise. Never take a zero."</div>
+              </div>
+              <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>🔒 Evening Check-in (9:30 PM)</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>"Before the day ends... did you show up?"</div>
+              </div>
+              <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>🏆 Milestone Alerts</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Days 7, 14, 30, 60, 90 breakthroughs</div>
+              </div>
+              <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
+            </div>
+          </div>
+
+          <button
+            onClick={async () => {
+              if (typeof window !== 'undefined' && 'Notification' in window) {
+                const perm = await Notification.requestPermission();
+                if (perm === 'granted') {
+                  new Notification('Winter Arc Protocol ❄️', {
+                    body: 'Your Arc is active. Reminders are configured.',
+                  });
+                  setSaveStatus('Live test notification dispatched! 🔔');
+                  setTimeout(() => setSaveStatus(null), 3500);
+                } else {
+                  setSaveStatus('Notification permission not granted.');
+                  setTimeout(() => setSaveStatus(null), 3500);
+                }
+              }
+            }}
+            className="btn-primary"
+            style={{ width: '100%', padding: '0.75rem', fontSize: '0.85rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+          >
+            <span>🔔</span>
+            <span>Enable & Test Notification Alert</span>
+          </button>
         </section>
 
         {/* ── System Actions & Logout ── */}
