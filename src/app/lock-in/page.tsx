@@ -111,7 +111,7 @@ export default function LockInPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0A192F] flex flex-col justify-between relative overflow-x-hidden">
       {/* ── Top Header ── */}
-      <header className="w-full max-w-lg mx-auto pt-6 px-5 flex items-center justify-between z-10">
+      <header className="w-full max-w-2xl lg:max-w-4xl mx-auto pt-6 px-5 flex items-center justify-between z-10">
         <Link
           href="/"
           className="w-10 h-10 rounded-full bg-white border border-[#E8EEF5] flex items-center justify-center text-[#0A192F] shadow-sm hover:bg-slate-50 transition"
@@ -134,7 +134,7 @@ export default function LockInPage() {
       </header>
 
       {/* ── MAIN CONTENT AREA ── */}
-      <main className="w-full max-w-lg mx-auto px-5 py-4 flex-1 z-10 flex flex-col justify-center">
+      <main className="w-full max-w-2xl lg:max-w-4xl mx-auto px-5 py-4 flex-1 z-10 flex flex-col justify-center">
         {/* =========================================================================
             STATE 1: LOCK IN LAUNCHER (SCREEN 15)
            ========================================================================= */}
@@ -172,7 +172,7 @@ export default function LockInPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
                 {ACTIVITIES.map((act) => {
                   const isSelected = selectedActivity === act.id;
                   return (

@@ -144,7 +144,7 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0A192F] flex flex-col justify-between relative select-none">
       {/* ── TOP HEADER (Steps 2-6) ── */}
       {step > 1 && (
-        <header className="w-full max-w-md mx-auto pt-6 px-4 flex items-center justify-between z-20">
+        <header className="w-full max-w-xl lg:max-w-2xl mx-auto pt-6 px-4 flex items-center justify-between z-20">
           <button
             onClick={() => setStep((s) => Math.max(1, s - 1))}
             className="w-10 h-10 rounded-full flex items-center justify-center text-[#0A192F] hover:bg-slate-200/60 transition"
@@ -168,7 +168,7 @@ export default function OnboardingPage() {
       )}
 
       {/* ── MAIN CONTENT CONTAINER ── */}
-      <main className="w-full max-w-md mx-auto px-4 flex-1 flex flex-col justify-between z-10 py-4">
+      <main className="w-full max-w-xl lg:max-w-2xl mx-auto px-4 flex-1 flex flex-col justify-between z-10 py-4">
         {/* =========================================================================
             STEP 1: WELCOME HERO (HIGH-IMPACT ENTRY)
            ========================================================================= */}
@@ -187,7 +187,7 @@ export default function OnboardingPage() {
               </p>
 
               {/* 4 Feature Value Pills */}
-              <div className="space-y-2 mt-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-5">
                 <div className="arc-card p-3 bg-white flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-blue-50 text-[#0085FF] flex items-center justify-center text-lg">
                     ⚡
@@ -427,7 +427,7 @@ export default function OnboardingPage() {
                   <span className="text-[10px] text-[#64748B]">Multi-select</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
                   {[
                     { name: 'Body', icon: '💪', desc: 'Strength & fitness' },
                     { name: 'Mind', icon: '🧠', desc: 'Calm & focus' },
