@@ -1,0 +1,38 @@
+﻿{
+  "expo": {
+    "name": "FitArc",
+    "slug": "fitarc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "fitarc",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.fitarc.app"
+    },
+    "android": {
+      "package": "com.fitarc.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FF6B35",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "softwareKeyboardLayoutMode": "pan"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        { "backgroundColor": "#FFFFFF", "image": "./assets/splash-icon.png", "imageWidth": 200 }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
