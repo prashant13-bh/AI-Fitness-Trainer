@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { getUserProfile, saveUserProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
+import { syncProfileToSupabase } from '@/lib/supabase/sync';
 import { Sparkles, Check, ArrowRight, Shield, Bell, Calendar, User, Dumbbell, Droplets, Brain, BookOpen, Apple, Plus, AlertCircle } from 'lucide-react';
 
 export default function OnboardingPage() {
@@ -118,7 +119,7 @@ export default function OnboardingPage() {
       .filter((h) => h.selected)
       .map(({ id, title, category, target }) => ({ id, title, category, target }));
 
-    saveUserProfile({
+    const payload = {
       name: name.trim(),
       email: email.trim(),
       identity: identityText.trim(),
@@ -131,7 +132,10 @@ export default function OnboardingPage() {
       quietHours,
       signature: signature.trim(),
       isSetupComplete: true,
-    });
+    };
+
+    saveUserProfile(payload);
+    syncProfileToSupabase(payload).catch((e) => console.warn('Supabase sync:', e));
 
     router.push('/today');
   };

@@ -6,6 +6,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import { Flame, Check, Zap, Sparkles, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRight } from 'lucide-react';
 
 import { getUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
+import { logHabitCompletion } from '@/lib/supabase/sync';
 
 interface HabitItem {
   id: string;
@@ -100,6 +101,7 @@ export default function TodayPage() {
           if (next) {
             setXpBonus((xp) => xp + 30);
           }
+          logHabitCompletion(id, next, new Date().toISOString().split('T')[0]);
           return { ...h, completed: next };
         }
         return h;
