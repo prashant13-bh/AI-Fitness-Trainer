@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Flame, Award, TrendingUp, CheckCircle2, Target, Calendar, Sparkles, ChevronRight, Zap } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function ProgressPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'habits' | 'goals' | 'badges'>('overview');

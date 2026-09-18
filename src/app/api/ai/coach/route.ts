@@ -69,7 +69,7 @@ Always speak as a world-class mentor who expects greatness but understands human
     }
 
     return NextResponse.json({ reply });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to process coaching request' },
       { status: 500 }

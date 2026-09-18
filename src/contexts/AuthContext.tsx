@@ -2,8 +2,8 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { getSupabaseClient } from '@/lib/supabase/client';
-import type { Session, User, AuthError } from '@supabase/supabase-js';
-import type { UserRow, Database } from '@/lib/supabase/types';
+import type { Session, User } from '@supabase/supabase-js';
+import type { UserRow } from '@/lib/supabase/types';
 
 // ── Context value shape ────────────────────────────────────────
 interface AuthContextValue {

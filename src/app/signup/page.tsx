@@ -28,8 +28,8 @@ export default function SignupPage() {
       setError('');
       await signup(email, password, name);
       router.push('/onboarding');
-    } catch (err: any) {
-      setError(err?.message || 'Signup failed.');
+    } catch (err: unknown) {
+      setError((err as Error)?.message || 'Signup failed.');
     } finally {
       setLoading(false);
     }

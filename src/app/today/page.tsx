@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Flame, Check, Zap, Sparkles, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRight } from 'lucide-react';
+import { Flame, Check, Zap, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRight } from 'lucide-react';
 
 import { getUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
 import { logHabitCompletion } from '@/lib/supabase/sync';
@@ -14,7 +14,7 @@ interface HabitItem {
   category: string;
   target: string;
   completed: boolean;
-  icon?: any;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 export default function TodayPage() {
@@ -147,7 +147,7 @@ export default function TodayPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#94A3B8]">
-                    TODAY'S DISCIPLINE SCORE
+                    TODAY&apos;S DISCIPLINE SCORE
                   </span>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span className="text-4xl sm:text-5xl font-black font-display gradient-text">
@@ -303,7 +303,7 @@ export default function TodayPage() {
             <div className="arc-card p-5 bg-gradient-to-br from-blue-50/60 via-purple-50/40 to-orange-50/50 border-blue-100 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-[#0085FF]">
-                  TODAY'S PROMISE
+                  TODAY&apos;S PROMISE
                 </span>
                 <span className="text-[10px] font-bold text-[#64748B]">Daily Anchor</span>
               </div>

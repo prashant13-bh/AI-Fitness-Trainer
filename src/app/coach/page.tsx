@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Send, Bot, Sparkles, User, Flame, Zap, Shield, ArrowRight } from 'lucide-react';
+import { Send, Bot, User, ArrowRight } from 'lucide-react';
 import { getUserProfile } from '@/lib/userProfile';
 
 interface ChatMessage {

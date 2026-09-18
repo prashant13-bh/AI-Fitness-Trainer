@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Award, CheckCircle2, AlertTriangle, ArrowRight, Sparkles, Shield, Flame, Check } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Sparkles, Shield, Flame, Check } from 'lucide-react';
 import { getUserProfile } from '@/lib/userProfile';
 
 export default function ReviewPage() {
@@ -22,7 +22,7 @@ export default function ReviewPage() {
               SUNDAY CALIBRATION RITUAL
             </span>
             <h1 className="text-2xl sm:text-3xl font-black font-display text-[#0A192F] tracking-tight mt-0.5">
-              Weekly Arc Review
+              Weekly Arc Review · {profile.name?.split(' ')[0] || 'Prashant'}
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#64748B] mt-0.5">
               Reflect honestly. Optimize relentlessly. Lock in week 3.
@@ -84,7 +84,7 @@ export default function ReviewPage() {
                 </div>
                 <div>
                   <div className="text-xs font-bold text-[#0A192F]">Unbroken 8-Day Streak</div>
-                  <div className="text-[10px] text-[#64748B]">Earned "7-Day Iron Will" Badge</div>
+                  <div className="text-[10px] text-[#64748B]">Earned &ldquo;7-Day Iron Will&rdquo; Badge</div>
                 </div>
               </div>
               <span className="text-xs font-extrabold text-[#FF7A00] bg-orange-50 px-3 py-1 rounded-full">

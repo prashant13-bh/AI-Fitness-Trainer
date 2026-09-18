@@ -2,7 +2,7 @@ import { getSupabaseClient } from './client';
 import { ChallengeProfile } from '../userProfile';
 
 export async function syncProfileToSupabase(profile: ChallengeProfile, userId?: string) {
-  const supabase = getSupabaseClient();
+  const supabase: any = getSupabaseClient();
   const uid = userId || (await supabase.auth.getUser()).data.user?.id;
   if (!uid) return { success: false, reason: 'unauthenticated' };
 
@@ -65,7 +65,7 @@ export async function syncProfileToSupabase(profile: ChallengeProfile, userId?: 
 }
 
 export async function logHabitCompletion(habitId: string, completed: boolean, dateStr: string, userId?: string) {
-  const supabase = getSupabaseClient();
+  const supabase: any = getSupabaseClient();
   const uid = userId || (await supabase.auth.getUser()).data.user?.id;
   if (!uid) return;
 
@@ -95,7 +95,7 @@ export async function logHabitCompletion(habitId: string, completed: boolean, da
 }
 
 export async function uploadProgressPhoto(file: File, dateStr: string, userId?: string) {
-  const supabase = getSupabaseClient();
+  const supabase: any = getSupabaseClient();
   const uid = userId || (await supabase.auth.getUser()).data.user?.id;
   if (!uid) throw new Error('User must be logged in to upload progress photos');
 

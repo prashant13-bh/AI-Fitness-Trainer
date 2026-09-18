@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Calendar as CalendarIcon, CheckCircle2, Shield, Share2, Sparkles, X, Flame, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Shield, Share2, Flame } from 'lucide-react';
 import { getUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
 
 interface DayDetail {

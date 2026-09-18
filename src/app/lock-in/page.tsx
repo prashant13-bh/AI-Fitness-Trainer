@@ -378,7 +378,7 @@ export default function LockInPage() {
             {/* Inspirational Quote Card */}
             <div className="p-4 rounded-2xl bg-white border border-[#E8EEF5] text-center shadow-sm">
               <p className="font-display italic text-xs sm:text-sm text-[#0A192F] font-semibold leading-relaxed">
-                "{MOTIVATIONAL_QUOTES[quoteIndex]}"
+                &ldquo;{MOTIVATIONAL_QUOTES[quoteIndex]}&rdquo;
               </p>
               <span className="font-handwriting text-base text-[#0085FF] block mt-1">
                 ~ Stay focused. You are forging your Arc.

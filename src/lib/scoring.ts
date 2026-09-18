@@ -93,15 +93,6 @@ export function calculateDayScore(habits: HabitScoreItem[], isMilestoneDay: bool
   const isPartialDay = dailyScore >= 0.40;
   const isMinimumDay = hasMinimum && dailyScore < 0.80;
 
-  // Bonus XP
-  let bonusXp = 0;
-  if (isFullDay) {
-    bonusXp += 25; // Complete day bonus
-  }
-  if (isMilestoneDay) {
-    bonusXp += 100; // Milestone day bonus (Day 7, 14, 30, 60, 90)
-  }
-
   // Daily anti-gaming cap (max 150 regular daily XP, plus milestone bonus)
   const regularXp = Math.min(150, habitXpTotal + (isFullDay ? 25 : 0));
   const finalXp = regularXp + (isMilestoneDay ? 100 : 0);

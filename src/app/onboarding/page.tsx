@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { getUserProfile, saveUserProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
+import { getUserProfile, saveUserProfile } from '@/lib/userProfile';
 import { syncProfileToSupabase } from '@/lib/supabase/sync';
-import { Sparkles, Check, ArrowRight, Shield, Bell, Calendar, User, Dumbbell, Droplets, Brain, BookOpen, Apple, Plus, AlertCircle } from 'lucide-react';
+import { Check, Shield, Plus, AlertCircle } from 'lucide-react';
 
 export default function OnboardingPage() {
   const router = useRouter();

@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { getUserProfile, saveUserProfile, resetUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
-import { User, Bell, Shield, Moon, Download, RotateCcw, Check, Sparkles, ChevronRight, Edit3, Clock, Flame, Database } from 'lucide-react';
+import { Shield, Moon, Download, RotateCcw, Check, Edit3, Clock, Database } from 'lucide-react';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ChallengeProfile>(DEFAULT_PROFILE);

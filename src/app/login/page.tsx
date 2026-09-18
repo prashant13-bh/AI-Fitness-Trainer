@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Sparkles, ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
+import { Sparkles, Lock, Mail, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,8 +27,8 @@ export default function LoginPage() {
       setError('');
       await login(email, password);
       router.push('/today');
-    } catch (err: any) {
-      setError(err?.message || 'Login failed. Please verify credentials.');
+    } catch (err: unknown) {
+      setError((err as Error)?.message || 'Login failed. Please verify credentials.');
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,7 @@ export default function LoginPage() {
               href="/onboarding"
               className="text-xs font-bold text-[#0085FF] hover:underline"
             >
-              Don't have an Arc yet? Start Setup →
+              Don&apos;t have an Arc yet? Start Setup →
             </Link>
           </div>
         </div>
