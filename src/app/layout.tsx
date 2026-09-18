@@ -14,12 +14,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#060A14',
+  themeColor: '#FFFFFF',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
 };
+
+import ScreenNavigator from '@/components/layout/ScreenNavigator';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -31,8 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body suppressHydrationWarning>
+      <body suppressHydrationWarning className="bg-[#F8FAFC] text-[#0A192F]">
         <AuthProvider>
+          <ScreenNavigator />
           {children}
         </AuthProvider>
       </body>

@@ -1,314 +1,154 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import BottomNav from '@/components/layout/BottomNav';
-import { useAuth } from '@/contexts/AuthContext';
-import { calculateLevel } from '@/lib/scoring';
+import { User, Bell, Shield, Moon, Download, LogOut, ChevronRight, Sparkles } from 'lucide-react';
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const { userData, user, logout, updateUserData } = useAuth();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isEditingIdentity, setIsEditingIdentity] = useState(false);
-  const [identityInput, setIdentityInput] = useState(userData?.identity_statement || 'I am forging an unbreakable version of myself.');
-  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [morningReminder, setMorningReminder] = useState(true);
+  const [eveningReview, setEveningReview] = useState(true);
+  const [quietHours, setQuietHours] = useState(true);
+  const [identityText, setIdentityText] = useState('disciplined, strong and focused.');
+  const [isSaved, setIsSaved] = useState(false);
 
-  const displayName = userData?.name || user?.user_metadata?.full_name || 'Warrior';
-  const email = userData?.email || user?.email || '';
-  const xp = userData?.xp ?? 340;
-  const streak = 8;
-  const levelInfo = calculateLevel(xp);
-  const currentDay = 17;
-  const totalDays = 90;
-
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    await logout();
-    router.push('/');
-  };
-
-  const handleSaveIdentity = async () => {
-    try {
-      await updateUserData({
-        identity_statement: identityInput,
-      });
-      setIsEditingIdentity(false);
-      setSaveStatus('Identity updated');
-      setTimeout(() => setSaveStatus(null), 3000);
-    } catch {
-      setSaveStatus('Failed to update');
-    }
+  const handleSaveIdentity = () => {
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2000);
   };
 
   return (
-    <div className="app-container">
-      <BottomNav />
-
-      <main className="page-content" style={{ paddingBottom: '7rem' }}>
-        {/* Toast Notification */}
-        {/* Toast Notification */}
-        {saveStatus && (
-          <div style={{
-            position: 'fixed',
-            top: '1.25rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'var(--grad-primary)',
-            color: '#08090d',
-            padding: '0.65rem 1.25rem',
-            borderRadius: '999px',
-            fontSize: '0.85rem',
-            fontWeight: 800,
-            zIndex: 9999,
-            boxShadow: '0 8px 24px var(--ice-blue-glow)',
-          }}>
-            {saveStatus}
-          </div>
-        )}
-
-        {/* ── Header ── */}
-        <header style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', color: 'var(--ice-blue)', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
-              PROTOCOL IDENTITY
-            </div>
-            <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
-              {displayName}
-            </h1>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-              {email}
-            </div>
-          </div>
-
-          <div style={{
-            width: '52px', height: '52px', borderRadius: '16px',
-            background: 'var(--grad-primary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1.5rem', fontWeight: 900, color: '#08090d',
-            boxShadow: '0 4px 16px var(--ice-blue-glow)'
-          }}>
-            {displayName.charAt(0).toUpperCase()}
-          </div>
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0A192F] pb-28 pt-4 px-4 select-none">
+      <div className="max-w-md mx-auto space-y-4">
+        {/* ── HEADER ── */}
+        <header className="pt-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#0085FF]">
+            PROFILE & PROTOCOL SETTINGS
+          </span>
+          <h1 className="text-2xl font-black font-display text-[#0A192F] tracking-tight">
+            My Account
+          </h1>
         </header>
 
-        {/* ── Main Responsive Grid ── */}
-        <div className="grid-2col-desktop">
-          {/* Left Column: Progression & Level + Active Arc Summary */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {/* ── Progression & Level Card ── */}
-            <section className="glass-card" style={{
-              padding: '1.25rem',
-              borderRadius: '18px',
-              borderLeft: '4px solid var(--ice-blue)',
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <div>
-                  <span className="pill pill-blue" style={{ fontSize: '0.65rem' }}>
-                    LEVEL {levelInfo.level}
-                  </span>
-                  <div className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'white', marginTop: '0.35rem' }}>
-                    Mastery Progression
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--ice-blue)' }}>
-                    {xp} <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>XP</span>
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    Next: {levelInfo.nextLevelXp} XP
-                  </div>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', margin: '0.75rem 0 0.35rem' }}>
-                <div style={{ width: `${levelInfo.progressPercent}%`, height: '100%', background: 'var(--grad-primary)', borderRadius: '999px', transition: 'width 0.4s ease' }} />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                <span>{levelInfo.progressPercent}% of current tier</span>
-                <span style={{ color: 'var(--amber)', fontWeight: 700 }}>🔥 {streak}-Day Active Streak</span>
-              </div>
-            </section>
-
-            {/* ── Active Arc Overview ── */}
-            <section className="glass-card" style={{ padding: '1.25rem', borderRadius: '18px' }}>
-              <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem' }}>
-                ACTIVE ARC SUMMARY
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
-                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '12px' }}>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Status</div>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'white', marginTop: '0.15rem' }}>
-                    Day {currentDay} of {totalDays}
-                  </div>
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '0.75rem', borderRadius: '12px' }}>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Remaining</div>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--ice-blue)', marginTop: '0.15rem' }}>
-                    {totalDays - currentDay} Days Left
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* ── Identity Statement Card ── */}
-            <section className="glass-card" style={{ padding: '1.25rem', borderRadius: '18px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  IDENTITY COVENANT
-                </span>
-                <button
-                  onClick={() => {
-                    if (isEditingIdentity) handleSaveIdentity();
-                    else setIsEditingIdentity(true);
-                  }}
-                  style={{ background: 'none', border: 'none', color: 'var(--ice-blue)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
-                >
-                  {isEditingIdentity ? 'Save ✓' : 'Edit ✎'}
-                </button>
-              </div>
-
-              {isEditingIdentity ? (
-                <div>
-                  <textarea
-                    value={identityInput}
-                    onChange={(e) => setIdentityInput(e.target.value)}
-                    className="input-field"
-                    rows={3}
-                    style={{ width: '100%', fontSize: '0.9rem', lineHeight: 1.4 }}
-                  />
-                </div>
-              ) : (
-                <p style={{ fontSize: '1rem', fontStyle: 'italic', color: 'white', lineHeight: 1.5, margin: '0.25rem 0 0' }}>
-                  "{userData?.identity_statement || identityInput}"
-                </p>
-              )}
-            </section>
+        {/* ── USER IDENTITY CARD ── */}
+        <div className="arc-card p-5 bg-white border border-[#E8EEF5] flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#0085FF] via-[#7B61FF] to-[#FF7A00] p-0.5 shadow-md shrink-0">
+            <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center text-xl font-black text-[#0085FF]">
+              P
+            </div>
           </div>
-
-          {/* Right Column: Notifications Protocol + System Actions */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {/* ── Notification Protocol (Section 5 Spec) ── */}
-            <section className="glass-card" style={{ padding: '1.25rem', borderRadius: '18px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  NOTIFICATION PROTOCOL
-                </span>
-                <span className="pill pill-blue" style={{ fontSize: '0.65rem' }}>
-                  QUIET HOURS ACTIVE
-                </span>
-              </div>
-
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 1rem', lineHeight: 1.4 }}>
-                Reminders keep the wire connected. Quiet hours automatically silence alerts between 10:30 PM and 6:30 AM.
-              </p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>🌅 Morning Reminder (7:00 AM)</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>"Your Arc starts now. ❄️"</div>
-                  </div>
-                  <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>⚡ Habit Reminders</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>"Keep the promise. Never take a zero."</div>
-                  </div>
-                  <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>🔒 Evening Check-in (9:30 PM)</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>"Before the day ends... did you show up?"</div>
-                  </div>
-                  <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.65rem 0.85rem', borderRadius: '12px' }}>
-                  <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'white' }}>🏆 Milestone Alerts</div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Days 7, 14, 30, 60, 90 breakthroughs</div>
-                  </div>
-                  <span style={{ color: 'var(--ice-blue)', fontSize: '0.85rem', fontWeight: 700 }}>ON</span>
-                </div>
-              </div>
-
-              <button
-                onClick={async () => {
-                  if (typeof window !== 'undefined' && 'Notification' in window) {
-                    const perm = await Notification.requestPermission();
-                    if (perm === 'granted') {
-                      new Notification('Winter Arc Protocol ❄️', {
-                        body: 'Your Arc is active. Reminders are configured.',
-                      });
-                      setSaveStatus('Live test notification dispatched! 🔔');
-                      setTimeout(() => setSaveStatus(null), 3500);
-                    } else {
-                      setSaveStatus('Notification permission not granted.');
-                      setTimeout(() => setSaveStatus(null), 3500);
-                    }
-                  }
-                }}
-                className="btn-primary"
-                style={{ width: '100%', padding: '0.75rem', fontSize: '0.85rem', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-              >
-                <span>🔔</span>
-                <span>Enable & Test Notification Alert</span>
-              </button>
-            </section>
-
-            {/* ── System Actions & Logout ── */}
-            <section style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <button
-                onClick={() => router.push('/onboarding')}
-                style={{
-                  padding: '0.85rem',
-                  borderRadius: '14px',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  color: 'white',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <span>📜 Reset / Re-Onboard Arc</span>
-                <span style={{ color: 'var(--text-muted)' }}>→</span>
-              </button>
-
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                style={{
-                  padding: '0.85rem',
-                  borderRadius: '14px',
-                  background: 'rgba(244, 63, 94, 0.12)',
-                  border: '1px solid rgba(244, 63, 94, 0.3)',
-                  color: '#f43f5e',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem'
-                }}
-              >
-                <span>🚪</span>
-                <span>{isLoggingOut ? 'Signing out...' : 'Sign Out of Winter Arc'}</span>
-              </button>
-            </section>
+          <div>
+            <h2 className="text-base font-black text-[#0A192F]">Prashant Hiremath</h2>
+            <p className="text-xs text-[#64748B] font-medium">The Unstoppable Producer</p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="px-2 py-0.5 rounded-md bg-blue-50 text-[#0085FF] text-[10px] font-extrabold">
+                Day 17 / 90
+              </span>
+              <span className="px-2 py-0.5 rounded-md bg-orange-50 text-[#FF7A00] text-[10px] font-extrabold">
+                Level 1 · 450 XP
+              </span>
+            </div>
           </div>
         </div>
-      </main>
+
+        {/* ── EDIT IDENTITY STATEMENT ── */}
+        <div className="arc-card p-4 bg-white border border-[#E8EEF5] space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black uppercase text-[#0A192F]">
+              Identity Affirmation
+            </span>
+            <span className="text-[10px] text-[#0085FF] font-bold">Daily Anchor</span>
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              value={identityText}
+              onChange={(e) => setIdentityText(e.target.value)}
+              className="w-full text-xs font-semibold text-[#0A192F] bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-[#0085FF]"
+            />
+          </div>
+          <div className="flex justify-between items-center pt-1">
+            <span className="text-[10px] text-[#94A3B8]">“I am becoming {identityText}”</span>
+            <button
+              onClick={handleSaveIdentity}
+              className="text-[10px] font-bold text-[#0085FF] hover:underline"
+            >
+              {isSaved ? '✓ Saved' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+
+        {/* ── NOTIFICATIONS SETTINGS ── */}
+        <div className="arc-card p-4 bg-white border border-[#E8EEF5] space-y-3">
+          <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+            <Bell className="w-4 h-4 text-[#0085FF]" />
+            <h3 className="text-xs font-black uppercase text-[#0A192F]">
+              Notification Protocol
+            </h3>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold text-[#0A192F]">Morning Protocol Alarm</div>
+              <div className="text-[10px] text-[#64748B]">7:00 AM wake up & cold shower reminder</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={morningReminder}
+              onChange={(e) => setMorningReminder(e.target.checked)}
+              className="accent-[#0085FF] w-4 h-4"
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold text-[#0A192F]">Evening Review Nudge</div>
+              <div className="text-[10px] text-[#64748B]">9:30 PM score log & honesty check</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={eveningReview}
+              onChange={(e) => setEveningReview(e.target.checked)}
+              className="accent-[#0085FF] w-4 h-4"
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-bold text-[#0A192F]">Quiet Hours DND</div>
+              <div className="text-[10px] text-[#64748B]">10:00 PM – 6:30 AM silent mode</div>
+            </div>
+            <input
+              type="checkbox"
+              checked={quietHours}
+              onChange={(e) => setQuietHours(e.target.checked)}
+              className="accent-[#0085FF] w-4 h-4"
+            />
+          </div>
+        </div>
+
+        {/* ── DATA & PRIVACY ── */}
+        <div className="arc-card p-4 bg-white border border-[#E8EEF5] space-y-2">
+          <div className="flex items-center gap-2 pb-1 border-b border-slate-100">
+            <Shield className="w-4 h-4 text-emerald-600" />
+            <h3 className="text-xs font-black uppercase text-[#0A192F]">
+              Data & Cloud Sync
+            </h3>
+          </div>
+
+          <button
+            onClick={() => alert('Exporting all 90-day logs to JSON...')}
+            className="w-full flex items-center justify-between py-2 text-xs font-bold text-[#475569] hover:text-[#0A192F]"
+          >
+            <div className="flex items-center gap-2">
+              <Download className="w-3.5 h-3.5" />
+              <span>Export Transformation Data (JSON)</span>
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+          </button>
+        </div>
+      </div>
+
+      <BottomNav />
     </div>
   );
 }

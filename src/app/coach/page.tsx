@@ -1,321 +1,170 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useState } from 'react';
 import BottomNav from '@/components/layout/BottomNav';
+import { Send, Bot, Sparkles, User } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
-  sender: 'user' | 'coach';
+  sender: 'coach' | 'user';
   text: string;
-  timestamp: string;
+  time: string;
 }
 
-const QUICK_ACTIONS = [
-  { label: '📊 Review my week', prompt: 'Review my weekly consistency and where I can tighten up.' },
-  { label: '🌅 Plan tomorrow', prompt: 'Help me plan tomorrow so I do not negotiate with myself.' },
-  { label: '🛡️ Recover from slip', prompt: 'I felt off track today. How do I recover without spiral?' },
-  { label: '⚡ Give me hard truth', prompt: 'Motivate me with hard truth. No sugarcoating.' },
-  { label: '🎯 Adjust difficulty', prompt: 'How do I know if my daily habits are too aggressive or too easy?' },
-];
-
 export default function CoachPage() {
-  const { user, userData } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: 'init-1',
+      id: '1',
       sender: 'coach',
-      text: "Welcome to the Arc Command. I'm your Winter Arc Transformation Coach.\n\nYou're on **Day 17 of 90** with an **82% consistency rate**. You have 73 days to solidify who you are.\n\nWhat are we locking in right now?",
-      timestamp: '10:00 AM',
+      text: "Good morning Prashant! You're on Day 17 of 90 with an 8-day streak and 82% consistency. Your body habits (cold shower, workout) are rock-solid. Let's make sure you protect your 90-minute deep work window today. How are your energy levels right now?",
+      time: '9:00 AM',
     },
   ]);
-  const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const [inputText, setInputText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+  const quickPrompts = [
+    'How do I defeat afternoon slump?',
+    'Review my 7-day consistency',
+    'I feel low motivation today',
+    'Give me a discipline reminder',
+  ];
 
-  const handleSendMessage = async (textToSend?: string) => {
-    const text = textToSend || inputValue;
-    if (!text.trim() || isLoading) return;
+  const handleSend = (textToSend?: string) => {
+    const text = textToSend || inputText;
+    if (!text.trim()) return;
 
     const userMsg: ChatMessage = {
-      id: `msg-${Date.now()}`,
+      id: Date.now().toString(),
       sender: 'user',
-      text: text.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
-    const newMessages = [...messages, userMsg];
-    setMessages(newMessages);
-    if (!textToSend) setInputValue('');
-    setIsLoading(true);
+    setMessages((prev) => [...prev, userMsg]);
+    setInputText('');
+    setIsTyping(true);
 
-    try {
-      const res = await fetch('/api/ai/coach', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: newMessages.map(m => ({
-            role: m.sender === 'user' ? 'user' : 'model',
-            content: m.text,
-          })),
-          userContext: {
-            identityStatement: userData?.identity_statement || 'I am forging an elite, disciplined version of myself.',
-            currentDay: 17,
-            consistency: 82,
-            streak: 8,
-          },
-        }),
-      });
+    // Simulate smart AI coach reply
+    setTimeout(() => {
+      let replyText = "Remember Prashant: action creates motivation, not the other way around. Step into the arena, execute the first 5 minutes, and momentum will take over.";
+      if (text.includes('afternoon') || text.includes('slump')) {
+        replyText = "For afternoon brain fog: 1) Drink 500ml cold water with a pinch of salt. 2) Take a brisk 7-minute walk outside in sunlight. 3) Avoid high carb meals before deep work. You've got this!";
+      } else if (text.includes('Review') || text.includes('consistency')) {
+        replyText = "Your 7-day average is 85.7%, which puts you in the top 5% of all Winter Arc practitioners. Your only vulnerability is Wednesday mid-day focus. Guard that time strictly.";
+      }
 
-      const data = await res.json();
-      const coachReply: ChatMessage = {
-        id: `coach-${Date.now()}`,
+      const coachMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
         sender: 'coach',
-        text: data.reply || "Focus on keeping today's promise. One rep, one page, one hour at a time.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        text: replyText,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
-      setMessages(prev => [...prev, coachReply]);
-    } catch (err) {
-      console.error('Failed to get coach reply', err);
-      setMessages(prev => [
-        ...prev,
-        {
-          id: `coach-${Date.now()}`,
-          sender: 'coach',
-          text: "Stay focused on your standard. Win the next decision in front of you.",
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
+      setMessages((prev) => [...prev, coachMsg]);
+      setIsTyping(false);
+    }, 1000);
   };
 
   return (
-    <div className="app-container">
-      <BottomNav />
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0A192F] flex flex-col justify-between select-none">
+      <div className="max-w-md w-full mx-auto flex-1 flex flex-col px-4 pt-4 pb-36">
+        {/* ── HEADER ── */}
+        <header className="pt-2 pb-3 border-b border-slate-200/80">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#0085FF] via-[#7B61FF] to-[#FF7A00] p-0.5 shadow-md">
+                <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#0085FF]">
+                  <Bot className="w-5 h-5" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-base font-black font-display text-[#0A192F]">
+                  AI Winter Arc Coach
+                </h1>
+                <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Active · Day 17 Context Loaded</span>
+                </div>
+              </div>
+            </div>
 
-      <main className="page-content" style={{ paddingBottom: '7rem', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {/* ── Header ── */}
-        <header style={{ marginBottom: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', color: 'var(--ice-blue)', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
-            TACTICAL MENTORSHIP
+            <div className="px-2.5 py-1 rounded-full bg-blue-50 text-[#0085FF] text-[10px] font-black">
+              8D Streak
+            </div>
           </div>
-          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 900, color: 'white', letterSpacing: '-0.02em', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span>Arc AI Coach</span>
-            <span className="pill pill-blue" style={{ fontSize: '0.65rem' }}>ACTIVE</span>
-          </h1>
         </header>
 
-        {/* ── Chat Container (Comfortable Max Width on Desktop) ── */}
-        <div style={{ maxWidth: '860px', width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', flex: 1 }}>
-          {/* ── Context Insight Card ── */}
-          <section className="glass-card" style={{
-            padding: '1rem 1.25rem',
-            borderRadius: '16px',
-            marginBottom: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '1rem',
-            borderLeft: '4px solid var(--ice-blue)'
-          }}>
-            <div>
-              <div style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                CURRENT STATE MONITOR
-              </div>
-              <div style={{ fontSize: '0.88rem', color: 'white', fontWeight: 700, marginTop: '0.15rem' }}>
-                Day 17 / 90 · 82% Arc Consistency
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
-                4 of 5 habits on track · Minimum Day enabled
-              </div>
-            </div>
-            <div style={{
-              width: '42px', height: '42px', borderRadius: '12px',
-              background: 'var(--grad-primary)',
-              color: '#08090d',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.25rem', flexShrink: 0,
-              boxShadow: '0 4px 12px var(--ice-blue-glow)'
-            }}>
-              🤖
-            </div>
-          </section>
-
-          {/* ── Quick Action Prompt Chips ── */}
-          <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', marginBottom: '1rem', scrollbarWidth: 'none' }}>
-            {QUICK_ACTIONS.map((action, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSendMessage(action.prompt)}
-                disabled={isLoading}
-                style={{
-                  whiteSpace: 'nowrap',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-secondary)',
-                  padding: '0.45rem 0.85rem',
-                  borderRadius: '999px',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                  flexShrink: 0,
-                }}
-              >
-                {action.label}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Chat Messages Stream ── */}
-          <section style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            marginBottom: '1rem',
-            minHeight: '300px'
-          }}>
-            {messages.map((msg) => {
-              const isUser = msg.sender === 'user';
-              return (
-                <div
-                  key={msg.id}
-                  style={{
-                    display: 'flex',
-                    justifyContent: isUser ? 'flex-end' : 'flex-start',
-                    alignItems: 'flex-start',
-                    gap: '0.65rem'
-                  }}
-                >
-                  {!isUser && (
-                    <div style={{
-                      width: '32px', height: '32px', borderRadius: '10px',
-                      background: 'var(--grad-primary)',
-                      color: '#08090d',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '0.9rem', flexShrink: 0, marginTop: '2px',
-                      fontWeight: 800
-                    }}>
-                      ❄️
-                    </div>
-                  )}
-
-                  <div style={{
-                    maxWidth: '82%',
-                    padding: '0.9rem 1.1rem',
-                    borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                    background: isUser
-                      ? 'var(--grad-primary)'
-                      : 'var(--bg-card)',
-                    border: isUser ? 'none' : '1px solid var(--border-subtle)',
-                    color: isUser ? '#08090d' : 'white',
-                    fontWeight: isUser ? 600 : 400,
-                    fontSize: '0.9rem',
-                    lineHeight: 1.5,
-                    boxShadow: isUser ? '0 4px 16px var(--ice-blue-glow)' : 'none'
-                  }}>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>
-                      {msg.text}
-                    </div>
-                    <div style={{
-                      fontSize: '0.62rem',
-                      color: isUser ? 'rgba(8, 9, 13, 0.7)' : 'var(--text-muted)',
-                      textAlign: 'right',
-                      marginTop: '0.4rem'
-                    }}>
-                      {msg.timestamp}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            {isLoading && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                <div style={{
-                  width: '32px', height: '32px', borderRadius: '10px',
-                  background: 'var(--grad-primary)',
-                  color: '#08090d',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '0.9rem'
-                }}>
-                  ❄️
-                </div>
-                <div style={{
-                  padding: '0.75rem 1rem',
-                  borderRadius: '16px',
-                  background: 'var(--bg-card)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--ice-blue)',
-                  fontSize: '0.85rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}>
-                  <span>Coach is formulating tactical advice...</span>
-                </div>
-              </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </section>
-
-          {/* ── Input Bar ── */}
-          <section style={{
-            position: 'sticky',
-            bottom: 0,
-            background: 'var(--bg-base)',
-            padding: '0.85rem 0',
-            borderTop: '1px solid var(--border-subtle)',
-            zIndex: 40
-          }}>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-              style={{ display: 'flex', gap: '0.6rem' }}
+        {/* ── CHAT MESSAGES ── */}
+        <div className="flex-1 overflow-y-auto py-4 space-y-3">
+          {messages.map((m) => (
+            <div
+              key={m.id}
+              className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
             >
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask your coach anything..."
-                className="input-field"
-                style={{ flex: 1, borderRadius: '14px', fontSize: '0.9rem' }}
-              />
-              <button
-                type="submit"
-                disabled={isLoading || !inputValue.trim()}
-                className="btn-primary"
-                style={{
-                  borderRadius: '14px',
-                  padding: '0.75rem 1.25rem',
-                  fontSize: '1.1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: !inputValue.trim() ? 0.6 : 1
-                }}
+              <div
+                className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                  m.sender === 'user'
+                    ? 'bg-[#0085FF] text-white rounded-tr-none shadow-sm'
+                    : 'bg-white text-[#0A192F] border border-[#E8EEF5] rounded-tl-none shadow-sm'
+                }`}
               >
-                ↑
-              </button>
-            </form>
-          </section>
+                {m.text}
+              </div>
+              <span className="text-[9px] text-[#94A3B8] font-semibold mt-1 px-1">{m.time}</span>
+            </div>
+          ))}
+
+          {isTyping && (
+            <div className="flex items-center gap-1.5 bg-white border border-[#E8EEF5] px-3.5 py-2 rounded-2xl w-fit">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0085FF] animate-bounce" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#7B61FF] animate-bounce [animation-delay:0.2s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF7A00] animate-bounce [animation-delay:0.4s]" />
+            </div>
+          )}
         </div>
-      </main>
+
+        {/* ── QUICK PROMPT CHIPS ── */}
+        <div className="flex gap-1.5 overflow-x-auto py-2 no-scrollbar">
+          {quickPrompts.map((q) => (
+            <button
+              key={q}
+              onClick={() => handleSend(q)}
+              className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white border border-[#E8EEF5] text-[10px] font-bold text-[#475569] hover:border-[#0085FF] hover:text-[#0085FF] transition-colors shadow-sm"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+
+        {/* ── INPUT BAR ── */}
+        <div className="pt-2">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+            className="flex items-center gap-2 bg-white border border-[#E8EEF5] rounded-full p-1.5 shadow-md"
+          >
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Ask your coach anything about your Arc..."
+              className="flex-1 bg-transparent px-4 text-xs text-[#0A192F] focus:outline-none placeholder:text-[#94A3B8]"
+            />
+            <button
+              type="submit"
+              className="w-9 h-9 rounded-full btn-sunset flex items-center justify-center text-white shrink-0 shadow-sm"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <BottomNav />
     </div>
   );
 }

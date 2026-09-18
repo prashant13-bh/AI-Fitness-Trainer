@@ -2,93 +2,71 @@
 
 import React, { useState } from 'react';
 import BottomNav from '@/components/layout/BottomNav';
-import { useAuth } from '@/contexts/AuthContext';
-
-type TabType = 'overview' | 'habits' | 'goals' | 'achievements';
-
-const WEEK_DAYS = [
-  { day: 'Mon', score: 100, status: 'complete' },
-  { day: 'Tue', score: 100, status: 'complete' },
-  { day: 'Wed', score: 80, status: 'complete' },
-  { day: 'Thu', score: 50, status: 'minimum' },
-  { day: 'Fri', score: 100, status: 'complete' },
-  { day: 'Sat', score: 40, status: 'partial' },
-  { day: 'Sun', score: 80, status: 'today' },
-];
-
-const HABIT_STATS = [
-  { name: 'Morning Cold Shower & Water', area: 'Body', completionRate: 94, totalDays: 16, status: 'Elite' },
-  { name: 'Strength Workout / Conditioning', area: 'Body', completionRate: 88, totalDays: 15, status: 'Strong' },
-  { name: 'Deep Work / Skill Mastery', area: 'Career', completionRate: 82, totalDays: 14, status: 'Solid' },
-  { name: 'Read Non-Fiction', area: 'Knowledge', completionRate: 76, totalDays: 13, status: 'Focus' },
-  { name: 'No Sugar & Clean Nutrition', area: 'Body', completionRate: 88, totalDays: 15, status: 'Strong' },
-];
-
-const ACHIEVEMENTS = [
-  { icon: '❄️', title: 'The First Frost', desc: 'Commenced the 90-Day Winter Arc', earned: true, date: 'Day 1' },
-  { icon: '🔥', title: '7-Day Iron Chain', desc: 'Maintained 7 consecutive days of discipline', earned: true, date: 'Day 7' },
-  { icon: '🛡️', title: 'The Shield Kept', desc: 'Protected streak using Minimum Day Protocol', earned: true, date: 'Day 11' },
-  { icon: '⚡', title: '14-Day Resolute', desc: 'Reached the 2-week transformation horizon', earned: true, date: 'Day 14' },
-  { icon: '🏆', title: 'Month of Iron', desc: 'Survive Day 30 with 80%+ consistency', earned: false },
-  { icon: '👑', title: 'Forged in Winter', desc: 'Complete all 90 days and seal your new self', earned: false },
-];
+import { Flame, Award, TrendingUp, CheckCircle2, Target, Calendar, Sparkles, ChevronRight, Zap } from 'lucide-react';
 
 export default function ProgressPage() {
-  const { userData } = useAuth();
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'habits' | 'goals' | 'badges'>('overview');
 
-  const winterScore = 84; // Winter Score (0-100)
-  const currentStreak = 8;
-  const bestStreak = 11;
-  const totalCompletedDays = 14;
-  const totalArcDays = 90;
-  const currentDay = 17;
+  const weeklyData = [
+    { day: 'Mon', score: 80, isTargetMet: true },
+    { day: 'Tue', score: 100, isTargetMet: true },
+    { day: 'Wed', score: 60, isTargetMet: false },
+    { day: 'Thu', score: 80, isTargetMet: true },
+    { day: 'Fri', score: 100, isTargetMet: true },
+    { day: 'Sat', score: 100, isTargetMet: true },
+    { day: 'Sun', score: 80, isTargetMet: true },
+  ];
+
+  const habitsAnalytics = [
+    { name: 'Morning Cold Shower', category: 'BODY', completed: 16, total: 17, streak: '8d', pct: 94, color: '#0085FF' },
+    { name: 'Strength Workout', category: 'BODY', completed: 14, total: 17, streak: '5d', pct: 82, color: '#FF7A00' },
+    { name: 'Deep Work Session', category: 'CAREER', completed: 13, total: 17, streak: '3d', pct: 76, color: '#7B61FF' },
+    { name: 'Read Non-Fiction', category: 'KNOWLEDGE', completed: 15, total: 17, streak: '6d', pct: 88, color: '#10B981' },
+    { name: 'Clean Nutrition', category: 'BODY', completed: 15, total: 17, streak: '7d', pct: 88, color: '#F59E0B' },
+  ];
+
+  const badges = [
+    { title: 'Arc Initiated', desc: 'Started your 90-day Winter Arc', icon: '🏔️', unlocked: true },
+    { title: '7-Day Iron Will', desc: 'Maintained an unbroken 7-day streak', icon: '🔥', unlocked: true },
+    { title: 'Cold Shower Beast', desc: '14 days of cold shower discipline', icon: '❄️', unlocked: true },
+    { title: 'Deep Work Master', desc: 'Completed 20+ hours of focused flow', icon: '⚡', unlocked: true },
+    { title: 'Halftime Titan', desc: 'Reach Day 45 of your Arc', icon: '🛡️', unlocked: false },
+    { title: 'Winter Legend', desc: 'Completed the full 90-day Arc', icon: '👑', unlocked: false },
+  ];
 
   return (
-    <div className="app-container">
-      <BottomNav />
-
-      <main className="page-content" style={{ paddingBottom: '7rem' }}>
-        {/* ── Top Header ── */}
-        <header style={{ marginBottom: '1.25rem' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', color: 'var(--ice-blue)', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
-            PERFORMANCE ANALYTICS
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0A192F] pb-28 pt-4 px-4 select-none">
+      <div className="max-w-md mx-auto space-y-4">
+        {/* ── HEADER ── */}
+        <header className="pt-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#0085FF]">
+            ARC ANALYTICS & INSIGHTS
+          </span>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-black font-display text-[#0A192F] tracking-tight">
+              Progress & Growth
+            </h1>
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#0085FF] text-xs font-bold border border-blue-100">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Day 17 / 90</span>
+            </div>
           </div>
-          <h1 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 900, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
-            Winter Arc Progress
-          </h1>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-            Day {currentDay} of {totalArcDays} · Consistency over streaks
-          </div>
+          <p className="text-xs font-semibold text-[#64748B] mt-0.5">
+            Consistency is the bridge between goals and reality.
+          </p>
         </header>
 
-        {/* ── Navigation Tabs ── */}
-        <div style={{
-          display: 'flex',
-          background: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '14px',
-          padding: '0.25rem',
-          marginBottom: '1.5rem',
-          gap: '0.25rem'
-        }}>
-          {(['overview', 'habits', 'goals', 'achievements'] as TabType[]).map((tab) => (
+        {/* ── TAB SELECTOR ── */}
+        <div className="flex bg-slate-100/80 p-1 rounded-2xl gap-1 text-xs font-bold">
+          {(['overview', 'habits', 'goals', 'badges'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              style={{
-                flex: 1,
-                padding: '0.6rem 0',
-                borderRadius: '10px',
-                background: activeTab === tab ? 'var(--ice-blue-dim)' : 'transparent',
-                border: activeTab === tab ? '1px solid rgba(56, 189, 248, 0.3)' : 'none',
-                color: activeTab === tab ? 'var(--ice-blue)' : 'var(--text-muted)',
-                fontWeight: activeTab === tab ? 700 : 500,
-                fontSize: '0.78rem',
-                textTransform: 'capitalize',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
+              className={`flex-1 py-2 rounded-xl capitalize transition-all ${
+                activeTab === tab
+                  ? 'bg-white text-[#0A192F] shadow-sm'
+                  : 'text-[#64748B] hover:text-[#0A192F]'
+              }`}
             >
               {tab}
             </button>
@@ -97,149 +75,117 @@ export default function ProgressPage() {
 
         {/* ── TAB: OVERVIEW ── */}
         {activeTab === 'overview' && (
-          <div className="grid-2col-desktop">
-            {/* Left Column: Hero Score + Weekly Bar Chart */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {/* Winter Score Hero */}
-              <div className="glass-card" style={{
-                padding: '1.5rem',
-                borderRadius: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '1rem',
-                borderLeft: '4px solid var(--ice-blue)'
-              }}>
-                <div>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                    WINTER SCORE™
-                  </div>
-                  <div className="font-display" style={{ fontSize: '2.8rem', fontWeight: 900, color: 'white', lineHeight: 1, margin: '0.3rem 0' }}>
-                    {winterScore}
-                    <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 600 }}>/100</span>
-                  </div>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                    Weighted protocol adherence: <span style={{ color: 'var(--ice-blue)', fontWeight: 700 }}>Optimal Range</span>
-                  </div>
-                </div>
-
-                <div style={{
-                  width: '64px', height: '64px', borderRadius: '18px',
-                  background: 'var(--grad-primary)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '1.8rem', boxShadow: '0 8px 24px var(--ice-blue-glow)',
-                  color: '#08090d'
-                }}>
-                  ❄️
-                </div>
+          <div className="space-y-4 animate-in fade-in duration-200">
+            {/* 3 Core Metric Dials */}
+            <div className="arc-card p-5 bg-white border border-[#E8EEF5]">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#94A3B8]">
+                  WINTER PERFORMANCE METRICS
+                </span>
+                <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                  Top 5% Tier
+                </span>
               </div>
 
-              {/* Weekly Bar Graph */}
-              <div className="glass-card" style={{ padding: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <div>
-                    <h3 className="font-display" style={{ fontSize: '1rem', fontWeight: 800, color: 'white', margin: 0 }}>
-                      This Week's Discipline
-                    </h3>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                      Daily scores & minimum days
-                    </div>
-                  </div>
-                  <span className="pill pill-blue" style={{ fontSize: '0.65rem' }}>
-                    Avg: 79%
-                  </span>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="p-3 rounded-2xl bg-blue-50/60 border border-blue-100">
+                  <div className="text-2xl font-black font-display text-[#0085FF]">82%</div>
+                  <div className="text-[10px] font-bold text-[#0A192F] mt-1">Consistency</div>
+                  <div className="text-[9px] text-[#64748B]">Last 30 Days</div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '120px', padding: '0 0.5rem' }}>
-                  {WEEK_DAYS.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
-                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-                        {d.score}%
-                      </div>
-                      <div style={{
-                        width: '24px',
-                        height: `${d.score}px`,
-                        maxHeight: '85px',
-                        borderRadius: '6px',
-                        background: d.status === 'minimum'
-                          ? 'var(--grad-amber)'
-                          : 'var(--grad-primary)',
-                        transition: 'height 0.4s ease'
-                      }} />
-                      <div style={{ fontSize: '0.7rem', color: d.status === 'today' ? 'var(--ice-blue)' : 'var(--text-secondary)', fontWeight: d.status === 'today' ? 800 : 500 }}>
-                        {d.day}
-                      </div>
-                    </div>
-                  ))}
+                <div className="p-3 rounded-2xl bg-orange-50/60 border border-orange-100">
+                  <div className="text-2xl font-black font-display text-[#FF7A00]">81%</div>
+                  <div className="text-[10px] font-bold text-[#0A192F] mt-1">Completion</div>
+                  <div className="text-[9px] text-[#64748B]">Daily average</div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-purple-50/60 border border-purple-100">
+                  <div className="text-2xl font-black font-display text-[#7B61FF]">89%</div>
+                  <div className="text-[10px] font-bold text-[#0A192F] mt-1">Momentum</div>
+                  <div className="text-[9px] text-[#64748B]">Growth velocity</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Metrics Triad + Habit Overview List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {/* Metrics Triad */}
-              <div className="grid-3col-responsive">
-                <div className="glass-card" style={{ padding: '0.85rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Consistency
-                  </div>
-                  <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--ice-blue)', marginTop: '0.2rem' }}>
-                    82%
-                  </div>
-                  <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.4)' }}>
-                    Active Days
-                  </div>
+            {/* 7-Day Performance Chart */}
+            <div className="arc-card p-5 bg-white border border-[#E8EEF5]">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xs font-black text-[#0A192F] uppercase tracking-wider">
+                    7-Day Execution Rate
+                  </h3>
+                  <p className="text-[10px] text-[#64748B]">Daily discipline score (Target: 80%+)</p>
                 </div>
-
-                <div className="glass-card" style={{ padding: '0.85rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Current Streak
-                  </div>
-                  <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--amber)', marginTop: '0.2rem' }}>
-                    {currentStreak}d
-                  </div>
-                  <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.4)' }}>
-                    Best: {bestStreak}d
-                  </div>
-                </div>
-
-                <div className="glass-card" style={{ padding: '0.85rem', textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Kept Days
-                  </div>
-                  <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', marginTop: '0.2rem' }}>
-                    {totalCompletedDays}
-                  </div>
-                  <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.4)' }}>
-                    Of {currentDay} Elapsed
-                  </div>
-                </div>
+                <span className="text-[10px] font-extrabold text-[#0085FF] bg-blue-50 px-2 py-0.5 rounded-full">
+                  Avg 85.7%
+                </span>
               </div>
 
-              {/* Protocol Summary Card */}
-              <div className="glass-card" style={{ padding: '1.25rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--ice-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    TOP HABIT ADHERENCE
-                  </div>
-                  <button onClick={() => setActiveTab('habits')} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.75rem', cursor: 'pointer' }}>
-                    View All →
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                  {HABIT_STATS.slice(0, 3).map((h, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
-                        <span style={{ color: 'white', fontWeight: 600 }}>{h.name}</span>
-                        <span style={{ color: 'var(--ice-blue)', fontWeight: 700 }}>{h.completionRate}%</span>
+              {/* Bar Chart Bars */}
+              <div className="flex items-end justify-between h-36 pt-4 px-2 border-b border-slate-100">
+                {weeklyData.map((d, i) => {
+                  const heightPct = `${d.score}%`;
+                  return (
+                    <div key={d.day} className="flex flex-col items-center gap-1.5 flex-1">
+                      <span className="text-[9px] font-bold text-[#64748B]">{d.score}%</span>
+                      <div className="w-full max-w-[24px] bg-slate-100 rounded-t-lg h-24 flex items-end justify-center overflow-hidden">
+                        <div
+                          style={{ height: heightPct }}
+                          className={`w-full rounded-t-lg transition-all duration-500 ${
+                            d.isTargetMet
+                              ? 'bg-gradient-to-t from-[#0085FF] to-[#7B61FF]'
+                              : 'bg-amber-400'
+                          }`}
+                        />
                       </div>
-                      <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden' }}>
-                        <div style={{ width: `${h.completionRate}%`, height: '100%', background: 'var(--grad-primary)' }} />
-                      </div>
+                      <span className="text-[10px] font-bold text-[#0A192F]">{d.day}</span>
                     </div>
-                  ))}
+                  );
+                })}
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] text-[#94A3B8] font-semibold mt-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded bg-gradient-to-r from-[#0085FF] to-[#7B61FF]" />
+                  <span>Target Met (80%+)</span>
                 </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded bg-amber-400" />
+                  <span>Minimum Day (&lt;80%)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Habit Snapshot */}
+            <div className="arc-card p-4 bg-white border border-[#E8EEF5]">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-black text-[#0A192F] uppercase tracking-wider">
+                  Top Disciplines
+                </h3>
+                <button
+                  onClick={() => setActiveTab('habits')}
+                  className="text-[10px] font-bold text-[#0085FF]"
+                >
+                  View All &gt;
+                </button>
+              </div>
+
+              <div className="space-y-2.5">
+                {habitsAnalytics.slice(0, 3).map((h) => (
+                  <div key={h.name} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#0A192F]">{h.name}</span>
+                      <span className="font-extrabold text-[#0085FF]">{h.pct}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${h.pct}%`, backgroundColor: h.color }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -247,31 +193,34 @@ export default function ProgressPage() {
 
         {/* ── TAB: HABITS ── */}
         {activeTab === 'habits' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {HABIT_STATS.map((h, i) => (
-              <div key={i} className="glass-card" style={{ padding: '1rem', borderRadius: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div className="space-y-3 animate-in fade-in duration-200">
+            {habitsAnalytics.map((h) => (
+              <div key={h.name} className="arc-card p-4 bg-white border border-[#E8EEF5]">
+                <div className="flex items-start justify-between">
                   <div>
-                    <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', fontWeight: 800, color: 'var(--ice-blue)' }}>
-                      {h.area}
+                    <span className="text-[9px] font-black text-[#0085FF] uppercase tracking-wider">
+                      {h.category}
                     </span>
-                    <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'white', marginTop: '0.15rem' }}>
-                      {h.name}
+                    <h3 className="text-sm font-bold text-[#0A192F]">{h.name}</h3>
+                    <div className="text-[11px] text-[#64748B] mt-0.5">
+                      Completed {h.completed} of {h.total} days
                     </div>
                   </div>
-                  <span className="pill pill-blue" style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}>
-                    {h.status}
-                  </span>
+
+                  <div className="text-right">
+                    <div className="text-xl font-black font-display text-[#0085FF]">{h.pct}%</div>
+                    <div className="inline-flex items-center gap-1 text-[10px] font-bold text-[#FF7A00] bg-orange-50 px-2 py-0.5 rounded-full mt-1">
+                      <Flame className="w-3 h-3 fill-[#FF7A00]" />
+                      <span>{h.streak} streak</span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Progress bar */}
-                <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '0.75rem' }}>
-                  <div style={{ width: `${h.completionRate}%`, height: '100%', background: 'var(--grad-primary)' }} />
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.4rem' }}>
-                  <span>{h.totalDays} of 17 days completed</span>
-                  <span style={{ color: 'white', fontWeight: 700 }}>{h.completionRate}%</span>
+                <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mt-3">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${h.pct}%`, backgroundColor: h.color }}
+                  />
                 </div>
               </div>
             ))}
@@ -280,55 +229,100 @@ export default function ProgressPage() {
 
         {/* ── TAB: GOALS ── */}
         {activeTab === 'goals' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div className="glass-card" style={{ padding: '1rem', borderRadius: '16px' }}>
-              <div style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>Sub-12% Body Fat</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Started: 15.5% · Current: 14.5% · Goal: 12.0%</div>
-              <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '0.6rem' }}>
-                <div style={{ width: '45%', height: '100%', background: 'var(--grad-primary)' }} />
+          <div className="space-y-3 animate-in fade-in duration-200">
+            <div className="arc-card p-4 bg-white border border-[#E8EEF5]">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🏋️</span>
+                  <div>
+                    <h3 className="text-xs font-bold text-[#0A192F]">Get Fit & Build Muscle</h3>
+                    <span className="text-[10px] text-[#64748B]">Target: 4x workouts / week</span>
+                  </div>
+                </div>
+                <span className="text-xs font-black text-[#0085FF]">68%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-[68%] h-full bg-[#0085FF] rounded-full" />
+              </div>
+              <div className="flex justify-between text-[10px] text-[#64748B] mt-2 font-medium">
+                <span>14 workouts completed</span>
+                <span>On Track</span>
               </div>
             </div>
 
-            <div className="glass-card" style={{ padding: '1rem', borderRadius: '16px' }}>
-              <div style={{ fontWeight: 700, color: 'white', fontSize: '1rem' }}>Read 6 Mastery Books</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>2 of 6 books finished</div>
-              <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '999px', overflow: 'hidden', marginTop: '0.6rem' }}>
-                <div style={{ width: '33%', height: '100%', background: 'var(--grad-primary)' }} />
+            <div className="arc-card p-4 bg-white border border-[#E8EEF5]">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">📖</span>
+                  <div>
+                    <h3 className="text-xs font-bold text-[#0A192F]">Read 10 Non-Fiction Books</h3>
+                    <span className="text-[10px] text-[#64748B]">Target: 15 pages / day</span>
+                  </div>
+                </div>
+                <span className="text-xs font-black text-[#7B61FF]">40%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-[40%] h-full bg-[#7B61FF] rounded-full" />
+              </div>
+              <div className="flex justify-between text-[10px] text-[#64748B] mt-2 font-medium">
+                <span>4 of 10 books finished</span>
+                <span>Pacing 1.5 books / month</span>
+              </div>
+            </div>
+
+            <div className="arc-card p-4 bg-white border border-[#E8EEF5]">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">💻</span>
+                  <div>
+                    <h3 className="text-xs font-bold text-[#0A192F]">Deep Work & Career Launch</h3>
+                    <span className="text-[10px] text-[#64748B]">Target: 90 min daily focused code</span>
+                  </div>
+                </div>
+                <span className="text-xs font-black text-[#FF7A00]">74%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-[74%] h-full bg-[#FF7A00] rounded-full" />
+              </div>
+              <div className="flex justify-between text-[10px] text-[#64748B] mt-2 font-medium">
+                <span>25.5 hours locked in</span>
+                <span>Ahead of schedule</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── TAB: ACHIEVEMENTS ── */}
-        {activeTab === 'achievements' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
-            {ACHIEVEMENTS.map((a, i) => (
+        {/* ── TAB: BADGES ── */}
+        {activeTab === 'badges' && (
+          <div className="grid grid-cols-2 gap-2.5 animate-in fade-in duration-200">
+            {badges.map((b) => (
               <div
-                key={i}
-                className="glass-card"
-                style={{
-                  padding: '1rem',
-                  borderRadius: '16px',
-                  opacity: a.earned ? 1 : 0.45,
-                  border: a.earned ? '1px solid var(--border-active)' : '1px solid var(--border-subtle)',
-                  background: a.earned ? 'var(--bg-glass)' : 'rgba(255, 255, 255, 0.02)'
-                }}
+                key={b.title}
+                className={`arc-card p-3 text-center transition-all ${
+                  b.unlocked
+                    ? 'bg-white border-blue-100 shadow-sm'
+                    : 'bg-slate-50/70 border-slate-200 opacity-60'
+                }`}
               >
-                <div style={{ fontSize: '1.75rem', marginBottom: '0.35rem' }}>{a.icon}</div>
-                <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'white' }}>{a.title}</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.2rem', lineHeight: 1.3 }}>
-                  {a.desc}
-                </div>
-                {a.earned && (
-                  <div style={{ fontSize: '0.65rem', color: 'var(--ice-blue)', fontWeight: 700, marginTop: '0.5rem' }}>
-                    ✓ Unlocked {a.date}
-                  </div>
-                )}
+                <div className="text-3xl mb-1.5">{b.icon}</div>
+                <h4 className="text-xs font-extrabold text-[#0A192F]">{b.title}</h4>
+                <p className="text-[9px] text-[#64748B] mt-0.5 leading-tight">{b.desc}</p>
+                <span
+                  className={`inline-block text-[8px] font-black uppercase px-2 py-0.5 rounded-full mt-2 ${
+                    b.unlocked
+                      ? 'bg-emerald-50 text-emerald-600'
+                      : 'bg-slate-200 text-slate-500'
+                  }`}
+                >
+                  {b.unlocked ? 'Unlocked' : 'In Progress'}
+                </span>
               </div>
             ))}
           </div>
         )}
-      </main>
+      </div>
+
+      <BottomNav />
     </div>
   );
 }
