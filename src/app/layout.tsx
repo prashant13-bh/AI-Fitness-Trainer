@@ -21,8 +21,6 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-import ScreenNavigator from '@/components/layout/ScreenNavigator';
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -35,7 +33,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body suppressHydrationWarning className="bg-[#F8FAFC] text-[#0A192F]">
         <AuthProvider>
-          <ScreenNavigator />
           {children}
         </AuthProvider>
       </body>
