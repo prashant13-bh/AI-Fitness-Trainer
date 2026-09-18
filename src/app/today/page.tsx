@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import BottomNav from '@/components/layout/BottomNav';
 import { Flame, Check, Zap, Sparkles, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRight } from 'lucide-react';
+
+import { getUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
 
 interface HabitItem {
   id: string;
@@ -11,10 +13,12 @@ interface HabitItem {
   category: string;
   target: string;
   completed: boolean;
-  icon: any;
+  icon?: any;
 }
 
 export default function TodayPage() {
+  const [profile, setProfile] = useState<ChallengeProfile>(DEFAULT_PROFILE);
+
   const [habits, setHabits] = useState<HabitItem[]>([
     {
       id: '1',
@@ -58,6 +62,31 @@ export default function TodayPage() {
     },
   ]);
 
+  useEffect(() => {
+    const user = getUserProfile();
+    setProfile(user);
+    if (user.habits && user.habits.length > 0) {
+      setHabits(
+        user.habits.map((h) => {
+          let icon = Zap;
+          if (h.category === 'BODY') icon = Droplets;
+          if (h.title.toLowerCase().includes('workout')) icon = Dumbbell;
+          if (h.category === 'CAREER' || h.title.toLowerCase().includes('deep work')) icon = Brain;
+          if (h.category === 'KNOWLEDGE' || h.title.toLowerCase().includes('read')) icon = BookOpen;
+          if (h.title.toLowerCase().includes('nutrition')) icon = Apple;
+          return {
+            id: h.id,
+            title: h.title,
+            category: h.category,
+            target: h.target,
+            completed: false,
+            icon,
+          };
+        })
+      );
+    }
+  }, []);
+
   const [xpBonus, setXpBonus] = useState(0);
 
   const completedCount = habits.filter((h) => h.completed).length;
@@ -88,11 +117,11 @@ export default function TodayPage() {
               PROTOCOL EXECUTION
             </span>
             <h1 className="text-2xl font-black font-display text-[#0A192F] tracking-tight">
-              Good Morning, Prashant
+              Good Morning, {profile.name.split(' ')[0] || 'Prashant'}
             </h1>
             <p className="text-xs font-semibold text-[#64748B]">
-              Day <span className="text-[#0085FF] font-bold">17</span> of 90 ·{' '}
-              <span className="text-[#FF7A00] font-bold">73 days remaining</span>
+              Day <span className="text-[#0085FF] font-bold">17</span> of {profile.duration} ·{' '}
+              <span className="text-[#FF7A00] font-bold">{profile.duration - 17} days remaining</span>
             </p>
           </div>
 
@@ -194,7 +223,9 @@ export default function TodayPage() {
           </p>
           <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200/60 text-[10px]">
             <span className="text-[#64748B] font-semibold">Identity Focus:</span>
-            <span className="font-extrabold text-[#0085FF]">The Unstoppable Producer</span>
+            <span className="font-extrabold text-[#0085FF] truncate max-w-[220px]">
+              {profile.identity}
+            </span>
           </div>
         </div>
 
