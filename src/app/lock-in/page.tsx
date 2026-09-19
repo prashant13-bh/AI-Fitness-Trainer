@@ -3,6 +3,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
+import { logHabitCompletion } from '@/lib/supabase/sync';
+import { ExerciseType } from '@/lib/rep-counter';
+
+// Dynamically import PoseWorkoutTracker with SSR disabled to guarantee zero SSR crashes
+const PoseWorkoutTracker = dynamic(
+  () => import('@/components/trainer/PoseWorkoutTracker'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="arc-card p-12 bg-white flex flex-col items-center justify-center space-y-3 text-center">
+        <div className="w-10 h-10 rounded-full border-3 border-[#0085FF] border-t-transparent animate-spin" />
+        <p className="text-xs font-bold text-[#64748B]">Loading AI Camera Coach...</p>
+      </div>
+    ),
+  }
+);
 
 type FocusActivity = 'workout' | 'reading' | 'study' | 'deepwork' | 'meditation' | 'custom';
 
@@ -44,6 +61,8 @@ export default function LockInPage() {
 
   // Launcher Config
   const [selectedActivity, setSelectedActivity] = useState<FocusActivity>('deepwork');
+  const [workoutMode, setWorkoutMode] = useState<'camera' | 'timer'>('camera');
+  const [selectedExercise, setSelectedExercise] = useState<ExerciseType>('pushups');
   const [customName, setCustomName] = useState('');
   const [durationMins, setDurationMins] = useState(45);
   const [isCustomDuration, setIsCustomDuration] = useState(false);
@@ -55,11 +74,19 @@ export default function LockInPage() {
   const [isPaused, setIsPaused] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
+  // Workout Tracker Result State
+  const [workoutSummary, setWorkoutSummary] = useState<{
+    exercise: ExerciseType;
+    reps: number;
+    durationSecs: number;
+    xp: number;
+  } | null>(null);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Handle active countdown
+  // Handle active countdown for timer mode
   useEffect(() => {
-    if (sessionState === 'active' && !isPaused) {
+    if (sessionState === 'active' && !isPaused && (selectedActivity !== 'workout' || workoutMode === 'timer')) {
       timerRef.current = setInterval(() => {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
@@ -77,7 +104,7 @@ export default function LockInPage() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [sessionState, isPaused]);
+  }, [sessionState, isPaused, selectedActivity, workoutMode]);
 
   // Start Focus Session
   const handleStartSession = () => {
@@ -86,8 +113,28 @@ export default function LockInPage() {
     setSecondsLeft(totalSecs);
     setInitialSeconds(totalSecs);
     setIsPaused(false);
+    setWorkoutSummary(null);
     setQuoteIndex(Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length));
     setSessionState('active');
+  };
+
+  // Workout Tracker Complete Callback
+  const handleWorkoutComplete = (summary: {
+    exercise: ExerciseType;
+    reps: number;
+    durationSecs: number;
+    xp: number;
+  }) => {
+    setWorkoutSummary(summary);
+    setSessionState('completed');
+
+    // Automatically sync workout completion to Supabase and daily habit logs
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      logHabitCompletion('2', true, todayStr);
+    } catch (err) {
+      console.debug('Habit sync error:', err);
+    }
   };
 
   // Add 5 Minutes
@@ -106,7 +153,14 @@ export default function LockInPage() {
   const progressPercent = initialSeconds > 0 ? ((initialSeconds - secondsLeft) / initialSeconds) * 100 : 0;
   const currentActivityObj = ACTIVITIES.find((a) => a.id === selectedActivity)!;
   const activeActivityName = selectedActivity === 'custom' && customName.trim() ? customName : currentActivityObj.name;
-  const xpEarned = Math.round((initialSeconds / 60) * 0.8);
+  
+  const xpEarned = workoutSummary
+    ? workoutSummary.xp
+    : Math.round((initialSeconds / 60) * 0.8);
+
+  const durationLockedDisplay = workoutSummary
+    ? formatTime(workoutSummary.durationSecs)
+    : formatTime(initialSeconds - secondsLeft);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0A192F] flex flex-col justify-between relative overflow-x-hidden">
@@ -123,7 +177,11 @@ export default function LockInPage() {
             WINTER ARC
           </span>
           <h2 className="text-xs font-semibold text-[#64748B]">
-            {sessionState === 'launcher' ? 'Deep Focus Hub' : 'Active Focus Protocol'}
+            {sessionState === 'launcher'
+              ? 'Deep Focus Hub'
+              : selectedActivity === 'workout' && workoutMode === 'camera'
+              ? 'AI Form Coach Active'
+              : 'Active Focus Protocol'}
           </h2>
         </div>
         <div className="w-10 flex justify-end">
@@ -136,7 +194,7 @@ export default function LockInPage() {
       {/* ── MAIN CONTENT AREA ── */}
       <main className="w-full max-w-2xl lg:max-w-4xl mx-auto px-5 py-4 flex-1 z-10 flex flex-col justify-center">
         {/* =========================================================================
-            STATE 1: LOCK IN LAUNCHER (SCREEN 15)
+            STATE 1: LOCK IN LAUNCHER
            ========================================================================= */}
         {sessionState === 'launcher' && (
           <div className="space-y-5 animate-fade-in">
@@ -212,77 +270,168 @@ export default function LockInPage() {
               )}
             </div>
 
-            {/* 2. Choose Duration */}
-            <div className="arc-card p-5 bg-white">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold tracking-wider text-[#64748B] uppercase">
-                  2. Choose Duration
-                </h3>
-                <span className="text-[11px] font-bold text-[#FF7A00]">
-                  {isCustomDuration ? `${customDurationInput} mins` : `${durationMins} mins`}
-                </span>
-              </div>
+            {/* 2. Workout AI Vision Coach or Standard Timer (Only for Workout) */}
+            {selectedActivity === 'workout' && (
+              <div className="arc-card p-5 bg-white border border-[#E8EEF5]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-bold tracking-wider text-[#64748B] uppercase">
+                    Workout Tracking Method
+                  </h3>
+                  <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-50 text-[#0085FF]">
+                    AI Computer Vision
+                  </span>
+                </div>
 
-              <div className="grid grid-cols-4 gap-2">
-                {PRESET_DURATIONS.map((preset) => {
-                  const isSelected = !isCustomDuration && durationMins === preset.mins;
-                  return (
-                    <button
-                      key={preset.mins}
-                      onClick={() => {
-                        setIsCustomDuration(false);
-                        setDurationMins(preset.mins);
-                      }}
-                      className={`py-3 px-2 rounded-2xl flex flex-col items-center justify-center transition-all ${
-                        isSelected
-                          ? 'border-2 border-[#FF7A00] bg-orange-50/40 shadow-sm'
-                          : 'border border-[#E8EEF5] bg-white hover:border-slate-300'
-                      }`}
-                    >
-                      <span
-                        className={`text-sm font-extrabold ${
-                          isSelected ? 'text-[#FF7A00]' : 'text-[#0A192F]'
-                        }`}
-                      >
-                        {preset.label}
-                      </span>
-                      <span className="text-[10px] text-[#94A3B8] font-semibold mt-0.5">
-                        {preset.tag}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setWorkoutMode('camera')}
+                    className={`p-4 rounded-2xl text-left border transition-all flex items-start gap-3.5 ${
+                      workoutMode === 'camera'
+                        ? 'border-2 border-[#0085FF] bg-blue-50/40 shadow-sm'
+                        : 'border-[#E8EEF5] hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-[#0085FF] text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
+                      📷
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#0A192F] flex items-center gap-1.5">
+                        <span>AI Webcam Form Coach</span>
+                        <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.2 rounded font-black">
+                          FEATURED
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#64748B] mt-0.5">
+                        MoveNet pose detection, live skeleton overlay, audio rep count, & form warnings.
+                      </p>
+                    </div>
+                  </button>
 
-              {/* Custom slider toggle */}
-              <div className="mt-3 pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
-                <button
-                  onClick={() => setIsCustomDuration(!isCustomDuration)}
-                  className={`text-xs font-semibold flex items-center gap-1.5 ${
-                    isCustomDuration ? 'text-[#0085FF]' : 'text-[#64748B] hover:text-[#0A192F]'
-                  }`}
-                >
-                  <span>⏱</span>
-                  <span>{isCustomDuration ? 'Using Custom Time' : 'Set custom minutes...'}</span>
-                </button>
+                  <button
+                    onClick={() => setWorkoutMode('timer')}
+                    className={`p-4 rounded-2xl text-left border transition-all flex items-start gap-3.5 ${
+                      workoutMode === 'timer'
+                        ? 'border-2 border-[#FF7A00] bg-orange-50/40 shadow-sm'
+                        : 'border-[#E8EEF5] hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 text-[#0A192F] flex items-center justify-center text-xl shrink-0">
+                      ⏱️
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#0A192F]">Standard Timer</div>
+                      <p className="text-[11px] text-[#64748B] mt-0.5">
+                        Countdown focus timer for outdoor runs, gym lifts, or mobility blocks.
+                      </p>
+                    </div>
+                  </button>
+                </div>
 
-                {isCustomDuration && (
-                  <div className="flex items-center gap-1.5">
-                    <input
-                      type="number"
-                      min="5"
-                      max="180"
-                      value={customDurationInput}
-                      onChange={(e) => setCustomDurationInput(e.target.value)}
-                      className="w-16 px-2.5 py-1 text-center font-bold text-xs rounded-lg border border-[#0085FF] text-[#0A192F] focus:outline-none"
-                    />
-                    <span className="text-xs text-[#64748B] font-medium">min</span>
+                {/* If Camera Mode, select default exercise */}
+                {workoutMode === 'camera' && (
+                  <div className="mt-4 pt-3 border-t border-[#F1F5F9]">
+                    <span className="text-[11px] font-bold text-[#64748B] block mb-2">
+                      Select Starting Exercise:
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { id: 'pushups', label: '💪 Push-ups' },
+                        { id: 'squats', label: '🦵 Squats' },
+                        { id: 'lunges', label: '🏃 Lunges' },
+                        { id: 'plank', label: '🧘 Plank' },
+                        { id: 'jumping_jacks', label: '⭐ Jumping Jacks' },
+                      ].map((ex) => (
+                        <button
+                          key={ex.id}
+                          onClick={() => setSelectedExercise(ex.id as ExerciseType)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                            selectedExercise === ex.id
+                              ? 'bg-[#0085FF] text-white'
+                              : 'bg-slate-100 text-[#64748B] hover:bg-slate-200'
+                          }`}
+                        >
+                          {ex.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
+            )}
 
-            {/* 3. Focus Commitment & Reward Banner */}
+            {/* 3. Choose Duration (Only for standard timer or non-camera workouts) */}
+            {(selectedActivity !== 'workout' || workoutMode === 'timer') && (
+              <div className="arc-card p-5 bg-white">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-bold tracking-wider text-[#64748B] uppercase">
+                    2. Choose Duration
+                  </h3>
+                  <span className="text-[11px] font-bold text-[#FF7A00]">
+                    {isCustomDuration ? `${customDurationInput} mins` : `${durationMins} mins`}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2">
+                  {PRESET_DURATIONS.map((preset) => {
+                    const isSelected = !isCustomDuration && durationMins === preset.mins;
+                    return (
+                      <button
+                        key={preset.mins}
+                        onClick={() => {
+                          setIsCustomDuration(false);
+                          setDurationMins(preset.mins);
+                        }}
+                        className={`py-3 px-2 rounded-2xl flex flex-col items-center justify-center transition-all ${
+                          isSelected
+                            ? 'border-2 border-[#FF7A00] bg-orange-50/40 shadow-sm'
+                            : 'border border-[#E8EEF5] bg-white hover:border-slate-300'
+                        }`}
+                      >
+                        <span
+                          className={`text-sm font-extrabold ${
+                            isSelected ? 'text-[#FF7A00]' : 'text-[#0A192F]'
+                          }`}
+                        >
+                          {preset.label}
+                        </span>
+                        <span className="text-[10px] text-[#94A3B8] font-semibold mt-0.5">
+                          {preset.tag}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Custom slider toggle */}
+                <div className="mt-3 pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
+                  <button
+                    onClick={() => setIsCustomDuration(!isCustomDuration)}
+                    className={`text-xs font-semibold flex items-center gap-1.5 ${
+                      isCustomDuration ? 'text-[#0085FF]' : 'text-[#64748B] hover:text-[#0A192F]'
+                    }`}
+                  >
+                    <span>⏱</span>
+                    <span>{isCustomDuration ? 'Using Custom Time' : 'Set custom minutes...'}</span>
+                  </button>
+
+                  {isCustomDuration && (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="number"
+                        min="5"
+                        max="180"
+                        value={customDurationInput}
+                        onChange={(e) => setCustomDurationInput(e.target.value)}
+                        className="w-16 px-2.5 py-1 text-center font-bold text-xs rounded-lg border border-[#0085FF] text-[#0A192F] focus:outline-none"
+                      />
+                      <span className="text-xs text-[#64748B] font-medium">min</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* 4. Focus Commitment & Reward Banner */}
             <div className="rounded-2xl bg-gradient-to-r from-blue-50/60 to-orange-50/60 border border-slate-200/80 p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center text-lg">
@@ -290,10 +439,12 @@ export default function LockInPage() {
                 </div>
                 <div>
                   <div className="text-xs font-bold text-[#0A192F]">
-                    Earn +{Math.round((isCustomDuration ? parseInt(customDurationInput) || 25 : durationMins) * 0.8)} XP
+                    {selectedActivity === 'workout' && workoutMode === 'camera'
+                      ? 'Earn up to +60 XP for full reps completed'
+                      : `Earn +${Math.round((isCustomDuration ? parseInt(customDurationInput) || 25 : durationMins) * 0.8)} XP`}
                   </div>
                   <div className="text-[11px] text-[#64748B]">
-                    Protects your daily consistency rate
+                    Protects your daily consistency rate & auto-syncs protocol
                   </div>
                 </div>
               </div>
@@ -307,111 +458,122 @@ export default function LockInPage() {
                 className="w-full btn-sunset py-4 text-base font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
               >
                 <span>🔒</span>
-                <span>Lock In Now ({isCustomDuration ? customDurationInput : durationMins} min) →</span>
+                <span>
+                  {selectedActivity === 'workout' && workoutMode === 'camera'
+                    ? 'Launch AI Camera Coach →'
+                    : `Lock In Now (${isCustomDuration ? customDurationInput : durationMins} min) →`}
+                </span>
               </button>
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            STATE 2: ACTIVE FOCUS SESSION (LIVE RUNNING COUNTDOWN)
+            STATE 2: ACTIVE SESSION
            ========================================================================= */}
         {sessionState === 'active' && (
-          <div className="space-y-6 animate-fade-in py-2">
-            {/* Status Pills */}
-            <div className="flex items-center justify-between">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#FF7A00] text-xs font-extrabold tracking-wide uppercase shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-[#FF7A00] animate-ping" />
-                LOCKED IN
-              </div>
-              <span className="text-xs font-bold text-[#64748B]">
-                +{xpEarned} XP on completion
-              </span>
-            </div>
-
-            {/* Activity Focus Header */}
-            <div className="text-center pt-2">
-              <div className="w-16 h-16 rounded-3xl bg-white border border-[#E8EEF5] shadow-md flex items-center justify-center text-3xl mx-auto mb-3">
-                {currentActivityObj.icon}
-              </div>
-              <h2 className="text-2xl font-black font-display text-[#0A192F] tracking-tight">
-                {activeActivityName}
-              </h2>
-              <p className="text-xs font-medium text-[#64748B] mt-1">
-                Deep work in progress. All notifications silenced.
-              </p>
-            </div>
-
-            {/* GIANT COUNTDOWN TIMER DIAL */}
-            <div className="arc-card p-8 bg-white text-center relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
-              {/* Progress Ring / Background Glow */}
-              <div
-                className="absolute inset-0 bg-gradient-to-b from-blue-50/20 via-transparent to-orange-50/30 opacity-70 pointer-events-none"
+          <div className="py-2 animate-fade-in">
+            {selectedActivity === 'workout' && workoutMode === 'camera' ? (
+              /* AI Computer Vision Workout Tracker */
+              <PoseWorkoutTracker
+                initialExercise={selectedExercise}
+                onComplete={handleWorkoutComplete}
+                onClose={() => setSessionState('launcher')}
               />
-
-              <div className="relative z-10 w-full">
-                {/* Time Display */}
-                <div className="font-mono text-6xl sm:text-7xl font-black tracking-tighter text-[#0A192F] py-2">
-                  {formatTime(secondsLeft)}
+            ) : (
+              /* Standard Countdown Timer View */
+              <div className="space-y-6">
+                {/* Status Pills */}
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#FF7A00] text-xs font-extrabold tracking-wide uppercase shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-[#FF7A00] animate-ping" />
+                    LOCKED IN
+                  </div>
+                  <span className="text-xs font-bold text-[#64748B]">
+                    +{xpEarned} XP on completion
+                  </span>
                 </div>
 
-                <div className="text-xs font-bold tracking-widest text-[#94A3B8] uppercase mt-1">
-                  {isPaused ? '⏸ SESSION PAUSED' : 'TIME REMAINING'}
+                {/* Activity Focus Header */}
+                <div className="text-center pt-2">
+                  <div className="w-16 h-16 rounded-3xl bg-white border border-[#E8EEF5] shadow-md flex items-center justify-center text-3xl mx-auto mb-3">
+                    {currentActivityObj.icon}
+                  </div>
+                  <h2 className="text-2xl font-black font-display text-[#0A192F] tracking-tight">
+                    {activeActivityName}
+                  </h2>
+                  <p className="text-xs font-medium text-[#64748B] mt-1">
+                    Deep work in progress. All notifications silenced.
+                  </p>
                 </div>
 
-                {/* Linear Progress Bar */}
-                <div className="w-full bg-slate-100 h-2.5 rounded-full mt-6 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-[#0085FF] via-[#7B61FF] to-[#FF7A00]"
-                    style={{ width: `${progressPercent}%` }}
-                  />
+                {/* COUNTDOWN TIMER DIAL */}
+                <div className="arc-card p-8 bg-white text-center relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
+                  <div className="absolute inset-0 bg-gradient-to-b from-blue-50/20 via-transparent to-orange-50/30 opacity-70 pointer-events-none" />
+
+                  <div className="relative z-10 w-full">
+                    <div className="font-mono text-6xl sm:text-7xl font-black tracking-tighter text-[#0A192F] py-2">
+                      {formatTime(secondsLeft)}
+                    </div>
+
+                    <div className="text-xs font-bold tracking-widest text-[#94A3B8] uppercase mt-1">
+                      {isPaused ? '⏸ SESSION PAUSED' : 'TIME REMAINING'}
+                    </div>
+
+                    <div className="w-full bg-slate-100 h-2.5 rounded-full mt-6 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-[#0085FF] via-[#7B61FF] to-[#FF7A00]"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+
+                    <div className="flex justify-between items-center text-[11px] font-semibold text-[#94A3B8] mt-2">
+                      <span>Elapsed: {formatTime(initialSeconds - secondsLeft)}</span>
+                      <span>{Math.round(progressPercent)}% Done</span>
+                      <span>Total: {formatTime(initialSeconds)}</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex justify-between items-center text-[11px] font-semibold text-[#94A3B8] mt-2">
-                  <span>Elapsed: {formatTime(initialSeconds - secondsLeft)}</span>
-                  <span>{Math.round(progressPercent)}% Done</span>
-                  <span>Total: {formatTime(initialSeconds)}</span>
+                {/* Inspirational Quote Card */}
+                <div className="p-4 rounded-2xl bg-white border border-[#E8EEF5] text-center shadow-sm">
+                  <p className="font-display italic text-xs sm:text-sm text-[#0A192F] font-semibold leading-relaxed">
+                    &ldquo;{MOTIVATIONAL_QUOTES[quoteIndex]}&rdquo;
+                  </p>
+                  <span className="font-handwriting text-base text-[#0085FF] block mt-1">
+                    ~ Stay focused. You are forging your Arc.
+                  </span>
+                </div>
+
+                {/* Active Controls */}
+                <div className="grid grid-cols-3 gap-3 pt-2">
+                  <button
+                    onClick={() => setIsPaused(!isPaused)}
+                    className={`py-3.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 transition ${
+                      isPaused
+                        ? 'bg-emerald-500 text-white shadow-md hover:bg-emerald-600'
+                        : 'bg-slate-100 text-[#0A192F] border border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    <span>{isPaused ? '▶ Resume' : '⏸ Pause'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleAdd5Mins}
+                    className="py-3.5 px-3 rounded-2xl bg-white border border-[#E8EEF5] text-[#0085FF] font-bold text-xs flex items-center justify-center gap-1 hover:border-[#0085FF] transition"
+                  >
+                    <span>+ 5 Min</span>
+                  </button>
+
+                  <button
+                    onClick={() => setSessionState('completed')}
+                    className="py-3.5 px-3 rounded-2xl bg-orange-50 border border-orange-200 text-[#FF7A00] font-bold text-xs flex items-center justify-center gap-1 hover:bg-orange-100 transition"
+                  >
+                    <span>✓ Finish</span>
+                  </button>
                 </div>
               </div>
-            </div>
-
-            {/* Inspirational Quote Card */}
-            <div className="p-4 rounded-2xl bg-white border border-[#E8EEF5] text-center shadow-sm">
-              <p className="font-display italic text-xs sm:text-sm text-[#0A192F] font-semibold leading-relaxed">
-                &ldquo;{MOTIVATIONAL_QUOTES[quoteIndex]}&rdquo;
-              </p>
-              <span className="font-handwriting text-base text-[#0085FF] block mt-1">
-                ~ Stay focused. You are forging your Arc.
-              </span>
-            </div>
-
-            {/* Active Controls */}
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              <button
-                onClick={() => setIsPaused(!isPaused)}
-                className={`py-3.5 px-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-1.5 transition ${
-                  isPaused
-                    ? 'bg-emerald-500 text-white shadow-md hover:bg-emerald-600'
-                    : 'bg-slate-100 text-[#0A192F] border border-slate-200 hover:bg-slate-200'
-                }`}
-              >
-                <span>{isPaused ? '▶ Resume' : '⏸ Pause'}</span>
-              </button>
-
-              <button
-                onClick={handleAdd5Mins}
-                className="py-3.5 px-3 rounded-2xl bg-white border border-[#E8EEF5] text-[#0085FF] font-bold text-xs flex items-center justify-center gap-1 hover:border-[#0085FF] transition"
-              >
-                <span>+ 5 Min</span>
-              </button>
-
-              <button
-                onClick={() => setSessionState('completed')}
-                className="py-3.5 px-3 rounded-2xl bg-orange-50 border border-orange-200 text-[#FF7A00] font-bold text-xs flex items-center justify-center gap-1 hover:bg-orange-100 transition"
-              >
-                <span>✓ Finish</span>
-              </button>
-            </div>
+            )}
           </div>
         )}
 
@@ -432,7 +594,9 @@ export default function LockInPage() {
                 Discipline <span className="gradient-text">Delivered</span>
               </h1>
               <p className="text-sm text-[#64748B] mt-1.5 max-w-xs mx-auto">
-                You successfully locked in for {activeActivityName}. Another promise kept.
+                {workoutSummary
+                  ? `Completed ${workoutSummary.reps} ${workoutSummary.exercise} with AI form verification.`
+                  : `You successfully locked in for ${activeActivityName}. Another promise kept.`}
               </p>
             </div>
 
@@ -444,12 +608,23 @@ export default function LockInPage() {
                   {currentActivityObj.icon} {activeActivityName}
                 </span>
               </div>
+
+              {workoutSummary && (
+                <div className="flex justify-between items-center py-3 border-b border-[#F1F5F9]">
+                  <span className="text-xs text-[#64748B] font-semibold">Verified Reps</span>
+                  <span className="text-xs font-bold text-emerald-600">
+                    {workoutSummary.reps} {workoutSummary.exercise}
+                  </span>
+                </div>
+              )}
+
               <div className="flex justify-between items-center py-3 border-b border-[#F1F5F9]">
                 <span className="text-xs text-[#64748B] font-semibold">Duration Locked</span>
                 <span className="text-xs font-bold text-[#0A192F]">
-                  {formatTime(initialSeconds - secondsLeft)}
+                  {durationLockedDisplay}
                 </span>
               </div>
+
               <div className="flex justify-between items-center pt-3">
                 <span className="text-xs text-[#64748B] font-semibold">XP Earned</span>
                 <span className="text-sm font-extrabold text-[#0085FF]">+{xpEarned} XP ⚡</span>
@@ -465,7 +640,10 @@ export default function LockInPage() {
                 <span>Return to Home Dashboard →</span>
               </Link>
               <button
-                onClick={() => setSessionState('launcher')}
+                onClick={() => {
+                  setWorkoutSummary(null);
+                  setSessionState('launcher');
+                }}
                 className="text-xs font-bold text-[#64748B] hover:text-[#0A192F] transition block mx-auto"
               >
                 Start another session
