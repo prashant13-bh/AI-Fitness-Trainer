@@ -218,7 +218,7 @@ export default function TodayPage() {
 
               <div className="space-y-2.5">
                 {habits.map((habit) => {
-                  const Icon = habit.icon;
+                  const Icon = habit.icon || Zap;
                   return (
                     <div
                       key={habit.id}
