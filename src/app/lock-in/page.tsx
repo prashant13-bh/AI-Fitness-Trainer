@@ -82,6 +82,24 @@ export default function LockInPage() {
     xp: number;
   } | null>(null);
 
+  // Read query params if arriving from direct 'Start AI Workout' links
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const act = params.get('activity') as FocusActivity | null;
+      if (act && ACTIVITIES.some((a) => a.id === act)) {
+        setSelectedActivity(act);
+        if (act === 'workout') {
+          setWorkoutMode('camera');
+        }
+      }
+      const ex = params.get('exercise') as ExerciseType | null;
+      if (ex && ['pushups', 'squats', 'lunges', 'plank', 'jumping_jacks'].includes(ex)) {
+        setSelectedExercise(ex);
+      }
+    }
+  }, []);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Handle active countdown for timer mode

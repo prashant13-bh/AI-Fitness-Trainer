@@ -241,13 +241,24 @@ export default function TodayPage() {
                         </div>
 
                         <div>
-                          <h3
-                            className={`text-xs sm:text-sm font-bold tracking-tight ${
-                              habit.completed ? 'line-through text-[#64748B]' : 'text-[#0A192F]'
-                            }`}
-                          >
-                            {habit.title}
-                          </h3>
+                          <div className="flex items-center gap-2">
+                            <h3
+                              className={`text-xs sm:text-sm font-bold tracking-tight ${
+                                habit.completed ? 'line-through text-[#64748B]' : 'text-[#0A192F]'
+                              }`}
+                            >
+                              {habit.title}
+                            </h3>
+                            {habit.title.toLowerCase().includes('workout') && !habit.completed && (
+                              <Link
+                                href="/lock-in?activity=workout"
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-[#FF7A00] border border-orange-200 text-[10px] font-extrabold transition shadow-xs"
+                              >
+                                <span>📷 AI Coach →</span>
+                              </Link>
+                            )}
+                          </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[9px] sm:text-[10px] font-black tracking-wide text-[#0085FF] uppercase">
                               {habit.category}
@@ -278,7 +289,7 @@ export default function TodayPage() {
           </div>
 
           {/* ── RIGHT COLUMN: QUICK ACTIONS & INSIGHTS (lg:col-span-5) ── */}
-          <div className="lg:col-span-5 space-y-5">
+          <div className="lg:col-span-5 space-y-4">
             {/* LOCK IN TODAY ACTION */}
             <Link
               href="/lock-in"
@@ -297,6 +308,32 @@ export default function TodayPage() {
                 </div>
               </div>
               <ArrowRight className="w-5 h-5" />
+            </Link>
+
+            {/* DIRECT AI CAMERA WORKOUT CARD */}
+            <Link
+              href="/lock-in?activity=workout"
+              className="w-full p-4 rounded-2xl bg-white border border-[#E8EEF5] hover:border-[#0085FF] hover:shadow-md transition flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#0085FF] flex items-center justify-center text-xl shrink-0 group-hover:bg-[#0085FF] group-hover:text-white transition-colors">
+                  📷
+                </div>
+                <div>
+                  <div className="text-xs font-extrabold text-[#0A192F] flex items-center gap-1.5">
+                    <span>AI Webcam Form Coach</span>
+                    <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                      LIVE
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-[#64748B]">
+                    Real-time MoveNet posture & rep counter
+                  </div>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-[#0085FF] group-hover:translate-x-0.5 transition-transform">
+                Start →
+              </span>
             </Link>
 
             {/* TODAY'S PROMISE CARD */}
