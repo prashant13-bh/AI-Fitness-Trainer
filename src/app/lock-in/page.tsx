@@ -21,6 +21,20 @@ const PoseWorkoutTracker = dynamic(
   }
 );
 
+// Dynamically import PythonStreamView for MediaPipe bridge
+const PythonStreamView = dynamic(
+  () => import('@/components/trainer/PythonStreamView'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="arc-card p-12 bg-white flex flex-col items-center justify-center space-y-3 text-center">
+        <div className="w-10 h-10 rounded-full border-3 border-[#0085FF] border-t-transparent animate-spin" />
+        <p className="text-xs font-bold text-[#64748B]">Connecting to Python MediaPipe Engine...</p>
+      </div>
+    ),
+  }
+);
+
 type FocusActivity = 'workout' | 'reading' | 'study' | 'deepwork' | 'meditation' | 'custom';
 
 interface ActivityOption {
@@ -61,7 +75,7 @@ export default function LockInPage() {
 
   // Launcher Config
   const [selectedActivity, setSelectedActivity] = useState<FocusActivity>('deepwork');
-  const [workoutMode, setWorkoutMode] = useState<'camera' | 'timer'>('camera');
+  const [workoutMode, setWorkoutMode] = useState<'python' | 'camera' | 'timer'>('python');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseType>('pushups');
   const [customName, setCustomName] = useState('');
   const [durationMins, setDurationMins] = useState(45);
@@ -90,7 +104,7 @@ export default function LockInPage() {
       if (act && ACTIVITIES.some((a) => a.id === act)) {
         setSelectedActivity(act);
         if (act === 'workout') {
-          setWorkoutMode('camera');
+          setWorkoutMode('python');
         }
       }
       const ex = params.get('exercise') as ExerciseType | null;
@@ -300,10 +314,34 @@ export default function LockInPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <button
+                    onClick={() => setWorkoutMode('python')}
+                    className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
+                      workoutMode === 'python'
+                        ? 'border-2 border-[#0085FF] bg-blue-50/50 shadow-sm'
+                        : 'border-[#E8EEF5] hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
+                        🐍
+                      </div>
+                      <span className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-black uppercase">
+                        PYTHON 60 FPS
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#0A192F]">Python MediaPipe</div>
+                      <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
+                        Native 60 FPS, 33 body landmarks, high accuracy form detection.
+                      </p>
+                    </div>
+                  </button>
+
                   <button
                     onClick={() => setWorkoutMode('camera')}
-                    className={`p-4 rounded-2xl text-left border transition-all flex items-start gap-3.5 ${
+                    className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
                       workoutMode === 'camera'
                         ? 'border-2 border-[#0085FF] bg-blue-50/40 shadow-sm'
                         : 'border-[#E8EEF5] hover:border-slate-300'
@@ -313,21 +351,16 @@ export default function LockInPage() {
                       📷
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-[#0A192F] flex items-center gap-1.5">
-                        <span>AI Webcam Form Coach</span>
-                        <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.2 rounded font-black">
-                          FEATURED
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">
-                        MoveNet pose detection, live skeleton overlay, audio rep count, & form warnings.
+                      <div className="text-xs font-bold text-[#0A192F]">Browser Camera</div>
+                      <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
+                        In-browser MoveNet detector without external scripts.
                       </p>
                     </div>
                   </button>
 
                   <button
                     onClick={() => setWorkoutMode('timer')}
-                    className={`p-4 rounded-2xl text-left border transition-all flex items-start gap-3.5 ${
+                    className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
                       workoutMode === 'timer'
                         ? 'border-2 border-[#FF7A00] bg-orange-50/40 shadow-sm'
                         : 'border-[#E8EEF5] hover:border-slate-300'
@@ -338,15 +371,15 @@ export default function LockInPage() {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-[#0A192F]">Standard Timer</div>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">
-                        Countdown focus timer for outdoor runs, gym lifts, or mobility blocks.
+                      <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
+                        Countdown focus timer for outdoor runs or gym lifts.
                       </p>
                     </div>
                   </button>
                 </div>
 
-                {/* If Camera Mode, select default exercise */}
-                {workoutMode === 'camera' && (
+                {/* If Camera or Python Mode, select default exercise */}
+                {workoutMode !== 'timer' && (
                   <div className="mt-4 pt-3 border-t border-[#F1F5F9]">
                     <span className="text-[11px] font-bold text-[#64748B] block mb-2">
                       Select Starting Exercise:
@@ -477,8 +510,10 @@ export default function LockInPage() {
               >
                 <span>🔒</span>
                 <span>
-                  {selectedActivity === 'workout' && workoutMode === 'camera'
-                    ? 'Launch AI Camera Coach →'
+                  {selectedActivity === 'workout' && workoutMode === 'python'
+                    ? 'Launch Python MediaPipe Coach →'
+                    : selectedActivity === 'workout' && workoutMode === 'camera'
+                    ? 'Launch Browser Camera Coach →'
                     : `Lock In Now (${isCustomDuration ? customDurationInput : durationMins} min) →`}
                 </span>
               </button>
@@ -491,8 +526,16 @@ export default function LockInPage() {
            ========================================================================= */}
         {sessionState === 'active' && (
           <div className="py-2 animate-fade-in">
-            {selectedActivity === 'workout' && workoutMode === 'camera' ? (
-              /* AI Computer Vision Workout Tracker */
+            {selectedActivity === 'workout' && workoutMode === 'python' ? (
+              /* Python MediaPipe Video & WebSocket Tracker */
+              <PythonStreamView
+                initialExercise={selectedExercise}
+                onComplete={handleWorkoutComplete}
+                onClose={() => setSessionState('launcher')}
+                onFallbackToBrowser={() => setWorkoutMode('camera')}
+              />
+            ) : selectedActivity === 'workout' && workoutMode === 'camera' ? (
+              /* In-Browser MoveNet Workout Tracker */
               <PoseWorkoutTracker
                 initialExercise={selectedExercise}
                 onComplete={handleWorkoutComplete}
