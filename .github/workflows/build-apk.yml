@@ -1,0 +1,89 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build & Package Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Build Next.js Static Export
+        run: npm run build
+
+      - name: Sync Capacitor Android Project
+        run: npx cap sync android
+
+      - name: Accept Android SDK Licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Build Android Debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: Copy & Rename APK
+        run: |
+          mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/AI-Fitness-Trainer.apk
+          echo "APK successfully generated at build-output/AI-Fitness-Trainer.apk"
+          ls -lh build-output/
+
+      - name: Upload APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AI-Fitness-Trainer-APK
+          path: build-output/AI-Fitness-Trainer.apk
+          retention-days: 30
+
+      - name: Publish Direct Download Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: android-apk-latest
+          name: "AI Fitness Trainer Android APK (Latest)"
+          body: |
+            ## 🚀 AI Fitness Trainer - Android APK
+            
+            **Direct Download:**
+            Download `AI-Fitness-Trainer.apk` below and install it directly on your Android phone!
+            
+            ### Included Features:
+            - 🎯 **Winter Arc 90-Day Challenge Dashboard & Habit Tracker**
+            - 📷 **Real-Time Camera AI Exercise Coach & Pose Detection** (Squats, Pushups, Jumping Jacks)
+            - 🗣️ **Live Audio Feedback & Rep Counter**
+            - ⏱️ **Lock-In Focus Protocols & Deep Work Timers**
+            - 📊 **Progress Visualizer & Supabase Cloud Sync**
+            
+            *Built automatically via GitHub Actions & Capacitor.*
+          files: build-output/AI-Fitness-Trainer.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
