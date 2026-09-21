@@ -40,22 +40,33 @@ export default function OnboardingPage() {
   // Load existing profile or authenticated user details on mount
   useEffect(() => {
     const existing = getUserProfile();
-    if (existing.name) {
+    const activeName = userData?.name || user?.user_metadata?.full_name || '';
+    const activeEmail = userData?.email || user?.email || '';
+
+    // Prioritize currently active authenticated session info over stale storage
+    if (activeName) {
+      setName(activeName);
+    } else if (existing.name) {
       setName(existing.name);
-    } else if (userData?.name) {
-      setName(userData.name);
     }
 
-    if (existing.email) {
+    if (activeEmail) {
+      setEmail(activeEmail);
+    } else if (existing.email) {
       setEmail(existing.email);
-    } else if (user?.email) {
-      setEmail(user.email);
     }
 
     if (existing.identity) setIdentityText(existing.identity);
     if (existing.duration) setDuration(existing.duration);
     if (existing.focusAreas?.length) setFocusAreas(existing.focusAreas);
-    if (existing.signature) setSignature(existing.signature);
+
+    // CRITICAL: Prevent signature leak. A signature is a solemn personal pledge.
+    // If this is a new onboarding or user switched, start signature completely blank.
+    if (existing.isSetupComplete && existing.signature && existing.email === (activeEmail || existing.email)) {
+      setSignature(existing.signature);
+    } else {
+      setSignature('');
+    }
   }, [user, userData]);
 
   const toggleFocusArea = (area: string) => {

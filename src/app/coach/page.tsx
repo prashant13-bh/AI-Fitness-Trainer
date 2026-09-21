@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Send, Bot, User, ArrowRight } from 'lucide-react';
-import { getUserProfile } from '@/lib/userProfile';
+import { getUserProfile, calculateChallengeDay } from '@/lib/userProfile';
 
 import { getCoachResponse } from '@/lib/coachEngine';
 
@@ -16,13 +16,14 @@ interface ChatMessage {
 
 export default function CoachPage() {
   const profile = getUserProfile();
+  const dayInfo = calculateChallengeDay(profile.startDate, profile.duration);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       sender: 'coach',
-      text: `Good morning ${profile.name ? profile.name.split(' ')[0] : 'Athlete'}! You're on Day 17 of ${profile.duration} with an 8-day streak and 82% consistency. Your body habits (cold shower, workout) are rock-solid. Let's make sure you protect your 90-minute deep work window today. How are your energy levels right now?`,
+      text: `Good morning ${profile.name ? profile.name.split(' ')[0] : 'Athlete'}! You're on Day ${dayInfo.currentDay} of ${profile.duration} with an active discipline commitment. Let's make sure you protect your non-negotiables and focus blocks today. How are your energy levels right now?`,
       time: '09:00 AM',
     },
   ]);
@@ -62,9 +63,9 @@ export default function CoachPage() {
     setTimeout(async () => {
       const replyText = await getCoachResponse(text, {
         identityStatement: profile.identity,
-        currentDay: 17,
-        consistency: 82,
-        streak: 8,
+        currentDay: dayInfo.currentDay,
+        consistency: 90,
+        streak: dayInfo.currentDay,
       });
 
       const coachMsg: ChatMessage = {
@@ -216,12 +217,12 @@ export default function CoachPage() {
                 <div>
                   <div className="text-xs font-bold text-[#64748B]">Arc Execution</div>
                   <div className="text-xl font-black font-display text-[#0A192F]">
-                    Day 17 / {profile.duration}
+                    Day {dayInfo.currentDay} / {profile.duration}
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs font-bold text-[#64748B]">Streak</div>
-                  <div className="text-xl font-black font-display text-[#FF7A00]">8 Days 🔥</div>
+                  <div className="text-xl font-black font-display text-[#FF7A00]">{dayInfo.currentDay} Days 🔥</div>
                 </div>
               </div>
 

@@ -41,6 +41,73 @@ export const DEFAULT_PROFILE: ChallengeProfile = {
 
 const STORAGE_KEY = 'winter_arc_challenge_profile';
 
+export interface ChallengeDayInfo {
+  currentDay: number;
+  totalDays: number;
+  daysRemaining: number;
+  isCompleted: boolean;
+  progressPct: number;
+}
+
+export function calculateChallengeDay(
+  startDateStr?: string,
+  durationDays: number = 90
+): ChallengeDayInfo {
+  const totalDays = Math.max(1, durationDays || 90);
+  const today = new Date();
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  let startMidnight = todayMidnight;
+  if (startDateStr) {
+    const parts = startDateStr.split('-');
+    if (parts.length === 3) {
+      const parsed = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+      if (!isNaN(parsed.getTime())) {
+        startMidnight = parsed;
+      }
+    }
+  }
+
+  const diffTime = todayMidnight.getTime() - startMidnight.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  // If user signed up today, diffDays = 0 -> currentDay = 1
+  // If signed up yesterday, diffDays = 1 -> currentDay = 2
+  const currentDay = Math.min(Math.max(1, diffDays + 1), totalDays);
+  const daysRemaining = Math.max(0, totalDays - currentDay);
+  const isCompleted = diffDays >= totalDays;
+  const progressPct = Math.min(100, Math.round((currentDay / totalDays) * 100));
+
+  return {
+    currentDay,
+    totalDays,
+    daysRemaining,
+    isCompleted,
+    progressPct,
+  };
+}
+
+export function initNewUserProfile(name: string, email: string): ChallengeProfile {
+  const newProfile: ChallengeProfile = {
+    ...DEFAULT_PROFILE,
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    startDate: new Date().toISOString().split('T')[0],
+    signature: '',
+    isSetupComplete: false,
+  };
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(newProfile));
+    } catch (e) {
+      console.error('Failed to init user profile', e);
+    }
+  }
+
+  return newProfile;
+}
+
 export function getUserProfile(): ChallengeProfile {
   if (typeof window === 'undefined') return DEFAULT_PROFILE;
   try {
@@ -74,3 +141,4 @@ export function resetUserProfile(): void {
     console.error('Failed to reset profile', e);
   }
 }
+

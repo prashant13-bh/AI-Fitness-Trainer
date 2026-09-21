@@ -166,7 +166,7 @@
         "name": "APK Binary Archive Integrity",
         "status": "[PASS]",
         "passed": true,
-        "details": "Size: 9.37 MB (9,825,234 bytes)"
+        "details": "Size: 9.37 MB (9,827,350 bytes)"
       },
       {
         "name": "APK Compiled Dalvik Bytecode (.dex)",

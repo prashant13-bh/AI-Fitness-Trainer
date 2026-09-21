@@ -3,9 +3,12 @@
 import React, { useState } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Sparkles } from 'lucide-react';
+import { getUserProfile, calculateChallengeDay } from '@/lib/userProfile';
 
 export default function ProgressPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'habits' | 'goals' | 'badges'>('overview');
+  const profile = getUserProfile();
+  const dayInfo = calculateChallengeDay(profile.startDate, profile.duration);
 
   const weeklyData = [
     { day: 'Mon', score: 80, isTargetMet: true },
@@ -17,21 +20,35 @@ export default function ProgressPage() {
     { day: 'Sun', score: 80, isTargetMet: true },
   ];
 
-  const habitsAnalytics = [
-    { name: 'Morning Cold Shower', category: 'BODY', completed: 16, total: 17, streak: '8d', pct: 94, color: '#0085FF' },
-    { name: 'Strength Workout', category: 'BODY', completed: 14, total: 17, streak: '5d', pct: 82, color: '#FF7A00' },
-    { name: 'Deep Work Session', category: 'CAREER', completed: 13, total: 17, streak: '3d', pct: 76, color: '#7B61FF' },
-    { name: 'Read Non-Fiction', category: 'KNOWLEDGE', completed: 15, total: 17, streak: '6d', pct: 88, color: '#10B981' },
-    { name: 'Clean Nutrition', category: 'BODY', completed: 15, total: 17, streak: '7d', pct: 88, color: '#F59E0B' },
-  ];
+  const currentTotal = dayInfo.currentDay;
+  const habitsAnalytics = (profile.habits && profile.habits.length > 0 ? profile.habits : [
+    { id: '1', title: 'Morning Cold Shower', category: 'BODY' },
+    { id: '2', title: 'Strength Workout', category: 'BODY' },
+    { id: '3', title: 'Deep Work Session', category: 'CAREER' },
+    { id: '4', title: 'Read Non-Fiction', category: 'KNOWLEDGE' },
+    { id: '5', title: 'Clean Nutrition', category: 'BODY' },
+  ]).map((h, idx) => {
+    const colors = ['#0085FF', '#FF7A00', '#7B61FF', '#10B981', '#F59E0B'];
+    const completed = currentTotal === 1 ? 1 : Math.max(1, currentTotal - (idx % 2));
+    const pct = Math.round((completed / currentTotal) * 100);
+    return {
+      name: h.title,
+      category: h.category,
+      completed,
+      total: currentTotal,
+      streak: `${completed}d`,
+      pct,
+      color: colors[idx % colors.length],
+    };
+  });
 
   const badges = [
-    { title: 'Arc Initiated', desc: 'Started your 90-day Winter Arc', icon: '🏔️', unlocked: true },
-    { title: '7-Day Iron Will', desc: 'Maintained an unbroken 7-day streak', icon: '🔥', unlocked: true },
-    { title: 'Cold Shower Beast', desc: '14 days of cold shower discipline', icon: '❄️', unlocked: true },
-    { title: 'Deep Work Master', desc: 'Completed 20+ hours of focused flow', icon: '⚡', unlocked: true },
-    { title: 'Halftime Titan', desc: 'Reach Day 45 of your Arc', icon: '🛡️', unlocked: false },
-    { title: 'Winter Legend', desc: 'Completed the full 90-day Arc', icon: '👑', unlocked: false },
+    { title: 'Arc Initiated', desc: `Started your ${dayInfo.totalDays}-day Winter Arc`, icon: '🏔️', unlocked: true },
+    { title: '7-Day Iron Will', desc: 'Maintained an unbroken 7-day streak', icon: '🔥', unlocked: dayInfo.currentDay >= 7 },
+    { title: 'Cold Shower Beast', desc: '14 days of cold shower discipline', icon: '❄️', unlocked: dayInfo.currentDay >= 14 },
+    { title: 'Deep Work Master', desc: 'Completed 20+ hours of focused flow', icon: '⚡', unlocked: dayInfo.currentDay >= 20 },
+    { title: 'Halftime Titan', desc: `Reach Day ${Math.floor(dayInfo.totalDays / 2)} of your Arc`, icon: '🛡️', unlocked: dayInfo.currentDay >= Math.floor(dayInfo.totalDays / 2) },
+    { title: 'Winter Legend', desc: `Completed the full ${dayInfo.totalDays}-day Arc`, icon: '👑', unlocked: dayInfo.isCompleted },
   ];
 
   return (
@@ -52,7 +69,7 @@ export default function ProgressPage() {
           </div>
           <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-50 text-[#0085FF] text-xs font-bold border border-blue-100 self-start sm:self-auto">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Day 17 / 90</span>
+            <span>Day {dayInfo.currentDay} / {dayInfo.totalDays}</span>
           </div>
         </header>
 

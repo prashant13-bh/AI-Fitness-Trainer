@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { CheckCircle2, Shield, Share2, Flame } from 'lucide-react';
-import { getUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
+import { getUserProfile, calculateChallengeDay, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
+import { Flame, Shield, CheckCircle2, Share2 } from 'lucide-react';
 
 interface DayDetail {
   dayNum: number;
   score: number;
-  status: 'completed' | 'minimum' | 'today' | 'upcoming';
+  status: 'completed' | 'minimum' | 'missed' | 'today' | 'upcoming';
   habitsDone: string[];
   note: string;
 }
@@ -17,38 +17,57 @@ export default function ArcPage() {
   const [profile, setProfile] = useState<ChallengeProfile>(DEFAULT_PROFILE);
   const [activeTab, setActiveTab] = useState<'matrix' | 'contract'>('matrix');
   const [selectedDay, setSelectedDay] = useState<DayDetail | null>(null);
+  const [todayCompletedHabits, setTodayCompletedHabits] = useState<string[]>([]);
 
   useEffect(() => {
-    setProfile(getUserProfile());
+    const p = getUserProfile();
+    setProfile(p);
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    try {
+      const raw = localStorage.getItem(`winter_arc_completed_${todayStr}`);
+      if (raw) setTodayCompletedHabits(JSON.parse(raw));
+    } catch (e) {
+      console.warn('Failed to parse today habits', e);
+    }
   }, []);
 
-  const totalDays = profile.duration || 90;
-  const currentDay = 17;
+  const dayInfo = calculateChallengeDay(profile.startDate, profile.duration);
+  const totalDays = dayInfo.totalDays;
+  const currentDay = dayInfo.currentDay;
 
-  // Generate days based on user's arc duration
+  // Generate days based on user's arc duration and dynamic currentDay
+  const habitTitles = profile.habits?.map((h) => h.title) || ['Cold Shower', 'Workout', 'Deep Work', 'Read', 'Clean Nutrition'];
+  const todayDoneTitles = profile.habits
+    ?.filter((h) => todayCompletedHabits.includes(h.id))
+    ?.map((h) => h.title) || [];
+
   const days: DayDetail[] = Array.from({ length: totalDays }, (_, i) => {
     const dayNum = i + 1;
     if (dayNum < currentDay) {
-      const isMin = dayNum === 3 || dayNum === 7 || dayNum === 13;
+      const isMin = dayNum % 4 === 0;
       return {
         dayNum,
         score: isMin ? 60 : 100,
         status: isMin ? 'minimum' : 'completed',
         habitsDone: isMin
-          ? ['Morning Cold Shower', 'Strength Workout']
-          : ['Morning Cold Shower', 'Strength Workout', 'Deep Work', 'Read Non-Fiction', 'Clean Nutrition'],
+          ? habitTitles.slice(0, 2)
+          : habitTitles,
         note: isMin
           ? 'Challenging recovery day, but kept the minimum standard.'
-          : 'High energy, fully locked in and executed the entire daily protocol.',
+          : 'High energy, fully locked in and executed the daily protocol.',
       };
     }
     if (dayNum === currentDay) {
+      const score = habitTitles.length > 0 ? Math.round((todayDoneTitles.length / habitTitles.length) * 100) : 100;
       return {
         dayNum: currentDay,
-        score: 60,
+        score: score || 60,
         status: 'today',
-        habitsDone: ['Morning Cold Shower', 'Strength Workout', 'Clean Nutrition'],
-        note: 'Active execution today. Deep work session pending.',
+        habitsDone: todayDoneTitles.length > 0 ? todayDoneTitles : habitTitles.slice(0, 2),
+        note: todayDoneTitles.length === habitTitles.length
+          ? 'Full standard completed today! 100% protocol locked.'
+          : 'Active execution today. Habits in progress.',
       };
     }
     return {
@@ -77,14 +96,14 @@ export default function ArcPage() {
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#64748B] mt-0.5">
               Day <span className="text-[#0085FF] font-bold">{currentDay}</span> of {totalDays} ·{' '}
-              <span className="text-[#FF7A00] font-bold">{totalDays - currentDay} days remaining</span>
+              <span className="text-[#FF7A00] font-bold">{dayInfo.daysRemaining} days remaining</span>
             </p>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#FF7A00] shadow-sm">
               <Flame className="w-4 h-4 fill-[#FF7A00]" />
-              <span className="text-xs font-black">16/17 Days (94%)</span>
+              <span className="text-xs font-black">{currentDay} / {totalDays} Days Logged</span>
             </div>
             <button
               onClick={() => setActiveTab(activeTab === 'matrix' ? 'contract' : 'matrix')}
@@ -106,10 +125,10 @@ export default function ArcPage() {
                   DISCIPLINE CONSISTENCY
                 </span>
                 <div className="text-2xl font-black font-display text-[#0085FF] mt-0.5">
-                  16 / 17 Days Logged
+                  {currentDay} / {totalDays} Days Logged
                 </div>
                 <span className="text-xs text-emerald-600 font-bold">
-                  Top 5% execution percentile
+                  {currentDay === 1 ? '100% Day 1 Initiation Active' : 'Consistent execution standard'}
                 </span>
               </div>
 

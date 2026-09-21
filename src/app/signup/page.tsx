@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Sparkles, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { initNewUserProfile } from '@/lib/userProfile';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -27,6 +28,8 @@ export default function SignupPage() {
       setLoading(true);
       setError('');
       await signup(email, password, name);
+      // Initialize pristine profile for this new user, clearing any stale signatures or previous accounts
+      initNewUserProfile(name, email);
       router.push('/onboarding');
     } catch (err: unknown) {
       setError((err as Error)?.message || 'Signup failed.');

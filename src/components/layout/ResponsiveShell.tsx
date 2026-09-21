@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import BottomNav from './BottomNav';
 import { Flame, Calendar, Zap, BarChart3, Bot, User, Sparkles } from 'lucide-react';
-import { getUserProfile } from '@/lib/userProfile';
+import { getUserProfile, calculateChallengeDay } from '@/lib/userProfile';
 
 interface ResponsiveShellProps {
   children: React.ReactNode;
@@ -14,6 +14,7 @@ interface ResponsiveShellProps {
 export default function ResponsiveShell({ children }: ResponsiveShellProps) {
   const pathname = usePathname();
   const profile = getUserProfile();
+  const dayInfo = calculateChallengeDay(profile.startDate, profile.duration);
   const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'A';
 
   const navLinks = [
@@ -43,7 +44,7 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
                 MAXXDADDY.AI
               </span>
               <span className="text-[10px] text-[#64748B] font-semibold mt-1 block">
-                LooksMaxx & BodyMaxx
+                Discipline & Performance
               </span>
             </div>
           </div>
@@ -58,12 +59,12 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
                 <div className="text-xs font-bold text-[#0A192F] truncate">
                   {profile.name || 'Athlete'}
                 </div>
-                <div className="text-[10px] text-[#64748B]">Day 17 / {profile.duration}</div>
+                <div className="text-[10px] text-[#64748B]">Day {dayInfo.currentDay} / {profile.duration}</div>
               </div>
             </div>
             <div className="flex items-center gap-1 text-[10px] font-black text-[#FF7A00] bg-orange-50 px-2 py-0.5 rounded-full shrink-0">
               <Flame className="w-3 h-3 fill-[#FF7A00]" />
-              <span>8D</span>
+              <span>{dayInfo.currentDay}D</span>
             </div>
           </div>
 

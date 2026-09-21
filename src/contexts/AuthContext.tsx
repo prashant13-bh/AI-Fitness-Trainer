@@ -175,8 +175,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('[AuthContext] SignOut error:', e);
+    }
+    setUser(null);
+    setSession(null);
     setUserData(null);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('winter_arc_challenge_profile');
+      } catch (e) {
+        console.warn('Failed to clear profile on logout', e);
+      }
+    }
   };
 
   const resetPassword = async (email: string) => {

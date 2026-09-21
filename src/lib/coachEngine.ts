@@ -7,8 +7,8 @@ export interface CoachContext {
 
 export async function getCoachResponse(message: string, context?: CoachContext): Promise<string> {
   const identity = context?.identityStatement || 'I am forging an elite, disciplined version of myself.';
-  const currentDay = context?.currentDay || 17;
-  const consistency = context?.consistency || 82;
+  const currentDay = context?.currentDay || 1;
+  const consistency = context?.consistency || 90;
 
   const lastMsg = message.toLowerCase();
 
@@ -19,7 +19,7 @@ export async function getCoachResponse(message: string, context?: CoachContext):
   } else if (lastMsg.includes('recover') || lastMsg.includes('miss') || lastMsg.includes('fail')) {
     return `Listen closely: **One missed day is an anomaly. Two missed days is the start of a new, negative habit.**\n\nYou do not need to "make up" lost reps with punishing volume tomorrow. That leads to burnout.\n\nActivate the **Minimum Day Protocol** today. Do 10 pushups, read 5 pages, drink your water. Keep the wire connected. Your identity is: *"${identity}"*. Act like it right now.`;
   } else if (lastMsg.includes('motivate') || lastMsg.includes('truth') || lastMsg.includes('hard')) {
-    return `Here is the reality: Nobody is coming to save you. The cold, dark winter does not care how tired you feel after work.\n\nIn 73 days, you will either stand on the other side of this 90-day Arc with proof that your word is ironclad, or with another excuse to explain away in the mirror.\n\nYou made a commitment to yourself. Honor it today. Step up.`;
+    return `Here is the reality: Nobody is coming to save you. The cold, dark winter does not care how tired you feel after work.\n\nIn ${Math.max(1, 90 - currentDay)} days, you will either stand on the other side of this Arc with proof that your word is ironclad, or with another excuse to explain away in the mirror.\n\nYou made a commitment to yourself. Honor it today. Step up.`;
   } else if (lastMsg.includes('afternoon') || lastMsg.includes('slump')) {
     return `For afternoon brain fog: 1) Drink 500ml cold water with a pinch of sea salt. 2) Take a brisk 7-minute walk outside in natural sunlight. 3) Keep lunch low-carb before deep work. You've got this!`;
   } else if (lastMsg.includes('deep work') || lastMsg.includes('focus')) {

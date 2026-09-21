@@ -5,7 +5,7 @@ import Link from 'next/link';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Flame, Check, Zap, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRight } from 'lucide-react';
 
-import { getUserProfile, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
+import { getUserProfile, calculateChallengeDay, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
 import { logHabitCompletion } from '@/lib/supabase/sync';
 
 interface HabitItem {
@@ -19,6 +19,7 @@ interface HabitItem {
 
 export default function TodayPage() {
   const [profile, setProfile] = useState<ChallengeProfile>(DEFAULT_PROFILE);
+  const dayInfo = calculateChallengeDay(profile.startDate, profile.duration);
 
   const [habits, setHabits] = useState<HabitItem[]>([
     {
@@ -146,15 +147,15 @@ export default function TodayPage() {
               Good Morning, {profile.name ? profile.name.split(' ')[0] : 'Athlete'}
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#64748B] mt-0.5">
-              Day <span className="text-[#0085FF] font-bold">17</span> of {profile.duration} ·{' '}
-              <span className="text-[#FF7A00] font-bold">{profile.duration - 17} days remaining</span>
+              Day <span className="text-[#0085FF] font-bold">{dayInfo.currentDay}</span> of {profile.duration} ·{' '}
+              <span className="text-[#FF7A00] font-bold">{dayInfo.daysRemaining} days remaining</span>
             </p>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#FF7A00] shadow-sm">
               <Flame className="w-4 h-4 fill-[#FF7A00]" />
-              <span className="text-xs font-black tracking-wide">8D STREAK</span>
+              <span className="text-xs font-black tracking-wide">{dayInfo.currentDay}D STREAK</span>
             </div>
             <span className="text-xs font-bold text-[#64748B] bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm">
               Lvl 1 · {xpBonus} XP
@@ -335,7 +336,7 @@ export default function TodayPage() {
                   <span className="text-xs font-black uppercase tracking-wider block">
                     ACTIVE FOCUS TIMER
                   </span>
-                  <span className="text-sm font-black">LOCK IN TODAY (DAY 17)</span>
+                  <span className="text-sm font-black">LOCK IN TODAY (DAY {dayInfo.currentDay})</span>
                 </div>
               </div>
               <ArrowRight className="w-5 h-5" />
