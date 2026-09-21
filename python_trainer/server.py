@@ -63,6 +63,21 @@ def health():
     }
 
 
+@app.get("/stats")
+def get_stats():
+    """Returns current real-time exercise telemetry via REST."""
+    return {
+        "exercise": engine.status.exercise,
+        "reps": engine.status.reps,
+        "stage": engine.status.stage,
+        "angle": engine.status.angle,
+        "feedback": engine.status.feedback,
+        "form_quality": engine.status.form_quality,
+        "hold_seconds": engine.status.hold_seconds,
+    }
+
+
+
 @app.post("/set_exercise")
 def set_exercise(req: ExerciseRequest):
     engine.set_exercise(req.exercise)

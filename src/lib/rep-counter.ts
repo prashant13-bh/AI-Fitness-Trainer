@@ -5,7 +5,15 @@ export interface Keypoint {
   name?: string;
 }
 
-export type ExerciseType = 'pushups' | 'squats' | 'lunges' | 'plank' | 'jumping_jacks';
+export type ExerciseType =
+  | 'pushups'
+  | 'diamond_pushups'
+  | 'squats'
+  | 'lunges'
+  | 'bicep_curls'
+  | 'glute_bridges'
+  | 'plank'
+  | 'jumping_jacks';
 
 export interface RepState {
   count: number;
