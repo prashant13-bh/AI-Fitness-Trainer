@@ -5,6 +5,8 @@ import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Send, Bot, User, ArrowRight } from 'lucide-react';
 import { getUserProfile } from '@/lib/userProfile';
 
+import { getCoachResponse } from '@/lib/coachEngine';
+
 interface ChatMessage {
   id: string;
   sender: 'coach' | 'user';
@@ -56,19 +58,14 @@ export default function CoachPage() {
     setInputText('');
     setIsTyping(true);
 
-    // Simulate intelligent coach reply
-    setTimeout(() => {
-      let replyText = `Remember ${profile.name.split(' ')[0] || 'Prashant'}: action creates motivation, not the other way around. Step into the arena, execute the first 5 minutes, and momentum will take over.`;
-      const lower = text.toLowerCase();
-      if (lower.includes('afternoon') || lower.includes('slump')) {
-        replyText = "For afternoon brain fog: 1) Drink 500ml cold water with a pinch of sea salt. 2) Take a brisk 7-minute walk outside in natural sunlight. 3) Keep lunch low-carb before deep work. You've got this!";
-      } else if (lower.includes('review') || lower.includes('consistency')) {
-        replyText = "Your 7-day average is 85.7%, which puts you in the top 5% of all Winter Arc practitioners. Your only slight vulnerability is Wednesday afternoon focus. Guard that slot strictly.";
-      } else if (lower.includes('deep work') || lower.includes('focus')) {
-        replyText = "Put your phone in another room or switch to Do Not Disturb. Use our 'Lock In' timer for 45 or 90 minutes. Remember: single-tasking builds elite mental muscle.";
-      } else if (lower.includes('cold shower')) {
-        replyText = "The cold shower isn't about the temperature — it's about the conscious decision to do the hard thing when your brain begs for comfort. Step in without hesitating for 3 seconds.";
-      }
+    // Call unified coach intelligence engine
+    setTimeout(async () => {
+      const replyText = await getCoachResponse(text, {
+        identityStatement: profile.identity,
+        currentDay: 17,
+        consistency: 82,
+        streak: 8,
+      });
 
       const coachMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -79,7 +76,7 @@ export default function CoachPage() {
 
       setMessages((prev) => [...prev, coachMsg]);
       setIsTyping(false);
-    }, 850);
+    }, 600);
   };
 
   return (

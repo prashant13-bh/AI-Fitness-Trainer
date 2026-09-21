@@ -24,6 +24,8 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "android/**",
+    "python_trainer/**",
     "next-env.d.ts",
     "node_modules/**",
   ]),
