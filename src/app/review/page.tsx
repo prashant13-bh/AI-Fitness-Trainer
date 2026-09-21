@@ -12,6 +12,39 @@ export default function ReviewPage() {
   const [adjustmentText, setAdjustmentText] = useState('Leave phone in another room starting at 1:00 PM.');
   const [isLockedIn, setIsLockedIn] = useState(false);
 
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('winter_arc_weekly_review');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.wins) setWinsText(parsed.wins);
+        if (parsed.leaks) setLeaksText(parsed.leaks);
+        if (parsed.adjustment) setAdjustmentText(parsed.adjustment);
+        if (parsed.isLockedIn) setIsLockedIn(parsed.isLockedIn);
+      }
+    } catch (e) {
+      console.warn('Failed to load saved review', e);
+    }
+  }, []);
+
+  const handleLockIn = () => {
+    setIsLockedIn(true);
+    try {
+      localStorage.setItem(
+        'winter_arc_weekly_review',
+        JSON.stringify({
+          wins: winsText,
+          leaks: leaksText,
+          adjustment: adjustmentText,
+          isLockedIn: true,
+          lockedAt: new Date().toISOString(),
+        })
+      );
+    } catch (e) {
+      console.warn('Failed to save review', e);
+    }
+  };
+
   return (
     <ResponsiveShell>
       <div className="w-full max-w-6xl mx-auto py-6 px-4 lg:px-8 pb-28 lg:pb-12 select-none">
@@ -152,7 +185,7 @@ export default function ReviewPage() {
               {/* Submit / Lock-In Button */}
               {!isLockedIn ? (
                 <button
-                  onClick={() => setIsLockedIn(true)}
+                  onClick={handleLockIn}
                   className="w-full btn-sunset py-3.5 text-xs font-extrabold flex items-center justify-center gap-2 shadow-md mt-2"
                 >
                   <Shield className="w-4 h-4" />

@@ -66,6 +66,17 @@ export default function TodayPage() {
   useEffect(() => {
     const user = getUserProfile();
     setProfile(user);
+
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayKey = `winter_arc_completed_${todayStr}`;
+    let savedCompleted: string[] = [];
+    try {
+      const raw = localStorage.getItem(todayKey);
+      if (raw) savedCompleted = JSON.parse(raw);
+    } catch (e) {
+      console.warn('Failed to parse completed habits', e);
+    }
+
     if (user.habits && user.habits.length > 0) {
       setHabits(
         user.habits.map((h) => {
@@ -80,7 +91,7 @@ export default function TodayPage() {
             title: h.title,
             category: h.category,
             target: h.target,
-            completed: false,
+            completed: savedCompleted.includes(h.id),
             icon,
           };
         })
@@ -91,22 +102,35 @@ export default function TodayPage() {
   const [xpBonus, setXpBonus] = useState(0);
 
   const completedCount = habits.filter((h) => h.completed).length;
-  const scorePercent = Math.round((completedCount / habits.length) * 100);
+  const scorePercent = habits.length > 0 ? Math.round((completedCount / habits.length) * 100) : 0;
 
   const toggleHabit = (id: string) => {
-    setHabits((prev) =>
-      prev.map((h) => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayKey = `winter_arc_completed_${todayStr}`;
+
+    setHabits((prev) => {
+      const updated = prev.map((h) => {
         if (h.id === id) {
           const next = !h.completed;
           if (next) {
             setXpBonus((xp) => xp + 30);
           }
-          logHabitCompletion(id, next, new Date().toISOString().split('T')[0]);
+          logHabitCompletion(id, next, todayStr);
           return { ...h, completed: next };
         }
         return h;
-      })
-    );
+      });
+
+      // Persist completed habit IDs for offline and mobile restart continuity
+      try {
+        const completedIds = updated.filter((h) => h.completed).map((h) => h.id);
+        localStorage.setItem(todayKey, JSON.stringify(completedIds));
+      } catch (e) {
+        console.warn('Failed to save completed habits to localStorage', e);
+      }
+
+      return updated;
+    });
   };
 
   return (
@@ -135,6 +159,13 @@ export default function TodayPage() {
             <span className="text-xs font-bold text-[#64748B] bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-sm">
               Lvl 1 · {xpBonus} XP
             </span>
+            <Link
+              href="/profile"
+              className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center hover:opacity-90 transition shadow-sm"
+              title="Settings & Profile"
+            >
+              {(profile.name || 'P').charAt(0).toUpperCase()}
+            </Link>
           </div>
         </header>
 

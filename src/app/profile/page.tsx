@@ -38,6 +38,25 @@ export default function ProfilePage() {
     }
   };
 
+  const handleExportData = () => {
+    try {
+      const data = {
+        profile,
+        exportedAt: new Date().toISOString(),
+        system: 'Winter Arc Protocol v1.0.0',
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `winter_arc_profile_${(profile.name || 'user').toLowerCase().replace(/\s+/g, '_')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.warn('Failed to export data', e);
+    }
+  };
+
   const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'P';
 
   return (
@@ -282,7 +301,7 @@ export default function ProfilePage() {
                   <span>Recalibrate Challenge</span>
                 </button>
                 <button
-                  onClick={() => alert('Winter Arc protocol data downloaded!')}
+                  onClick={handleExportData}
                   className="flex-1 py-3 rounded-2xl border border-slate-200 text-[#475569] hover:bg-slate-50 text-xs font-bold flex items-center justify-center gap-2 transition"
                 >
                   <Download className="w-3.5 h-3.5" />
