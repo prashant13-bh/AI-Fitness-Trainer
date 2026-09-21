@@ -75,7 +75,8 @@ export default function LockInPage() {
 
   // Launcher Config
   const [selectedActivity, setSelectedActivity] = useState<FocusActivity>('deepwork');
-  const [workoutMode, setWorkoutMode] = useState<'python' | 'camera' | 'timer'>('python');
+  // Default to in-app camera (works seamlessly on mobile Android & web without Python)
+  const [workoutMode, setWorkoutMode] = useState<'python' | 'camera' | 'timer'>('camera');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseType>('pushups');
   const [customName, setCustomName] = useState('');
   const [durationMins, setDurationMins] = useState(45);
@@ -104,7 +105,7 @@ export default function LockInPage() {
       if (act && ACTIVITIES.some((a) => a.id === act)) {
         setSelectedActivity(act);
         if (act === 'workout') {
-          setWorkoutMode('python');
+          setWorkoutMode('camera');
         }
       }
       const ex = params.get('exercise') as ExerciseType | null;
@@ -315,6 +316,32 @@ export default function LockInPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Option 1: Mobile & Web In-App AI Camera (Recommended / Zero Python Required) */}
+                  <button
+                    onClick={() => setWorkoutMode('camera')}
+                    className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
+                      workoutMode === 'camera'
+                        ? 'border-2 border-[#0085FF] bg-blue-50/50 shadow-sm ring-2 ring-blue-500/20'
+                        : 'border-[#E8EEF5] hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
+                        📱
+                      </div>
+                      <span className="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-black uppercase">
+                        MOBILE READY
+                      </span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-[#0A192F]">In-App AI Camera</div>
+                      <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
+                        100% on-device WebGL vision. Runs smoothly on Android phones & browsers without Python.
+                      </p>
+                    </div>
+                  </button>
+
+                  {/* Option 2: Desktop Python MediaPipe Companion */}
                   <button
                     onClick={() => setWorkoutMode('python')}
                     className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
@@ -324,40 +351,22 @@ export default function LockInPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
                         🐍
                       </div>
-                      <span className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-black uppercase">
-                        PYTHON 60 FPS
+                      <span className="text-[9px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-black uppercase">
+                        DESKTOP PC ONLY
                       </span>
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-[#0A192F]">Python MediaPipe</div>
+                      <div className="text-xs font-bold text-[#0A192F]">Desktop Python Engine</div>
                       <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
-                        Native 60 FPS, 33 body landmarks, high accuracy form detection.
+                        Connects to local PC MediaPipe server (<code className="text-[10px]">python server.py</code>) via WebSocket.
                       </p>
                     </div>
                   </button>
 
-                  <button
-                    onClick={() => setWorkoutMode('camera')}
-                    className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
-                      workoutMode === 'camera'
-                        ? 'border-2 border-[#0085FF] bg-blue-50/40 shadow-sm'
-                        : 'border-[#E8EEF5] hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-[#0085FF] text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
-                      📷
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-[#0A192F]">Browser Camera</div>
-                      <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
-                        In-browser MoveNet detector without external scripts.
-                      </p>
-                    </div>
-                  </button>
-
+                  {/* Option 3: Standard Timer */}
                   <button
                     onClick={() => setWorkoutMode('timer')}
                     className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
@@ -372,7 +381,7 @@ export default function LockInPage() {
                     <div>
                       <div className="text-xs font-bold text-[#0A192F]">Standard Timer</div>
                       <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
-                        Countdown focus timer for outdoor runs or gym lifts.
+                        Countdown focus timer for outdoor runs or gym weightlifting.
                       </p>
                     </div>
                   </button>
@@ -511,9 +520,9 @@ export default function LockInPage() {
                 <span>🔒</span>
                 <span>
                   {selectedActivity === 'workout' && workoutMode === 'python'
-                    ? 'Launch Python MediaPipe Coach →'
+                    ? 'Launch Desktop Python Coach (PC Only) →'
                     : selectedActivity === 'workout' && workoutMode === 'camera'
-                    ? 'Launch Browser Camera Coach →'
+                    ? 'Launch In-App AI Coach (Mobile Ready) →'
                     : `Lock In Now (${isCustomDuration ? customDurationInput : durationMins} min) →`}
                 </span>
               </button>

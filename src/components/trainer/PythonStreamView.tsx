@@ -232,9 +232,12 @@ export default function PythonStreamView({
               🐍
             </div>
             <div>
-              <h3 className="text-xl font-black">Python MediaPipe Engine Ready</h3>
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider mb-2">
+                Desktop PC Mode
+              </div>
+              <h3 className="text-xl font-black">Desktop Python Server</h3>
               <p className="text-xs text-slate-300 mt-1">
-                For rock-solid 60 FPS body tracking with MediaPipe, run the Python server in your terminal:
+                Python mode is for Desktop PC developers. On mobile devices or Android APK, use the On-Device In-App Camera.
               </p>
             </div>
 
@@ -245,22 +248,22 @@ export default function PythonStreamView({
             </div>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button
-                onClick={() => window.open('http://localhost:8000', '_blank')}
-                className="btn-sunset py-2.5 px-4 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md"
-              >
-                <span>Check Server Connection</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </button>
-
               {onFallbackToBrowser && (
                 <button
                   onClick={onFallbackToBrowser}
-                  className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition"
+                  className="btn-sunset py-2.5 px-4 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md"
                 >
-                  Use Browser Camera Mode Instead
+                  <span>📱 Switch to In-App Camera (Mobile)</span>
                 </button>
               )}
+
+              <button
+                onClick={() => window.open('http://localhost:8000', '_blank')}
+                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5"
+              >
+                <span>Check Desktop Server</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
         )}
