@@ -70,7 +70,7 @@ export default function SignupPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Prashant Hiremath"
+                  placeholder="Enter your full name"
                   className="w-full text-xs text-[#0A192F] bg-slate-50 border border-slate-200 rounded-xl py-3 pl-9 pr-3 focus:outline-none focus:border-[#0085FF]"
                 />
               </div>
@@ -86,7 +86,7 @@ export default function SignupPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="prashant@example.com"
+                  placeholder="name@example.com"
                   className="w-full text-xs text-[#0A192F] bg-slate-50 border border-slate-200 rounded-xl py-3 pl-9 pr-3 focus:outline-none focus:border-[#0085FF]"
                 />
               </div>
@@ -117,12 +117,18 @@ export default function SignupPage() {
             </button>
           </form>
 
-          <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col items-center gap-2 text-center">
             <Link
               href="/login"
               className="text-xs font-bold text-[#0085FF] hover:underline"
             >
               Already have an account? Sign In →
+            </Link>
+            <Link
+              href="/onboarding"
+              className="text-[11px] font-semibold text-[#64748B] hover:text-[#0A192F]"
+            >
+              Continue without account (Offline Athlete) →
             </Link>
           </div>
         </div>

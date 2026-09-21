@@ -14,7 +14,7 @@ interface ResponsiveShellProps {
 export default function ResponsiveShell({ children }: ResponsiveShellProps) {
   const pathname = usePathname();
   const profile = getUserProfile();
-  const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'P';
+  const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'A';
 
   const navLinks = [
     { label: 'Today', href: '/today', icon: Flame },
@@ -56,7 +56,7 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-bold text-[#0A192F] truncate">
-                  {profile.name || 'Prashant Hiremath'}
+                  {profile.name || 'Athlete'}
                 </div>
                 <div className="text-[10px] text-[#64748B]">Day 17 / {profile.duration}</div>
               </div>

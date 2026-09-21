@@ -96,12 +96,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── Auth actions ──────────────────────────────────────────────
 
   const login = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const isPlaceholder =
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder.supabase.co');
+
+    if (isPlaceholder) {
+      const mockUser = {
+        id: 'usr_' + Math.random().toString(36).substring(2, 9),
+        email,
+        user_metadata: { email },
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      } as unknown as User;
+      setUser(mockUser);
+      setUserData({
+        id: mockUser.id,
+        name: email.split('@')[0],
+        email,
+        created_at: new Date().toISOString(),
+      } as unknown as UserRow);
+      return;
+    }
+
+    const { error, data } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    if (data?.user) {
+      setUser(data.user);
+    }
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
+    const isPlaceholder =
+      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder.supabase.co');
+
+    if (isPlaceholder) {
+      const mockUser = {
+        id: 'usr_' + Math.random().toString(36).substring(2, 9),
+        email,
+        user_metadata: { full_name: name, name },
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+      } as unknown as User;
+      setUser(mockUser);
+      setUserData({
+        id: mockUser.id,
+        name,
+        email,
+        created_at: new Date().toISOString(),
+      } as unknown as UserRow);
+      return;
+    }
+
+    const { error, data } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -109,6 +158,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
     });
     if (error) throw error;
+    if (data?.user) {
+      setUser(data.user);
+    }
     // The DB trigger (handle_new_user) auto-creates the public.users row
   };
 

@@ -22,7 +22,7 @@ export default function CoachPage() {
     {
       id: '1',
       sender: 'coach',
-      text: `Good morning ${profile.name.split(' ')[0] || 'Prashant'}! You're on Day 17 of ${profile.duration} with an 8-day streak and 82% consistency. Your body habits (cold shower, workout) are rock-solid. Let's make sure you protect your 90-minute deep work window today. How are your energy levels right now?`,
+      text: `Good morning ${profile.name ? profile.name.split(' ')[0] : 'Athlete'}! You're on Day 17 of ${profile.duration} with an 8-day streak and 82% consistency. Your body habits (cold shower, workout) are rock-solid. Let's make sure you protect your 90-minute deep work window today. How are your energy levels right now?`,
       time: '09:00 AM',
     },
   ]);

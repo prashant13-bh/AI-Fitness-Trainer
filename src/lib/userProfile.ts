@@ -19,8 +19,8 @@ export interface ChallengeProfile {
 }
 
 export const DEFAULT_PROFILE: ChallengeProfile = {
-  name: 'Prashant Hiremath',
-  email: 'prashant@example.com',
+  name: '',
+  email: '',
   identity: 'disciplined, strong and focused.',
   duration: 90,
   startDate: new Date().toISOString().split('T')[0],
@@ -35,7 +35,7 @@ export const DEFAULT_PROFILE: ChallengeProfile = {
   morningAlarm: '07:00 AM',
   eveningReview: '09:30 PM',
   quietHours: true,
-  signature: 'Prashant Hiremath',
+  signature: '',
   isSetupComplete: false,
 };
 

@@ -269,7 +269,7 @@ export default function ArcPage() {
 
               <div className="space-y-3 text-xs text-[#475569] leading-relaxed border-t border-b border-slate-100 py-3.5">
                 <p className="font-semibold text-[#0A192F]">
-                  “I, {profile.name || 'Prashant Hiremath'}, solemnly commit to {totalDays} consecutive days of uncompromising personal discipline and deliberate transformation.”
+                  “I, {profile.name || 'Candidate'}, solemnly commit to {totalDays} consecutive days of uncompromising personal discipline and deliberate transformation.”
                 </p>
 
                 <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-100 text-xs">
@@ -287,7 +287,7 @@ export default function ArcPage() {
                     Digital Signature
                   </span>
                   <div className="font-handwriting text-2xl text-[#0085FF] select-none -rotate-2 mt-0.5">
-                    {profile.signature || profile.name || 'Prashant Hiremath'}
+                    {profile.signature || profile.name || 'Awaiting Signature'}
                   </div>
                   <span className="text-[10px] text-[#64748B] block mt-0.5">
                     Started: {profile.startDate || 'Day 1'}

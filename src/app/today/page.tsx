@@ -143,7 +143,7 @@ export default function TodayPage() {
               PROTOCOL EXECUTION
             </span>
             <h1 className="text-2xl sm:text-3xl font-black font-display text-[#0A192F] tracking-tight mt-0.5">
-              Good Morning, {profile.name.split(' ')[0] || 'Prashant'}
+              Good Morning, {profile.name ? profile.name.split(' ')[0] : 'Athlete'}
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#64748B] mt-0.5">
               Day <span className="text-[#0085FF] font-bold">17</span> of {profile.duration} ·{' '}
@@ -164,7 +164,7 @@ export default function TodayPage() {
               className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-white font-black text-xs flex items-center justify-center hover:opacity-90 transition shadow-sm"
               title="Settings & Profile"
             >
-              {(profile.name || 'P').charAt(0).toUpperCase()}
+              {(profile.name || 'A').charAt(0).toUpperCase()}
             </Link>
           </div>
         </header>

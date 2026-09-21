@@ -3,19 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { getUserProfile, saveUserProfile } from '@/lib/userProfile';
 import { syncProfileToSupabase } from '@/lib/supabase/sync';
 import { Check, Shield, Plus, AlertCircle } from 'lucide-react';
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { user, userData } = useAuth();
 
   // Wizard Steps: 1: Welcome | 2: Account & Identity | 3: Challenge Setup | 4: Daily Habits | 5: Notifications | 6: Covenant & Launch
   const [step, setStep] = useState<number>(1);
 
-  // Form State
-  const [name, setName] = useState('Prashant Hiremath');
-  const [email, setEmail] = useState('prashant@example.com');
+  // Form State - Empty by default so users enter their own real details
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [identityText, setIdentityText] = useState('disciplined, strong and focused.');
   const [duration, setDuration] = useState<number>(90);
   const [focusAreas, setFocusAreas] = useState<string[]>(['Body', 'Mind', 'Career', 'Knowledge']);
@@ -32,19 +34,29 @@ export default function OnboardingPage() {
   const [morningAlarm, setMorningAlarm] = useState('07:00 AM');
   const [eveningReview, setEveningReview] = useState('09:30 PM');
   const [quietHours, setQuietHours] = useState(true);
-  const [signature, setSignature] = useState('Prashant Hiremath');
+  const [signature, setSignature] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Load existing profile on mount
+  // Load existing profile or authenticated user details on mount
   useEffect(() => {
     const existing = getUserProfile();
-    if (existing.name) setName(existing.name);
-    if (existing.email) setEmail(existing.email);
+    if (existing.name) {
+      setName(existing.name);
+    } else if (userData?.name) {
+      setName(userData.name);
+    }
+
+    if (existing.email) {
+      setEmail(existing.email);
+    } else if (user?.email) {
+      setEmail(user.email);
+    }
+
     if (existing.identity) setIdentityText(existing.identity);
     if (existing.duration) setDuration(existing.duration);
     if (existing.focusAreas?.length) setFocusAreas(existing.focusAreas);
     if (existing.signature) setSignature(existing.signature);
-  }, []);
+  }, [user, userData]);
 
   const toggleFocusArea = (area: string) => {
     setFocusAreas((prev) =>
@@ -75,6 +87,10 @@ export default function OnboardingPage() {
   const handleNextFromAccount = () => {
     if (!name.trim()) {
       setErrorMsg('Please enter your full name');
+      return;
+    }
+    if (!email.trim() || !email.includes('@')) {
+      setErrorMsg('Please enter a valid email address');
       return;
     }
     if (!identityText.trim()) {
@@ -288,20 +304,20 @@ export default function OnboardingPage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Prashant Hiremath"
+                    placeholder="Enter your full name"
                     className="w-full text-xs font-semibold text-[#0A192F] bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-[#0085FF]"
                   />
                 </div>
 
                 <div>
                   <label className="text-xs font-bold text-[#0A192F] block mb-1">
-                    Email Address (for backup & notifications)
+                    Email Address (for backup & notifications) *
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. prashant@example.com"
+                    placeholder="name@example.com"
                     className="w-full text-xs font-semibold text-[#0A192F] bg-slate-50 border border-slate-200 rounded-xl p-3 focus:outline-none focus:border-[#0085FF]"
                   />
                 </div>
@@ -709,7 +725,7 @@ export default function OnboardingPage() {
                     type="text"
                     value={signature}
                     onChange={(e) => setSignature(e.target.value)}
-                    placeholder="e.g. Prashant Hiremath"
+                    placeholder="Type your full name to sign"
                     className="w-full font-handwriting text-xl text-[#0085FF] bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-[#0085FF]"
                   />
                 </div>

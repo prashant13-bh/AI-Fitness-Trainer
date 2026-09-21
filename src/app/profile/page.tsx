@@ -57,7 +57,7 @@ export default function ProfilePage() {
     }
   };
 
-  const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'P';
+  const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'A';
 
   return (
     <ResponsiveShell>
@@ -103,9 +103,9 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-black text-[#0A192F]">
-                    {profile.name || 'Prashant Hiremath'}
+                    {profile.name || 'Athlete'}
                   </h2>
-                  <p className="text-xs text-[#64748B]">{profile.email || 'prashant@example.com'}</p>
+                  <p className="text-xs text-[#64748B]">{profile.email || 'No email registered'}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-[10px] font-bold text-[#0085FF] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
                       Day 17 of {profile.duration}
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                 <div>
                   <span className="text-[10px] text-[#64748B] block">Signed by</span>
                   <span className="font-handwriting text-2xl text-[#0085FF]">
-                    {profile.signature || profile.name || 'Prashant Hiremath'}
+                    {profile.signature || profile.name || 'Unsigned'}
                   </span>
                 </div>
                 <div className="text-right">
