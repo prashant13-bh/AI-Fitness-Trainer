@@ -35,15 +35,15 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
           <div className="flex items-center gap-3 pb-6 border-b border-slate-100">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#0085FF] via-[#7B61FF] to-[#FF7A00] p-0.5 shadow-md shrink-0">
               <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center text-lg font-black text-[#0085FF]">
-                ❄️
+                ⚡
               </div>
             </div>
             <div>
               <span className="text-xs font-black tracking-widest text-[#0085FF] uppercase block leading-none">
-                WINTER ARC
+                MAXXDADDY.AI
               </span>
               <span className="text-[10px] text-[#64748B] font-semibold mt-1 block">
-                90 Days of Discipline
+                LooksMaxx & BodyMaxx
               </span>
             </div>
           </div>

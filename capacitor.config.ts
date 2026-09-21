@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.aifitnesstrainer.app',
-  appName: 'AI Fitness Trainer',
+  appName: 'MaxxDaddy.ai',
   webDir: 'out',
   server: {
     androidScheme: 'https',

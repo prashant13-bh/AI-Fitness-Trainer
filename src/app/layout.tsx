@@ -3,13 +3,13 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'Winter Arc — Become who you said you\'d become',
-  description: '90 days. One promise. A different you. Track your Arc, build daily habits, and transform with AI coaching.',
+  title: 'MaxxDaddy.ai — LooksMaxx, BodyMaxx & Winter Arc Protocol',
+  description: 'MaxxDaddy.ai: Real-time AI pose coaching, looksmax ratio scans, body transformation, and 90-day winter arc protocols.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Winter Arc',
+    title: 'MaxxDaddy.ai',
   },
 };
 

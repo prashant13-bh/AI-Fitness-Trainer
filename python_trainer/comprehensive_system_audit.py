@@ -226,7 +226,9 @@ def run_agent_5():
     manifest_path = os.path.join(ROOT_DIR, "android", "app", "src", "main", "AndroidManifest.xml")
     cap_config_path = os.path.join(ROOT_DIR, "capacitor.config.ts")
     build_gradle_path = os.path.join(ROOT_DIR, "android", "app", "build.gradle")
-    apk_path = os.path.join(ROOT_DIR, "AI-Fitness-Trainer.apk")
+    apk_path = os.path.join(ROOT_DIR, "MaxxDaddy.ai.apk")
+    if not os.path.exists(apk_path):
+        apk_path = os.path.join(ROOT_DIR, "AI-Fitness-Trainer.apk")
 
     # Test 5.1: AndroidManifest exists & contains permissions
     with open(manifest_path, "r", encoding="utf-8") as f:
@@ -241,12 +243,18 @@ def run_agent_5():
     record_test(agent, "AndroidManifest Audio & Internet Permissions", has_audio and has_internet, "RECORD_AUDIO & INTERNET configured")
     record_test(agent, "Hardware WebGL Acceleration Flag", has_hw_accel, "android:hardwareAccelerated='true'")
 
-    # Test 5.2: Capacitor Config verification
+    # Test 5.2: Capacitor Config & Android Strings Name verification
     with open(cap_config_path, "r", encoding="utf-8") as f:
         cap_config = f.read()
     
-    valid_cap = "com.aifitnesstrainer.app" in cap_config and "webDir: 'out'" in cap_config
-    record_test(agent, "Capacitor AppId & WebDir Target", valid_cap, "AppId: com.aifitnesstrainer.app, WebDir: out")
+    strings_path = os.path.join(ROOT_DIR, "android", "app", "src", "main", "res", "values", "strings.xml")
+    with open(strings_path, "r", encoding="utf-8") as f:
+        strings_xml = f.read()
+
+    valid_cap = "MaxxDaddy.ai" in cap_config and "webDir: 'out'" in cap_config
+    valid_strings = "MaxxDaddy.ai" in strings_xml
+    record_test(agent, "Capacitor & Android Strings MaxxDaddy.ai Name", valid_cap and valid_strings,
+                "Official App Name: MaxxDaddy.ai configured across Capacitor & Android strings.xml")
 
     # Test 5.3: Android Gradle Java 21 compilation
     with open(build_gradle_path, "r", encoding="utf-8") as f:

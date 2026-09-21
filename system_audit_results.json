@@ -151,10 +151,10 @@
         "details": "android:hardwareAccelerated='true'"
       },
       {
-        "name": "Capacitor AppId & WebDir Target",
+        "name": "Capacitor & Android Strings MaxxDaddy.ai Name",
         "status": "[PASS]",
         "passed": true,
-        "details": "AppId: com.aifitnesstrainer.app, WebDir: out"
+        "details": "Official App Name: MaxxDaddy.ai configured across Capacitor & Android strings.xml"
       },
       {
         "name": "Android Gradle Java 21 Toolchain",
@@ -166,7 +166,7 @@
         "name": "APK Binary Archive Integrity",
         "status": "[PASS]",
         "passed": true,
-        "details": "Size: 9.37 MB (9,823,982 bytes)"
+        "details": "Size: 9.37 MB (9,825,234 bytes)"
       },
       {
         "name": "APK Compiled Dalvik Bytecode (.dex)",

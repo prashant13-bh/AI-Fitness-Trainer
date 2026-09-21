@@ -54,38 +54,42 @@ jobs:
       - name: Copy & Rename APK
         run: |
           mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/MaxxDaddy.ai.apk
           cp android/app/build/outputs/apk/debug/app-debug.apk build-output/AI-Fitness-Trainer.apk
-          echo "APK successfully generated at build-output/AI-Fitness-Trainer.apk"
+          echo "APK successfully generated at build-output/MaxxDaddy.ai.apk"
           ls -lh build-output/
 
       - name: Upload APK as Workflow Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AI-Fitness-Trainer-APK
-          path: build-output/AI-Fitness-Trainer.apk
+          name: MaxxDaddy-AI-APK
+          path: build-output/MaxxDaddy.ai.apk
           retention-days: 30
 
       - name: Publish Direct Download Release
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: android-apk-v1.0
-          name: "AI Fitness Trainer Android APK (v1.0)"
+          tag_name: maxxdaddy-v1.0
+          name: "MaxxDaddy.ai Android APK (v1.0)"
           make_latest: true
           body: |
-            ## 🚀 AI Fitness Trainer - Android APK
+            ## 👑 MaxxDaddy.ai - LooksMaxx, BodyMaxx & Winter Arc Platform
 
             **Direct Download:**
-            Download `AI-Fitness-Trainer.apk` below and install it directly on your Android mobile device!
+            Download `MaxxDaddy.ai.apk` below and install it directly on your Android mobile device!
 
-            ### Included Features:
-            - 🎯 **Winter Arc 90-Day Challenge Dashboard & Habit Tracker**
-            - 📷 **Real-Time Camera AI Exercise Coach & Pose Detection** (Squats, Pushups, Jumping Jacks)
-            - 🗣️ **Live Audio Feedback & Rep Counter**
-            - ⏱️ **Lock-In Focus Protocols & Deep Work Timers**
-            - 📊 **Progress Visualizer & Supabase Cloud Sync**
+            ### Core Capabilities:
+            - 👑 **MaxxDaddy.ai Aesthetics & LooksMaxx Platform**
+            - 🎯 **90-Day Winter Arc Transformation Protocol & Habit Tracker**
+            - 📱 **Mobile In-App AI Camera** (Real-Time MoveNet + WebGL on mobile GPU - Zero Python required!)
+            - 🗣️ **Live Voice Coaching & Real-Time Biomechanics HUD**
+            - ⏱️ **Lock-In Focus Timer & Deep Work Protocols**
+            - 📊 **Progress Analytics & Offline-First Local Storage**
 
-            *Built automatically via GitHub Actions & Capacitor.*
-          files: build-output/AI-Fitness-Trainer.apk
+            *Compiled automatically via GitHub Actions CI/CD.*
+          files: |
+            build-output/MaxxDaddy.ai.apk
+            build-output/AI-Fitness-Trainer.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

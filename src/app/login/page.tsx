@@ -41,10 +41,10 @@ export default function LoginPage() {
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#0085FF] text-[10px] font-black tracking-widest uppercase">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>WINTER ARC PROTOCOL</span>
+            <span>MAXXDADDY.AI PROTOCOL</span>
           </div>
           <h1 className="text-3xl font-black font-display text-[#0A192F] tracking-tight">
-            Sign In to Your <span className="gradient-text">Arc</span>
+            Sign In to <span className="gradient-text">MaxxDaddy</span>
           </h1>
           <p className="text-xs text-[#64748B]">
             Pick up your daily momentum and discipline score.
