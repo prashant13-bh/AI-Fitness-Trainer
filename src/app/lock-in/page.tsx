@@ -6,6 +6,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { logHabitCompletion } from '@/lib/supabase/sync';
 import { ExerciseType } from '@/lib/rep-counter';
+import { focusAudio, AmbientSoundType } from '@/lib/focusAudio';
 
 // Dynamically import PoseWorkoutTracker with SSR disabled to guarantee zero SSR crashes
 const PoseWorkoutTracker = dynamic(
@@ -35,7 +36,7 @@ const PythonStreamView = dynamic(
   }
 );
 
-type FocusActivity = 'workout' | 'reading' | 'study' | 'deepwork' | 'meditation' | 'custom';
+type FocusActivity = 'workout' | 'reading' | 'study' | 'deepwork' | 'coldshower' | 'mealprep' | 'meditation' | 'custom';
 
 interface ActivityOption {
   id: FocusActivity;
@@ -46,12 +47,13 @@ interface ActivityOption {
 }
 
 const ACTIVITIES: ActivityOption[] = [
-  { id: 'deepwork', name: 'Deep Work', icon: '💻', desc: 'High output, coding, or writing', color: '#0085FF' },
-  { id: 'workout', name: 'Workout', icon: '🏋️', desc: 'Strength, cardio, or mobility', color: '#FF7A00' },
-  { id: 'reading', name: 'Reading', icon: '📖', desc: 'Non-fiction or study books', color: '#7B61FF' },
-  { id: 'study', name: 'Study / Learn', icon: '🧠', desc: 'Skill acquisition or courses', color: '#10B981' },
-  { id: 'meditation', name: 'Stillness', icon: '🧘', desc: 'Breathwork, calm, reflection', color: '#EC4899' },
-  { id: 'custom', name: 'Custom Goal', icon: '🎯', desc: 'Name your specific focus', color: '#6366F1' },
+  { id: 'deepwork', name: 'Senior Dev Deep Work', icon: '💻', desc: 'Code architecture, agent engineering & problem solving', color: '#0085FF' },
+  { id: 'workout', name: 'Gym Beast Mode', icon: '🏋️', desc: 'Push / Pull / Legs hypertrophy & calisthenics', color: '#FF7A00' },
+  { id: 'coldshower', name: 'Cold Shower & Breath', icon: '🚿', desc: '5:30 AM Wim Hof reset & nervous reboot', color: '#06B6D4' },
+  { id: 'mealprep', name: 'NK Veg Fuel Prep', icon: '🌾', desc: 'Jowar bhakri, sprouted usli, taak, paneer', color: '#EAB308' },
+  { id: 'reading', name: 'Knowledge & Mastery', icon: '📖', desc: 'Clean architecture, AI systems & nutrition', color: '#7B61FF' },
+  { id: 'meditation', name: 'Evening Wind-down', icon: '🧘', desc: 'Screen-free reset, skin recovery & 9:30 PM bed', color: '#EC4899' },
+  { id: 'custom', name: 'Custom Goal', icon: '🎯', desc: 'Define your personal high-focus mission', color: '#6366F1' },
 ];
 
 const PRESET_DURATIONS = [
@@ -89,6 +91,10 @@ export default function LockInPage() {
   const [isPaused, setIsPaused] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
+  // Ambient Focus Audio State
+  const [ambientSound, setAmbientSound] = useState<AmbientSoundType>('none');
+  const [ambientVolume, setAmbientVolume] = useState<number>(0.5);
+
   // Workout Tracker Result State
   const [workoutSummary, setWorkoutSummary] = useState<{
     exercise: ExerciseType;
@@ -117,6 +123,23 @@ export default function LockInPage() {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Sync ambient sound with active state and volume
+  useEffect(() => {
+    if (sessionState === 'active' && !isPaused && ambientSound !== 'none') {
+      focusAudio.startSound(ambientSound);
+      focusAudio.setVolume(ambientVolume);
+    } else {
+      focusAudio.stop();
+    }
+    return () => {
+      focusAudio.stop();
+    };
+  }, [sessionState, isPaused, ambientSound]);
+
+  useEffect(() => {
+    focusAudio.setVolume(ambientVolume);
+  }, [ambientVolume]);
+
   // Handle active countdown for timer mode
   useEffect(() => {
     if (sessionState === 'active' && !isPaused && (selectedActivity !== 'workout' || workoutMode === 'timer')) {
@@ -124,6 +147,8 @@ export default function LockInPage() {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timerRef.current!);
+            focusAudio.stop();
+            focusAudio.playCompletionBell();
             setSessionState('completed');
             return 0;
           }
@@ -613,6 +638,53 @@ export default function LockInPage() {
                   <span className="font-handwriting text-base text-[#0085FF] block mt-1">
                     ~ Stay focused. You are forging your Arc.
                   </span>
+                </div>
+
+                {/* Ambient Focus Audio Engine */}
+                <div className="arc-card p-4 bg-white border border-[#E8EEF5] shadow-sm rounded-2xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-black uppercase text-[#0085FF] tracking-wider flex items-center gap-1.5">
+                      <span>🎧</span> Bruce Focus Synthesizer
+                    </span>
+                    <span className="text-[10px] text-[#64748B] font-bold">
+                      {ambientSound === 'none' ? 'Muted' : `${Math.round(ambientVolume * 100)}% Volume`}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5 mb-2.5">
+                    {[
+                      { id: 'none', label: '🔇 Silent' },
+                      { id: 'gamma', label: '🧠 40Hz Gamma' },
+                      { id: 'alpha', label: '🌊 Alpha Flow' },
+                      { id: 'brown', label: '🌧️ Brown Noise' },
+                    ].map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => setAmbientSound(s.id as AmbientSoundType)}
+                        className={`py-2 px-1 rounded-xl text-[10px] font-black transition text-center ${
+                          ambientSound === s.id
+                            ? 'bg-[#0A192F] text-white shadow-sm'
+                            : 'bg-slate-100 text-[#64748B] hover:bg-slate-200'
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                  {ambientSound !== 'none' && (
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-xs">🔈</span>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={ambientVolume}
+                        onChange={(e) => setAmbientVolume(parseFloat(e.target.value))}
+                        className="w-full accent-[#0085FF] cursor-pointer"
+                      />
+                      <span className="text-xs">🔊</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Active Controls */}

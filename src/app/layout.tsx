@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
+import ServiceWorkerRegister from '@/components/pwa/ServiceWorkerRegister';
 
 export const metadata: Metadata = {
   title: 'Bruce Glow-Up 2027 — Winter Arc & Transformation Protocol',
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body suppressHydrationWarning className="bg-[#F8FAFC] text-[#0A192F]">
         <AuthProvider>
+          <ServiceWorkerRegister />
           {children}
         </AuthProvider>
       </body>

@@ -8,6 +8,8 @@ import {
   ChevronLeft, ChevronRight, ZoomIn, X, Award,
   Target, BarChart3, Activity, Eye,
 } from 'lucide-react';
+import BeforeAfterSlider from '@/components/progress/BeforeAfterSlider';
+
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -308,7 +310,7 @@ function PhotoGallery({ photos, onClose }: {
 export default function ProgressPage() {
   const [records, setRecords] = useState<DayRecord[]>([]);
   const [showGallery, setShowGallery] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'weight' | 'skin' | 'streaks' | 'badges' | 'gallery'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'weight' | 'skin' | 'compare' | 'streaks' | 'badges' | 'gallery'>('overview');
   const [weekOffset, setWeekOffset] = useState(0);
 
   const currentDay = getCurrentArcDay();
@@ -427,6 +429,7 @@ export default function ProgressPage() {
             { key: 'overview', label: '📊 Overview' },
             { key: 'weight',   label: '⚖️ Weight' },
             { key: 'skin',     label: '✨ Skin' },
+            { key: 'compare',  label: '⚡ Compare' },
             { key: 'streaks',  label: '🔥 Streaks' },
             { key: 'badges',   label: '🏆 Badges' },
             { key: 'gallery',  label: '📸 Gallery' },
@@ -737,6 +740,13 @@ export default function ProgressPage() {
           </div>
         )}
 
+        {/* ═══ COMPARE TAB ═══ */}
+        {activeTab === 'compare' && (
+          <div className="space-y-4">
+            <BeforeAfterSlider photos={allPhotos} />
+          </div>
+        )}
+
         {/* ═══ STREAKS TAB ═══ */}
         {activeTab === 'streaks' && (
           <div className="space-y-4">
@@ -869,6 +879,9 @@ export default function ProgressPage() {
                 );
               })}
             </div>
+
+            {/* Before / After Transformation Split Slider */}
+            <BeforeAfterSlider photos={allPhotos} />
 
             {allPhotos.length > 0 ? (
               <>

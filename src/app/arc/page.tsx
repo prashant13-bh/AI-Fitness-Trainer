@@ -10,6 +10,8 @@ import {
   BarChart3, Share2, Play, Pause, RotateCcw, Download,
 } from 'lucide-react';
 import { exportAllDataBackup } from '@/lib/backupEngine';
+import { soundEffects } from '@/lib/feedbackAudio';
+
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -516,6 +518,7 @@ function WorkoutSection({ workout, dayData, updateData }: {
   }, [isTimerRunning, restSecondsLeft]);
 
   const toggleEx = (i: number) => {
+    soundEffects.playTick();
     updateData({ completedExercises: { ...dayData.completedExercises, [`ex_${i}`]: !dayData.completedExercises[`ex_${i}`] } });
   };
 
@@ -720,6 +723,7 @@ function MealSection({ meals, dayData, updateData }: {
   const targetProtein = meals.reduce((a, m) => a + m.protein, 0);
 
   const toggleMeal = (i: number) => {
+    soundEffects.playTick();
     updateData({ completedMeals: { ...dayData.completedMeals, [`meal_${i}`]: !dayData.completedMeals[`meal_${i}`] } });
   };
 
@@ -782,21 +786,30 @@ function MealSection({ meals, dayData, updateData }: {
             {/* Quick Action Buttons */}
             <div className="grid grid-cols-3 gap-2 mt-3 pt-2 border-t border-slate-100">
               <button
-                onClick={() => updateData({ waterGlasses: (dayData.waterGlasses || 0) + 1 })}
+                onClick={() => {
+                  soundEffects.playWaterDrop();
+                  updateData({ waterGlasses: (dayData.waterGlasses || 0) + 1 });
+                }}
                 className="py-2 px-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#0085FF] text-[11px] font-black transition flex items-center justify-center gap-1 active:scale-95"
               >
                 <span>+250ml</span>
                 <span className="text-[9px] font-bold text-blue-400">(Glass)</span>
               </button>
               <button
-                onClick={() => updateData({ waterGlasses: (dayData.waterGlasses || 0) + 2 })}
+                onClick={() => {
+                  soundEffects.playWaterDrop();
+                  updateData({ waterGlasses: (dayData.waterGlasses || 0) + 2 });
+                }}
                 className="py-2 px-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black transition flex items-center justify-center gap-1 active:scale-95"
               >
                 <span>+500ml</span>
                 <span className="text-[9px] font-bold text-emerald-500">(Bottle)</span>
               </button>
               <button
-                onClick={() => updateData({ waterGlasses: Math.max(0, (dayData.waterGlasses || 0) - 1) })}
+                onClick={() => {
+                  soundEffects.playWaterDrop();
+                  updateData({ waterGlasses: Math.max(0, (dayData.waterGlasses || 0) - 1) });
+                }}
                 className="py-2 px-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-black transition flex items-center justify-center gap-1 active:scale-95"
               >
                 <span>-250ml</span>
@@ -867,6 +880,7 @@ function SkinSection({ dayData, updateData }: {
   const pmDone = PM_SKIN_STEPS.filter(s => dayData.completedSkinSteps[s.id]).length;
 
   const toggleStep = (id: string) => {
+    soundEffects.playTick();
     updateData({ completedSkinSteps: { ...dayData.completedSkinSteps, [id]: !dayData.completedSkinSteps[id] } });
   };
 
