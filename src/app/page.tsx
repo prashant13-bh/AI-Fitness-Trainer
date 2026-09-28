@@ -1,33 +1,28 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { getUserProfile } from '@/lib/userProfile';
-import OnboardingPage from './onboarding/page';
-import TodayPage from './today/page';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
-  const [isReady, setIsReady] = useState(false);
-  const [isSetupComplete, setIsSetupComplete] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    const profile = getUserProfile();
-    setIsSetupComplete(Boolean(profile?.isSetupComplete));
-    setIsReady(true);
-  }, []);
+    // Redirect straight to Prashant's personalized Glow-Up 2027 dashboard
+    router.replace('/glowup');
+  }, [router]);
 
-  if (!isReady) {
-    return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#0085FF] border-t-transparent animate-spin" />
+  return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0A192F' }}>
+      <div className="flex flex-col items-center gap-4">
+        <div
+          className="w-16 h-16 rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-2xl"
+          style={{ background: 'linear-gradient(135deg, #0085FF, #7B61FF, #FF7A00)' }}
+        >
+          P
+        </div>
+        <div className="w-8 h-8 rounded-full border-2 border-[#FF7A00] border-t-transparent animate-spin" />
+        <p className="text-[#94A3B8] text-xs font-bold">Loading Prashant's Glow-Up 2027...</p>
       </div>
-    );
-  }
-
-  // If user has not completed setup, show streamlined Details Filling & Challenge Setup
-  if (!isSetupComplete) {
-    return <OnboardingPage />;
-  }
-
-  // Once setup is complete, show the Daily Protocol Dashboard
-  return <TodayPage />;
+    </div>
+  );
 }

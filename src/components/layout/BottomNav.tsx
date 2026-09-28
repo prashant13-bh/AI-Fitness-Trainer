@@ -3,18 +3,19 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Flame, Calendar, Zap, BarChart3, Bot } from 'lucide-react';
+import { Flame, Calendar, Zap, BarChart3, Star } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
     { label: 'Today', href: '/today', icon: Flame },
-    { label: 'Arc', href: '/arc', icon: Calendar },
+    { label: 'Arc Day', href: '/arc', icon: Calendar },
     { label: 'Lock In', href: '/lock-in', icon: Zap, isCenter: true },
     { label: 'Progress', href: '/progress', icon: BarChart3 },
-    { label: 'Coach', href: '/coach', icon: Bot },
+    { label: 'Glow-Up', href: '/glowup', icon: Star },
   ];
+
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-[#E8EEF5] px-4 py-2 select-none shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">

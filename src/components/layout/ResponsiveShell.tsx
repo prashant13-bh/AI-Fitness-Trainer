@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import BottomNav from './BottomNav';
-import { Flame, Calendar, Zap, BarChart3, Bot, User, Sparkles } from 'lucide-react';
+import { Flame, Calendar, Zap, BarChart3, Bot, User, Sparkles, Star, Apple } from 'lucide-react';
 import { getUserProfile, calculateChallengeDay } from '@/lib/userProfile';
 
 interface ResponsiveShellProps {
@@ -18,9 +18,11 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
   const initial = profile.name ? profile.name.charAt(0).toUpperCase() : 'A';
 
   const navLinks = [
+    { label: '🔥 Glow-Up 2027', href: '/glowup', icon: Star },
     { label: 'Today', href: '/today', icon: Flame },
-    { label: 'Arc Matrix', href: '/arc', icon: Calendar },
+    { label: '📅 Arc Day Planner', href: '/arc', icon: Calendar },
     { label: 'Lock In', href: '/lock-in', icon: Zap, isSpecial: true },
+    { label: '🌾 NK Veg Diet (Bruce)', href: '/nk-diet', icon: Apple },
     { label: 'Progress & Analytics', href: '/progress', icon: BarChart3 },
     { label: 'AI Coach', href: '/coach', icon: Bot },
     { label: 'Weekly Review', href: '/review', icon: Sparkles },
