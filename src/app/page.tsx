@@ -18,10 +18,10 @@ export default function HomePage() {
           className="w-16 h-16 rounded-3xl flex items-center justify-center text-white text-3xl font-black shadow-2xl"
           style={{ background: 'linear-gradient(135deg, #0085FF, #7B61FF, #FF7A00)' }}
         >
-          P
+          B
         </div>
         <div className="w-8 h-8 rounded-full border-2 border-[#FF7A00] border-t-transparent animate-spin" />
-        <p className="text-[#94A3B8] text-xs font-bold">Loading Prashant's Glow-Up 2027...</p>
+        <p className="text-[#94A3B8] text-xs font-bold">Loading Bruce's Glow-Up 2027...</p>
       </div>
     </div>
   );

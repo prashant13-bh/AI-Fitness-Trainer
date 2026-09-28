@@ -35,9 +35,9 @@ export interface SkinProtocol {
 }
 
 export const PRASHANT_PROFILE = {
-  name: 'Prashant',
+  name: 'Bruce',
   trainingName: 'Bruce',          // Gym alias — used in all training contexts
-  fullName: 'Prashant Hiremath',
+  fullName: 'Bruce',
   dob: '2000-08-13',
   height: 167, // cm
   currentWeight: 70, // kg
@@ -94,7 +94,7 @@ export const GLOW_UP_PHASES: PhaseGoal[] = [
       'Full glass skin routine locked in',
       'Before/After transformation documented',
       'Mental glow-up: confidence, discipline, vision',
-      '🏆 THE PRASHANT GLOW-UP 2027 COMPLETE',
+      '🏆 THE BRUCE GLOW-UP 2027 COMPLETE',
     ],
   },
 ];
@@ -351,12 +351,12 @@ export const NUTRITION_RULES = [
   { rule: 'No Sugar Policy', value: 'Zero refined sugar', why: 'Sugar causes insulin spikes → more acne → slower skin healing.' },
   { rule: 'No Processed Food', value: 'Home-cooked preferred', why: 'Seed oils, additives worsen skin inflammation.' },
   { rule: 'Carbs Timing', value: 'Only before/after workout', why: 'Carbs at night = fat storage. Evening meal = protein + veggies only.' },
-  { rule: 'Skin Foods', value: 'Eggs, Fish, Nuts, Berries, Greens', why: 'Vitamin C, E, Zinc, Omega-3 = skin glow from inside.' },
+  { rule: 'Skin Foods', value: 'Paneer, Soya, Flaxseeds, Walnuts, Amla, Green Leafy Veggies (Methi/Palak), Curd', why: 'Vitamin C, E, Zinc, Omega-3 = skin glow from inside.' },
 ];
 
 // ── REMINDER SCHEDULE ─────────────────────────────────────────
 export const REMINDER_SCHEDULE = [
-  { id: 'r1', time: '05:30', label: '⏰ WAKE UP — Rise & Shine Prashant!', type: 'morning' },
+  { id: 'r1', time: '05:30', label: '⏰ WAKE UP — Rise & Shine Bruce!', type: 'morning' },
   { id: 'r2', time: '05:35', label: '🧴 AM Skin Routine Time', type: 'skin' },
   { id: 'r3', time: '06:20', label: '💪 WORKOUT TIME — No excuses!', type: 'workout' },
   { id: 'r4', time: '08:00', label: '🥗 Breakfast — Hit your 40g protein', type: 'nutrition' },

@@ -129,7 +129,7 @@ function DashboardTab({ completed, onToggle }: { completed: CompletedTasks; onTo
             <div>
               <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest">{greeting}</p>
               <h1 className="text-3xl font-black text-white mt-1 tracking-tight">
-                Prashant 🔥
+                Bruce 🔥
               </h1>
               <p className="text-sm font-semibold text-[#94A3B8] mt-0.5">Glow-Up 2027 — Day {dayNum}</p>
             </div>
@@ -268,7 +268,7 @@ function DashboardTab({ completed, onToggle }: { completed: CompletedTasks; onTo
         style={{ background: 'linear-gradient(135deg, #FF7A00 0%, #FF4500 50%, #CC0000 100%)' }}
       >
         <div className="absolute inset-0 opacity-10 text-[120px] flex items-center justify-center font-black">🔥</div>
-        <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Prashant's Daily Mantra</p>
+        <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Bruce's Daily Mantra</p>
         <p className="text-lg font-black leading-snug">
           "From 92kg to 70kg — I already proved I can. Now I go from 70 to Legendary."
         </p>
@@ -755,7 +755,7 @@ function GoalsTab() {
     <div className="space-y-5">
       {/* TRANSFORMATION TIMELINE */}
       <div className="arc-card p-5">
-        <SectionHeader title="🏆 The 2027 Glow-Up Roadmap" subtitle="Prashant Hiremath · Born 13 Aug 2000" />
+        <SectionHeader title="🏆 The 2027 Glow-Up Roadmap" subtitle="Bruce · Born 13 Aug 2000" />
         <div className="relative pl-8 space-y-5">
           {/* vertical line */}
           <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#0085FF] via-[#7B61FF] to-[#FF7A00] rounded-full" />
@@ -883,6 +883,29 @@ function RemindersTab() {
     } catch {}
   }, []);
 
+  // Audio alarm synthesizer for morning wake-up
+  const playAlarmChime = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      // Upbeat motivating 6-note wake-up chime
+      const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50, 1318.51];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.16);
+        gain.gain.setValueAtTime(0.35, ctx.currentTime + idx * 0.16);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.32);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.16);
+        osc.stop(ctx.currentTime + idx * 0.16 + 0.33);
+      });
+    } catch {}
+  };
+
   // Poll for reminders every minute
   useEffect(() => {
     if (!notifGranted) return;
@@ -892,21 +915,22 @@ function RemindersTab() {
       REMINDER_SCHEDULE.forEach(r => {
         if (activeReminders.has(r.id) && r.time === currentTime) {
           try {
-            new Notification('Prashant — Glow-Up Reminder 🔥', {
+            new Notification('Bruce — Glow-Up Reminder 🔥', {
               body: r.label,
               icon: '/favicon.ico',
-              tag: `prashant_reminder_${r.id}`,
+              tag: `bruce_reminder_${r.id}`,
             });
           } catch {}
         }
       });
-      // Morning alarm
+      // Morning alarm: rings audio chime + push notification
       if (alarmActive && currentTime === '05:30') {
+        playAlarmChime();
         try {
-          new Notification('⏰ WAKE UP PRASHANT!', {
-            body: '5:30 AM — Rise & Shine! Your Glow-Up starts NOW. No snooze allowed! 🔥',
+          new Notification('⏰ WAKE UP BRUCE!', {
+            body: '5:30 AM — Rise & Shine! Your Winter Arc routine starts NOW. No snooze allowed! 🔥',
             icon: '/favicon.ico',
-            tag: 'prashant_morning_alarm',
+            tag: 'bruce_morning_alarm',
           });
         } catch {}
       }
@@ -946,8 +970,9 @@ function RemindersTab() {
     setAlarmActive(next);
     localStorage.setItem('prashant_alarm_active', String(next));
     if (next && notifGranted) {
+      playAlarmChime();
       new Notification('✅ Morning Alarm Set!', {
-        body: 'Your 5:30 AM wake-up alarm is active. Sleep well, Prashant! 🌙',
+        body: 'Your 5:30 AM wake-up alarm is active. Sleep well, Bruce! 🌙',
       });
     }
   };
@@ -1024,6 +1049,18 @@ function RemindersTab() {
             />
           </button>
         </div>
+
+        {/* Audio Preview */}
+        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+          <span className="text-[11px] font-bold text-slate-500">Wake-up audio chime</span>
+          <button
+            onClick={playAlarmChime}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#FF7A00] text-xs font-black transition"
+          >
+            <span>🔊</span>
+            <span>Test Alarm Sound</span>
+          </button>
+        </div>
       </div>
 
       {/* REMINDER CONTROLS */}
@@ -1083,19 +1120,27 @@ function RemindersTab() {
         </div>
       </div>
 
-      {/* TEST NOTIFICATION */}
+      {/* TEST NOTIFICATION & AUDIO */}
       {notifGranted && (
-        <button
-          onClick={() => {
-            new Notification('🔥 Test — Prashant Glow-Up!', {
-              body: 'Notifications are working! You\'ll never miss a routine again.',
-              icon: '/favicon.ico',
-            });
-          }}
-          className="w-full py-3 rounded-2xl border-2 border-dashed border-[#0085FF] text-[#0085FF] text-xs font-black"
-        >
-          🔔 Send Test Notification
-        </button>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => {
+              new Notification('🔥 Test — Bruce Glow-Up!', {
+                body: 'Notifications are working! You\'ll never miss a routine again.',
+                icon: '/favicon.ico',
+              });
+            }}
+            className="py-3 px-2 rounded-2xl border-2 border-dashed border-[#0085FF] text-[#0085FF] text-xs font-black text-center"
+          >
+            🔔 Test Notification
+          </button>
+          <button
+            onClick={playAlarmChime}
+            className="py-3 px-2 rounded-2xl border-2 border-dashed border-[#FF7A00] text-[#FF7A00] text-xs font-black text-center"
+          >
+            🔊 Test Wake Chime
+          </button>
+        </div>
       )}
     </div>
   );
@@ -1147,10 +1192,10 @@ export default function GlowUpPage() {
             className="w-9 h-9 rounded-xl flex items-center justify-center text-white text-base font-black shadow-md"
             style={{ background: 'linear-gradient(135deg, #0085FF, #7B61FF, #FF7A00)' }}
           >
-            P
+            B
           </div>
           <div>
-            <p className="text-xs font-black text-[#0A192F] leading-tight">Prashant's Glow-Up</p>
+            <p className="text-xs font-black text-[#0A192F] leading-tight">Bruce's Glow-Up</p>
             <p className="text-[9px] text-[#94A3B8] font-bold">Day {getDaysSinceOct1()} · Winter Arc 2026</p>
           </div>
         </div>
