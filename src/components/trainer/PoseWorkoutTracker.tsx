@@ -13,6 +13,7 @@ import {
   playWarningTick,
   playCelebrationSound,
   speakVoiceCue,
+  speakRepCount,
 } from '@/lib/audioFeedback';
 import {
   Volume2,
@@ -312,7 +313,7 @@ export default function PoseWorkoutTracker({
                 if (soundModeRef.current !== 'mute') {
                   playRepBeep();
                   if (soundModeRef.current === 'voice') {
-                    speakVoiceCue(`${nextState.count}`);
+                    speakRepCount(nextState.count, 'Bruce');
                   }
                 }
               } else if (nextState.formQuality === 'warning' && previousState.formQuality !== 'warning') {

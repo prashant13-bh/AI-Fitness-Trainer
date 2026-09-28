@@ -2,8 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Send, Bot, User, ArrowRight, Volume2, Sparkles, Dumbbell, Apple, ShieldAlert, Zap } from 'lucide-react';
+import { Send, Bot, User, ArrowRight, Volume2, Sparkles, Dumbbell, Apple, ShieldAlert, Zap, Mic, MicOff, Square } from 'lucide-react';
 import { getCoachResponse } from '@/lib/coachEngine';
+import { soundEffects } from '@/lib/feedbackAudio';
+
 
 interface ChatMessage {
   id: string;
@@ -29,6 +31,77 @@ export default function CoachPage() {
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+
+  // Hands-free Voice Input (Speech-to-Text)
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition =
+        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setSpeechSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-IN'; // Indian English accent optimized
+
+        recognition.onstart = () => {
+          setIsListening(true);
+          soundEffects.playTick();
+        };
+
+        recognition.onresult = (event: any) => {
+          let currentTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            currentTranscript += event.results[i][0].transcript;
+          }
+          if (currentTranscript) {
+            setInputText(currentTranscript);
+          }
+        };
+
+        recognition.onerror = (event: any) => {
+          console.debug('[SpeechRecognition error]:', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+          soundEffects.playTick();
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {}
+      }
+    };
+  }, []);
+
+  const toggleListening = () => {
+    if (!speechSupported || !recognitionRef.current) return;
+    if (isListening) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.debug('Failed to start speech recognition:', err);
+      }
+    }
+  };
+
 
   const categoryPrompts: Record<string, string[]> = {
     all: [
@@ -265,25 +338,68 @@ export default function CoachPage() {
             </div>
 
             {/* Bottom Input Box */}
-            <div className="p-3 sm:p-4 border-t border-slate-100 bg-white">
+            <div className="border-t border-slate-100 bg-white">
+              {/* Hands-Free Listening Banner */}
+              {isListening && (
+                <div className="px-4 py-2 bg-gradient-to-r from-rose-50 to-orange-50 border-b border-rose-100 flex items-center justify-between text-xs text-rose-700 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+                    <span className="font-bold text-[11px]">🎙️ Listening... Speak naturally to your AI Coach, Bruce</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className="text-[10px] font-black text-rose-600 bg-rose-100 px-2 py-0.5 rounded-lg hover:bg-rose-200"
+                  >
+                    Done Speaking
+                  </button>
+                </div>
+              )}
+
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSend();
                 }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 p-3 sm:p-4"
               >
                 <input
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Ask about workouts, NK veg meals, Betnovate-N skin healing..."
-                  className="flex-1 px-4 py-3 rounded-2xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-[#0085FF] bg-slate-50/50"
+                  placeholder={
+                    isListening
+                      ? 'Listening to your voice, Bruce...'
+                      : 'Ask workouts, NK veg meals, Betnovate-N skin healing...'
+                  }
+                  className={`flex-1 px-4 py-3 rounded-2xl border text-xs sm:text-sm focus:outline-none transition-all ${
+                    isListening
+                      ? 'border-rose-400 bg-rose-50/30 ring-2 ring-rose-200'
+                      : 'border-slate-200 bg-slate-50/50 focus:border-[#0085FF]'
+                  }`}
                 />
+
+                {/* Microphone Speech-to-Text Button */}
+                {speechSupported && (
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className={`p-3 rounded-2xl transition shrink-0 flex items-center justify-center ${
+                      isListening
+                        ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse ring-2 ring-rose-300'
+                        : 'bg-slate-100 text-[#64748B] hover:text-[#0085FF] hover:bg-blue-50 border border-slate-200'
+                    }`}
+                    title={isListening ? 'Stop listening' : 'Speak to AI Coach (Hands-free)'}
+                    aria-label={isListening ? 'Stop voice recording' : 'Start voice recording'}
+                  >
+                    {isListening ? <Square className="w-4 h-4 fill-current" /> : <Mic className="w-4 h-4" />}
+                  </button>
+                )}
+
                 <button
                   type="submit"
                   disabled={!inputText.trim()}
-                  className="btn-sunset px-4 sm:px-6 py-3 rounded-2xl text-xs font-bold disabled:opacity-40 shadow-sm shrink-0"
+                  className="btn-sunset px-4 sm:px-6 py-3 rounded-2xl text-xs font-bold disabled:opacity-40 shadow-sm shrink-0 flex items-center gap-1.5"
                 >
                   <Send className="w-4 h-4" />
                 </button>

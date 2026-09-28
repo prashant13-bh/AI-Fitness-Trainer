@@ -3,6 +3,8 @@
 import React, { useState, useCallback } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Check, ChevronDown, ChevronUp, Flame, Star, Zap } from 'lucide-react';
+import KiranaShoppingList from '@/components/nutrition/KiranaShoppingList';
+
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -623,7 +625,7 @@ export default function NKVegetarianPage() {
   // Map: Mon=0,Tue=1...Sun=6
   const dayMapIndex = todayIndex === 0 ? 6 : todayIndex - 1;
   const [selectedDay, setSelectedDay] = useState(dayMapIndex);
-  const [activeTab, setActiveTab] = useState<'meal' | 'foods' | 'rules'>('meal');
+  const [activeTab, setActiveTab] = useState<'meal' | 'foods' | 'kirana' | 'rules'>('meal');
 
   const plan = WEEKLY_PLAN[selectedDay];
 
@@ -671,10 +673,11 @@ export default function NKVegetarianPage() {
         </div>
 
         {/* ── TABS ── */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
           {[
             { key: 'meal', label: '🍽️ Weekly Plan' },
-            { key: 'foods', label: '💪 NK Superfoods' },
+            { key: 'foods', label: '💪 Superfoods' },
+            { key: 'kirana', label: '🛒 Kirana Supply' },
             { key: 'rules', label: '📋 Bruce\'s Rules' },
           ].map(t => (
             <button
@@ -862,6 +865,11 @@ export default function NKVegetarianPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* ── KIRANA SUPPLY TAB ── */}
+        {activeTab === 'kirana' && (
+          <KiranaShoppingList />
         )}
 
         {/* ── BRUCE'S RULES TAB ── */}

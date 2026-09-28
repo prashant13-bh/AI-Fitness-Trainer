@@ -18,6 +18,8 @@ import {
   Bell, BellOff, Check, ChevronDown, ChevronUp, Target,
   Heart, Zap, Trophy, Sparkles, Clock, Volume2, Calendar,
 } from 'lucide-react';
+import CalendarSyncCard from '@/components/calendar/CalendarSyncCard';
+
 
 // ── Types ──────────────────────────────────────────────────────
 type TabId = 'dashboard' | 'routine' | 'skin' | 'workout' | 'nutrition' | 'goals' | 'reminders';
@@ -294,6 +296,35 @@ function DashboardTab({ completed, onToggle }: { completed: CompletedTasks; onTo
           "From 92kg to 70kg — I already proved I can. Now I go from 70 to Legendary."
         </p>
         <p className="text-xs font-bold mt-2 opacity-70">Winter ARC 2026 → Glow-Up 2027 🏆</p>
+      </div>
+
+      {/* QUICK COMMAND DECK */}
+      <div className="grid grid-cols-2 gap-2.5">
+        <a
+          href="/poster"
+          className="p-3.5 rounded-2xl bg-white border border-[#E8EEF5] hover:border-slate-400 shadow-sm flex items-center gap-2.5 group transition"
+        >
+          <div className="w-8 h-8 rounded-xl bg-orange-50 text-[#FF7A00] flex items-center justify-center text-sm font-black group-hover:scale-105 transition">
+            🖨️
+          </div>
+          <div>
+            <p className="text-xs font-black text-[#0A192F]">A4 Wall Poster</p>
+            <p className="text-[9px] text-[#64748B]">Print for your room</p>
+          </div>
+        </a>
+
+        <a
+          href="/arc"
+          className="p-3.5 rounded-2xl bg-white border border-[#E8EEF5] hover:border-slate-400 shadow-sm flex items-center gap-2.5 group transition"
+        >
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#0085FF] flex items-center justify-center text-sm font-black group-hover:scale-105 transition">
+            📅
+          </div>
+          <div>
+            <p className="text-xs font-black text-[#0A192F]">Arc Day Planner</p>
+            <p className="text-[9px] text-[#64748B]">Log daily workouts</p>
+          </div>
+        </a>
       </div>
     </div>
   );
@@ -1061,6 +1092,9 @@ function RemindersTab({ onTriggerAlarm }: { onTriggerAlarm?: () => void }) {
           </button>
         </div>
       </div>
+
+      {/* CALENDAR ROUTINE & ALARM SYNC */}
+      <CalendarSyncCard />
 
       {/* REMINDER CONTROLS */}
       <div className="arc-card p-5">

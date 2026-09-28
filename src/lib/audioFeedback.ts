@@ -129,3 +129,30 @@ export function speakVoiceCue(text: string, force = false) {
     console.debug('Speech synthesis skipped:', err);
   }
 }
+
+/**
+ * Real-time athletic spoken rep announcement with motivational cues for Bruce
+ */
+export function speakRepCount(count: number, athleteName: string = 'Bruce') {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+  let phrase = `${count}`;
+  if (count === 5) phrase = `Five. Halfway, ${athleteName}!`;
+  else if (count === 8) phrase = `Eight. Stay tight, ${athleteName}!`;
+  else if (count === 10) phrase = `Ten. Greek God power!`;
+  else if (count === 12) phrase = `Twelve. Lock it in!`;
+  else if (count === 15) phrase = `Fifteen. Outstanding, ${athleteName}!`;
+  else if (count === 20) phrase = `Twenty. Beast mode!`;
+
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(phrase);
+    utterance.rate = 1.25;
+    utterance.pitch = 1.05;
+    utterance.volume = 0.95;
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    console.debug('Rep speech skipped:', err);
+  }
+}
+
