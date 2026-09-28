@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Send, Bot, User, ArrowRight, Volume2, Sparkles, Dumbbell, Apple, ShieldAlert, Zap, Mic, MicOff, Square } from 'lucide-react';
 import { getCoachResponse } from '@/lib/coachEngine';
 import { soundEffects } from '@/lib/feedbackAudio';
-
+import { getRealArcDayInfo, formatLiveTime } from '@/lib/realTimeSync';
 
 interface ChatMessage {
   id: string;
@@ -17,14 +17,16 @@ interface ChatMessage {
 
 export default function CoachPage() {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const arcDayInfo = useMemo(() => getRealArcDayInfo(), []);
+  const currentArcDay = arcDayInfo.currentDay;
 
   const [activeCategory, setActiveCategory] = useState<'all' | 'gym' | 'nutrition' | 'skin' | 'mindset'>('all');
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
       sender: 'coach',
-      text: `Welcome, Bruce! 🔥\n\nI am your Personal Senior AI Coach — combining your Gym Trainer, North Karnataka Vegetarian Nutritionist, Dermatological Skin Healer, and Senior Developer accountability partner.\n\nWe are targeting 63kg lean athletic muscle, reversing Betnovate-N hyperpigmentation, and locking in your 5:30 AM discipline. What do you need guidance on right now?`,
-      time: '05:30 AM',
+      text: `Welcome, Bruce! 🔥 (Winter Arc Day ${currentArcDay})\n\nI am your Personal Senior AI Coach — combining your Gym Trainer, North Karnataka Vegetarian Nutritionist, Dermatological Skin Healer, and Senior Developer accountability partner.\n\nWe are targeting 63kg lean athletic muscle, reversing Betnovate-N hyperpigmentation, and locking in your 5:30 AM discipline. What do you need guidance on right now?`,
+      time: 'Live',
     },
   ]);
 
@@ -179,8 +181,8 @@ export default function CoachPage() {
     setIsTyping(true);
 
     const replyText = await getCoachResponse(text, {
-      currentDay: 1,
-      streak: 1,
+      currentDay: currentArcDay,
+      streak: currentArcDay,
       mode: activeCategory,
     });
 
@@ -222,7 +224,7 @@ export default function CoachPage() {
           <div className="flex items-center gap-2 self-start sm:self-auto">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Coach Online · Day 1</span>
+              <span>Coach Online · Day {currentArcDay}</span>
             </div>
           </div>
         </header>

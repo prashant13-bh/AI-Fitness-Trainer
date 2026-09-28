@@ -373,23 +373,48 @@ const NK_MEALS_BY_DAY: NKMeal[][] = [
 // ═══════════════════════════════════════════════════════════════
 // HELPER FUNCTIONS
 // ═══════════════════════════════════════════════════════════════
-function getCurrentArcDay() {
-  const start = new Date('2026-10-01');
+function getCurrentArcDay(): number {
   const today = new Date();
-  const diff = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(1, diff + 1);
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  let startMidnight = todayMidnight; // Default: challenge synced to real current day
+  if (typeof window !== 'undefined') {
+    try {
+      const p = localStorage.getItem('winter_arc_challenge_profile');
+      if (p) {
+        const parsed = JSON.parse(p);
+        if (parsed.startDate) {
+          const parts = parsed.startDate.split('-');
+          if (parts.length === 3) {
+            const parsedStart = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            if (!isNaN(parsedStart.getTime()) && parsedStart <= todayMidnight) {
+              startMidnight = parsedStart;
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  const diffTime = todayMidnight.getTime() - startMidnight.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays + 1);
 }
 
-function getWeekdayForArcDay(arcDay: number): number {
-  // Oct 1, 2026 = Thursday = 4
-  // arcDay 1 = Thursday
-  return (4 + arcDay - 1) % 7; // 0=Sun,1=Mon,...,6=Sat
+function getWeekdayForArcDay(arcDay: number, currentDay: number = getCurrentArcDay()): number {
+  // Real calendar-synced weekday:
+  // When viewing today (arcDay === currentDay), always matches actual today!
+  const today = new Date();
+  const offset = arcDay - currentDay;
+  const targetDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+  return targetDate.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
 }
 
-function getDateForDay(dayNum: number): string {
-  const start = new Date('2026-10-01');
-  start.setDate(start.getDate() + dayNum - 1);
-  return start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
+function getDateForDay(dayNum: number, currentDay: number = getCurrentArcDay()): string {
+  const today = new Date();
+  const offset = dayNum - currentDay;
+  const targetDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
+  return targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'short' });
 }
 
 function getDayKey(dayNum: number) { return `bruce_arc_v2_day_${dayNum}`; }
@@ -1157,7 +1182,7 @@ export default function ArcDayPage() {
     });
   }, [viewDay]);
 
-  const weekday = getWeekdayForArcDay(viewDay);
+  const weekday = getWeekdayForArcDay(viewDay, currentArcDay);
   const workout = WORKOUTS_BY_DAY[weekday];
   const meals = NK_MEALS_BY_DAY[weekday];
 
@@ -1213,7 +1238,7 @@ export default function ArcDayPage() {
                   {isToday && <span className="text-[9px] font-black bg-[#FF7A00] text-white px-2 py-0.5 rounded-full animate-pulse">TODAY</span>}
                   {isFuture && <span className="text-[9px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full">FUTURE</span>}
                 </div>
-                <p className="text-xs font-bold text-white/60">{getDateForDay(viewDay)}</p>
+                <p className="text-xs font-bold text-white/60">{getDateForDay(viewDay, currentArcDay)}</p>
                 <p className="text-[11px] font-bold mt-1" style={{ color: INTENSITY_COLORS[workout.intensity] }}>
                   {workout.name}
                 </p>
@@ -1294,7 +1319,7 @@ export default function ArcDayPage() {
                   const exD = Object.values(dd.completedExercises).filter(Boolean).length;
                   const skinD = Object.values(dd.completedSkinSteps).filter(Boolean).length;
                   const mealD = Object.values(dd.completedMeals).filter(Boolean).length;
-                  const wk = getWeekdayForArcDay(d);
+                  const wk = getWeekdayForArcDay(d, currentArcDay);
                   const totalI = WORKOUTS_BY_DAY[wk].exercises.length + AM_SKIN_STEPS.length + PM_SKIN_STEPS.length + NK_MEALS_BY_DAY[wk].length;
                   const pct = Math.round(((exD + skinD + mealD) / totalI) * 100);
                   const isSelected = d === viewDay;

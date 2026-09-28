@@ -30,6 +30,7 @@ import {
   FileCheck,
 } from 'lucide-react';
 import { exportAllDataBackup, importDataBackup } from '@/lib/backupEngine';
+import { getLocalISODate } from '@/lib/realTimeSync';
 
 export default function ProfilePage() {
   const { user, userData, updateUserData } = useAuth();
@@ -60,7 +61,7 @@ export default function ProfilePage() {
     setEmailInput(p.email || user?.email || userData?.email || '');
     setIdentityInput(p.identity || '');
     setDurationInput(p.duration || 90);
-    setStartDateInput(p.startDate || new Date().toISOString().split('T')[0]);
+    setStartDateInput(p.startDate || getLocalISODate());
     setMorningAlarmInput(p.morningAlarm || '07:00 AM');
     setEveningReviewInput(p.eveningReview || '09:30 PM');
     setSignatureInput(p.signature || '');
@@ -87,7 +88,7 @@ export default function ProfilePage() {
       email: emailInput.trim(),
       identity: identityInput.trim() || 'disciplined, strong and focused.',
       duration: durationInput,
-      startDate: startDateInput || new Date().toISOString().split('T')[0],
+      startDate: startDateInput || getLocalISODate(),
       morningAlarm: morningAlarmInput.trim() || '07:00 AM',
       eveningReview: eveningReviewInput.trim() || '09:30 PM',
       signature: signatureInput.trim(),

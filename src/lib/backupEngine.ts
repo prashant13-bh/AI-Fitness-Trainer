@@ -1,3 +1,5 @@
+import { getLocalISODate } from './realTimeSync';
+
 export interface BackupPayload {
   version: string;
   exportDate: string;
@@ -48,7 +50,7 @@ export function exportAllDataBackup() {
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement('a');
-  const dateStr = new Date().toISOString().split('T')[0];
+  const dateStr = getLocalISODate();
   a.href = url;
   a.download = `bruce_glowup_backup_${dateStr}.json`;
   document.body.appendChild(a);

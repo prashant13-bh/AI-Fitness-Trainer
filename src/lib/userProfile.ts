@@ -1,3 +1,5 @@
+import { getLocalISODate } from './realTimeSync';
+
 export interface ChallengeProfile {
   name: string;
   email: string;
@@ -92,7 +94,7 @@ export function initNewUserProfile(name: string, email: string): ChallengeProfil
     ...DEFAULT_PROFILE,
     name: name.trim(),
     email: email.trim().toLowerCase(),
-    startDate: new Date().toISOString().split('T')[0],
+    startDate: getLocalISODate(),
     signature: '',
     isSetupComplete: false,
   };

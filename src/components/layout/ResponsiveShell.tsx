@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import BottomNav from './BottomNav';
+import RealTimeClockBar from './RealTimeClockBar';
 import { Flame, Calendar, Zap, BarChart3, Bot, User, Sparkles, Star, Apple } from 'lucide-react';
 import { getUserProfile, calculateChallengeDay } from '@/lib/userProfile';
 
@@ -120,6 +121,7 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
 
       {/* ── MAIN CONTENT AREA ── */}
       <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
+        <RealTimeClockBar />
         <div className="w-full flex-1">
           {children}
         </div>

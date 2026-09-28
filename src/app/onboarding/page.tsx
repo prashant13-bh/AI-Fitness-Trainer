@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserProfile, saveUserProfile } from '@/lib/userProfile';
 import { syncProfileToSupabase } from '@/lib/supabase/sync';
+import { getLocalISODate } from '@/lib/realTimeSync';
 import { Check, Shield, Plus, AlertCircle } from 'lucide-react';
 
 export default function OnboardingPage() {
@@ -151,7 +152,7 @@ export default function OnboardingPage() {
       email: email.trim(),
       identity: identityText.trim(),
       duration,
-      startDate: new Date().toISOString().split('T')[0],
+      startDate: getLocalISODate(),
       focusAreas,
       habits: selectedHabits,
       morningAlarm,

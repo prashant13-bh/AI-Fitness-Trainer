@@ -40,5 +40,15 @@
 - [x] Real-time form alerts ("Keep back straight!", "Go lower on the squat!")
 - [x] Audio toggle to mute/unmute voice coach
 
+### [x] Task 6: Real-Time Clock & Date Synchronization Engine
+- [x] Create timezone-safe local date calculation (`getLocalISODate`) eliminating UTC midnight rollbacks in IST
+- [x] Live ticking 12-hour clock (with seconds: `01:14:05 AM`) updating every 1000ms
+- [x] Live 24-Hour schedule block tracker highlighting active routine (Deep Sleep, 5:30 AM Rise, AM Skin, Gym, NK Meals, PM Skin)
+- [x] Global `<RealTimeClockBar />` integrated into desktop topbar and mobile sticky banner
+- [x] Dynamic Arc Day & real weekday matching in [`src/app/arc/page.tsx`](file:///c:/Users/prashant%20B%20hiremath/.gemini/antigravity/scratch/ai-fitness-trainer/src/app/arc/page.tsx) and [`src/app/progress/page.tsx`](file:///c:/Users/prashant%20B%20hiremath/.gemini/antigravity/scratch/ai-fitness-trainer/src/app/progress/page.tsx)
+- [x] Real-time Current Meal Advisor and pulsing "TODAY" tab indicator in [`src/app/nk-diet/page.tsx`](file:///c:/Users/prashant%20B%20hiremath/.gemini/antigravity/scratch/ai-fitness-trainer/src/app/nk-diet/page.tsx)
+- [x] Synchronized AI Coach context with live Arc day and current day streak in [`src/app/coach/page.tsx`](file:///c:/Users/prashant%20B%20hiremath/.gemini/antigravity/scratch/ai-fitness-trainer/src/app/coach/page.tsx)
+- [x] Timezone-safe local ISO dates wired across local storage keys, Supabase sync, backup export, and profile models
+
 ---
-*Status: All 5 Tasks Complete & Verified.*
+*Status: All 6 Tasks Complete & Verified.*

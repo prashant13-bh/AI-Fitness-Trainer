@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import { logHabitCompletion } from '@/lib/supabase/sync';
 import { ExerciseType } from '@/lib/rep-counter';
 import { focusAudio, AmbientSoundType } from '@/lib/focusAudio';
+import { getLocalISODate } from '@/lib/realTimeSync';
 
 // Dynamically import PoseWorkoutTracker with SSR disabled to guarantee zero SSR crashes
 const PoseWorkoutTracker = dynamic(
@@ -188,7 +189,7 @@ export default function LockInPage() {
 
     // Automatically sync workout completion to Supabase and daily habit logs
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getLocalISODate();
       logHabitCompletion('2', true, todayStr);
     } catch (err) {
       console.debug('Habit sync error:', err);

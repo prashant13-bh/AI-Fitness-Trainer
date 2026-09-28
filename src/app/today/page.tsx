@@ -8,6 +8,7 @@ import { Flame, Check, Zap, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRig
 
 import { getUserProfile, calculateChallengeDay, ChallengeProfile, DEFAULT_PROFILE } from '@/lib/userProfile';
 import { logHabitCompletion } from '@/lib/supabase/sync';
+import { getLocalISODate } from '@/lib/realTimeSync';
 
 interface HabitItem {
   id: string;
@@ -74,7 +75,7 @@ export default function TodayPage() {
     const user = getUserProfile();
     setProfile(user);
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalISODate();
     const todayKey = `winter_arc_completed_${todayStr}`;
     let savedCompleted: string[] = [];
     try {
@@ -112,7 +113,7 @@ export default function TodayPage() {
   const scorePercent = habits.length > 0 ? Math.round((completedCount / habits.length) * 100) : 0;
 
   const toggleHabit = (id: string) => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalISODate();
     const todayKey = `winter_arc_completed_${todayStr}`;
 
     setHabits((prev) => {

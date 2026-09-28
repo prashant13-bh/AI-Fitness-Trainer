@@ -83,21 +83,45 @@ const BADGES_DEF = [
 // ─────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────
-function getCurrentArcDay() {
+function getCurrentArcDay(): number {
   const today = new Date();
-  const diff = Math.floor((today.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(1, diff + 1);
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  let startMidnight = todayMidnight;
+  if (typeof window !== 'undefined') {
+    try {
+      const p = localStorage.getItem('winter_arc_challenge_profile');
+      if (p) {
+        const parsed = JSON.parse(p);
+        if (parsed.startDate) {
+          const parts = parsed.startDate.split('-');
+          if (parts.length === 3) {
+            const parsedStart = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            if (!isNaN(parsedStart.getTime()) && parsedStart <= todayMidnight) {
+              startMidnight = parsedStart;
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  const diffTime = todayMidnight.getTime() - startMidnight.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays + 1);
 }
 
-function getDateForDay(dayNum: number) {
-  const d = new Date(START_DATE);
-  d.setDate(d.getDate() + dayNum - 1);
+function getDateForDay(dayNum: number, currentDay: number = getCurrentArcDay()) {
+  const today = new Date();
+  const offset = dayNum - currentDay;
+  const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
-function getWeekdayForDay(dayNum: number) {
-  const d = new Date(START_DATE);
-  d.setDate(d.getDate() + dayNum - 1);
+function getWeekdayForDay(dayNum: number, currentDay: number = getCurrentArcDay()) {
+  const today = new Date();
+  const offset = dayNum - currentDay;
+  const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset);
   return d.toLocaleDateString('en-IN', { weekday: 'short' });
 }
 

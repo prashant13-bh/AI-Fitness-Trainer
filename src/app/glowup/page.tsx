@@ -19,7 +19,7 @@ import {
   Heart, Zap, Trophy, Sparkles, Clock, Volume2, Calendar,
 } from 'lucide-react';
 import CalendarSyncCard from '@/components/calendar/CalendarSyncCard';
-
+import { getLocalISODate, useRealTimeClock, getRealArcDayInfo } from '@/lib/realTimeSync';
 
 // ── Types ──────────────────────────────────────────────────────
 type TabId = 'dashboard' | 'routine' | 'skin' | 'workout' | 'nutrition' | 'goals' | 'reminders';
@@ -29,17 +29,39 @@ interface CompletedTasks {
 }
 
 // ── Helpers ────────────────────────────────────────────────────
-function getDaysSinceOct1() {
-  const start = new Date('2026-10-01');
+function getDaysSinceOct1(): number {
   const today = new Date();
-  const diff = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(1, diff + 1);
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  let startMidnight = todayMidnight;
+
+  if (typeof window !== 'undefined') {
+    try {
+      const p = localStorage.getItem('winter_arc_challenge_profile');
+      if (p) {
+        const parsed = JSON.parse(p);
+        if (parsed.startDate) {
+          const parts = parsed.startDate.split('-');
+          if (parts.length === 3) {
+            const parsedStart = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            if (!isNaN(parsedStart.getTime()) && parsedStart <= todayMidnight) {
+              startMidnight = parsedStart;
+            }
+          }
+        }
+      }
+    } catch {}
+  }
+
+  const diffTime = todayMidnight.getTime() - startMidnight.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return Math.max(1, diffDays + 1);
 }
 
-function getDaysUntilDec2027() {
-  const end = new Date('2027-12-31');
+function getDaysUntilDec2027(): number {
+  const end = new Date(2027, 11, 31);
   const today = new Date();
-  const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const diff = Math.ceil((end.getTime() - todayMidnight.getTime()) / (1000 * 60 * 60 * 24));
   return Math.max(0, diff);
 }
 
@@ -79,15 +101,15 @@ function getCurrentPhase(): number {
 }
 
 function getTodayKey() {
-  return `prashant_glowup_${new Date().toISOString().split('T')[0]}`;
+  return `prashant_glowup_${getLocalISODate()}`;
 }
 
 function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return 'Good Morning';
-  if (h < 17) return 'Good Afternoon';
-  if (h < 20) return 'Good Evening';
-  return 'Good Night';
+  if (h >= 5 && h < 12) return 'Good Morning';
+  if (h >= 12 && h < 17) return 'Good Afternoon';
+  if (h >= 17 && h < 21) return 'Good Evening';
+  return 'Night Rest';
 }
 
 // ── Category configs ──────────────────────────────────────────
@@ -123,20 +145,20 @@ function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }
 
 // ── DASHBOARD TAB ─────────────────────────────────────────────
 function DashboardTab({ completed, onToggle }: { completed: CompletedTasks; onToggle: (id: string) => void }) {
+  const { timeString, dateString, greeting: liveGreeting, activeSlot } = useRealTimeClock();
   const dayNum = getDaysSinceOct1();
   const daysLeft = getDaysUntilDec2027();
   const currentPhase = getCurrentPhase();
   const allTasks = [...MORNING_ROUTINE, ...MIDDAY_ROUTINE, ...EVENING_ROUTINE];
   const todayDone = allTasks.filter(t => completed[t.id]).length;
   const todayScore = Math.round((todayDone / allTasks.length) * 100);
-  const greeting = getGreeting();
 
   // BMI
   const bmi = (PRASHANT_PROFILE.currentWeight / ((PRASHANT_PROFILE.height / 100) ** 2)).toFixed(1);
 
   return (
     <div className="space-y-5">
-      {/* HERO CARD */}
+      {/* HERO CARD WITH REAL-TIME CLOCK */}
       <div
         className="relative rounded-3xl overflow-hidden p-6"
         style={{ background: 'linear-gradient(135deg, #0A192F 0%, #1E3A5F 40%, #2D1B4E 100%)' }}
@@ -150,11 +172,17 @@ function DashboardTab({ completed, onToggle }: { completed: CompletedTasks; onTo
         <div className="relative z-10">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest">{greeting}</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest">{liveGreeting}</p>
+                <div className="flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 font-mono text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>{timeString}</span>
+                </div>
+              </div>
               <h1 className="text-3xl font-black text-white mt-1 tracking-tight">
                 Bruce 🔥
               </h1>
-              <p className="text-sm font-semibold text-[#94A3B8] mt-0.5">Glow-Up 2027 — Day {dayNum}</p>
+              <p className="text-xs font-semibold text-slate-300 mt-0.5">{dateString} · Arc Day {dayNum}</p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-black text-white">{todayScore}%</div>
@@ -162,8 +190,22 @@ function DashboardTab({ completed, onToggle }: { completed: CompletedTasks; onTo
             </div>
           </div>
 
+          {/* Active Schedule Slot in Real Time */}
+          <div className="mt-4 p-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-base">{activeSlot.emoji}</span>
+              <div className="min-w-0">
+                <span className="text-[9px] font-black uppercase text-emerald-400 block tracking-wider">ACTIVE RIGHT NOW</span>
+                <span className="font-bold text-white block truncate">{activeSlot.title}</span>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono text-slate-300 shrink-0 bg-black/30 px-2 py-1 rounded-xl">
+              {activeSlot.timeRange}
+            </span>
+          </div>
+
           {/* Progress bar */}
-          <div className="mt-5">
+          <div className="mt-4">
             <div className="flex justify-between text-[10px] font-bold text-[#64748B] mb-1.5">
               <span>Daily Protocol: {todayDone}/{allTasks.length} done</span>
               <span>{daysLeft} days to Dec 2027</span>
@@ -1189,6 +1231,7 @@ function RemindersTab({ onTriggerAlarm }: { onTriggerAlarm?: () => void }) {
 
 // ── MAIN PAGE ─────────────────────────────────────────────────
 export default function GlowUpPage() {
+  const { timeString, dateString } = useRealTimeClock();
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const [completed, setCompleted] = useState<CompletedTasks>({});
   const [isAlarmRinging, setIsAlarmRinging] = useState(false);
@@ -1298,17 +1341,25 @@ export default function GlowUpPage() {
           </div>
           <div>
             <p className="text-xs font-black text-[#0A192F] leading-tight">Bruce's Glow-Up</p>
-            <p className="text-[9px] text-[#94A3B8] font-bold">Day {getDaysSinceOct1()} · Winter Arc 2026</p>
+            <p className="text-[9px] text-[#94A3B8] font-bold">Day {getDaysSinceOct1()} · {dateString}</p>
           </div>
         </div>
-        <button
-          onClick={() => setActiveTab('routine')}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-[10px] font-black shadow-md"
-          style={{ background: 'linear-gradient(90deg, #FF7A00, #FF4500)' }}
-        >
-          <Flame className="w-3.5 h-3.5 fill-white" />
-          Today's Protocol
-        </button>
+
+        <div className="flex items-center gap-2">
+          <div className="hidden xs:flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-xl text-[10px] font-mono font-black text-emerald-700 border border-slate-200 shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>{timeString}</span>
+          </div>
+
+          <button
+            onClick={() => setActiveTab('routine')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-[10px] font-black shadow-md"
+            style={{ background: 'linear-gradient(90deg, #FF7A00, #FF4500)' }}
+          >
+            <Flame className="w-3.5 h-3.5 fill-white" />
+            Today's Protocol
+          </button>
+        </div>
       </header>
 
       {/* ── CONTENT ── */}

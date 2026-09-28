@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getSupabaseClient } from './client';
 import { ChallengeProfile } from '../userProfile';
+import { getLocalISODate } from '../realTimeSync';
 
 export async function syncProfileToSupabase(profile: ChallengeProfile, userId?: string) {
   const supabase: any = getSupabaseClient();
@@ -20,8 +21,8 @@ export async function syncProfileToSupabase(profile: ChallengeProfile, userId?: 
     });
 
     // 2. Upsert active arc
-    const startDate = profile.startDate || new Date().toISOString().split('T')[0];
-    const endDate = new Date(Date.now() + profile.duration * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const startDate = profile.startDate || getLocalISODate();
+    const endDate = getLocalISODate(new Date(Date.now() + profile.duration * 24 * 60 * 60 * 1000));
 
     const { data: arcData } = await supabase
       .from('arcs')

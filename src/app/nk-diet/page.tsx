@@ -2,8 +2,9 @@
 
 import React, { useState, useCallback } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
-import { Check, ChevronDown, ChevronUp, Flame, Star, Zap } from 'lucide-react';
+import { Check, ChevronDown, ChevronUp, Flame, Star, Zap, Clock } from 'lucide-react';
 import KiranaShoppingList from '@/components/nutrition/KiranaShoppingList';
+import { useRealTimeClock } from '@/lib/realTimeSync';
 
 
 // ─────────────────────────────────────────────────────────────
@@ -621,13 +622,37 @@ const MEAL_COLORS: Record<string, string> = {
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────
 export default function NKVegetarianPage() {
-  const todayIndex = new Date().getDay(); // 0=Sun
+  const { now, timeString, weekdayIndex, dateString } = useRealTimeClock();
   // Map: Mon=0,Tue=1...Sun=6
-  const dayMapIndex = todayIndex === 0 ? 6 : todayIndex - 1;
+  const dayMapIndex = weekdayIndex === 0 ? 6 : weekdayIndex - 1;
   const [selectedDay, setSelectedDay] = useState(dayMapIndex);
   const [activeTab, setActiveTab] = useState<'meal' | 'foods' | 'kirana' | 'rules'>('meal');
 
   const plan = WEEKLY_PLAN[selectedDay];
+
+  // Determine current meal recommendation in real time based on local hours
+  const currentHour = now.getHours();
+  const currentMin = now.getMinutes();
+  const currentTotalMins = currentHour * 60 + currentMin;
+
+  const currentMealAdvisor = (() => {
+    if (currentTotalMins >= 5 * 60 && currentTotalMins < 10 * 60 + 30) {
+      return { title: `Breakfast: ${plan.breakfast.name}`, time: '08:00 – 10:30 AM', protein: plan.breakfast.protein, emoji: '🌾' };
+    }
+    if (currentTotalMins >= 10 * 60 + 30 && currentTotalMins < 13 * 60) {
+      return { title: `Mid-Morning: ${plan.midMorning.name}`, time: '10:30 AM – 01:00 PM', protein: plan.midMorning.protein, emoji: '🌱' };
+    }
+    if (currentTotalMins >= 13 * 60 && currentTotalMins < 16 * 60 + 30) {
+      return { title: `Lunch: ${plan.lunch.name}`, time: '01:00 – 04:30 PM', protein: plan.lunch.protein, emoji: '🍆' };
+    }
+    if (currentTotalMins >= 16 * 60 + 30 && currentTotalMins < 19 * 60 + 30) {
+      return { title: `Snack: ${plan.afternoonSnack.name}`, time: '04:30 – 07:30 PM', protein: plan.afternoonSnack.protein, emoji: '🥜' };
+    }
+    if (currentTotalMins >= 19 * 60 + 30 && currentTotalMins < 21 * 60 + 30) {
+      return { title: `Dinner: ${plan.dinner.name}`, time: '07:30 – 09:30 PM', protein: plan.dinner.protein, emoji: '🍲' };
+    }
+    return { title: `Bedtime: ${plan.bedtime.name}`, time: '09:30 PM – 05:00 AM', protein: plan.bedtime.protein, emoji: '🥛' };
+  })();
 
   const meals: { label: string; meal: Meal }[] = [
     { label: 'Breakfast',  meal: plan.breakfast },
@@ -649,8 +674,14 @@ export default function NKVegetarianPage() {
         >
           <div className="absolute top-0 right-0 opacity-15 text-[100px] leading-none">🌾</div>
           <div className="relative z-10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-300">BRUCE · NORTH KARNATAKA</span>
-            <h1 className="text-2xl font-black text-white mt-1 leading-tight">
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-300">BRUCE · NORTH KARNATAKA</span>
+              <div className="flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-2.5 py-0.5 rounded-full text-white font-mono text-[10px] font-bold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>{timeString}</span>
+              </div>
+            </div>
+            <h1 className="text-2xl font-black text-white leading-tight">
               NK Vegetarian<br />Muscle Plan 💪
             </h1>
             <p className="text-xs font-semibold text-amber-200 mt-2 leading-relaxed">
@@ -696,25 +727,50 @@ export default function NKVegetarianPage() {
         {/* ── MEAL PLAN TAB ── */}
         {activeTab === 'meal' && (
           <div className="space-y-4">
+            {/* Real-Time Current Meal Advisor */}
+            <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="text-xl shrink-0">{currentMealAdvisor.emoji}</span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[9px] font-black uppercase text-amber-800 tracking-wider">CURRENT MEAL ADVISOR</span>
+                    <span className="text-[9px] font-mono bg-amber-200/60 text-amber-900 px-1.5 py-0.5 rounded font-bold">{timeString}</span>
+                  </div>
+                  <span className="font-extrabold text-[#0A192F] block truncate">{currentMealAdvisor.title}</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-black text-amber-800 bg-amber-100 px-2.5 py-1 rounded-xl shrink-0">
+                {currentMealAdvisor.protein}g P
+              </span>
+            </div>
+
             {/* DAY SELECTOR */}
             <div className="flex gap-1.5 overflow-x-auto pb-1">
-              {WEEKLY_PLAN.map((d, i) => (
-                <button
-                  key={d.day}
-                  onClick={() => setSelectedDay(i)}
-                  className={`flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-2xl transition-all ${
-                    selectedDay === i
-                      ? 'text-white shadow-md'
-                      : 'bg-white border border-[#E8EEF5] text-[#64748B]'
-                  }`}
-                  style={selectedDay === i ? { background: 'linear-gradient(135deg, #B45309, #7C3A00)' } : {}}
-                >
-                  <span className="text-[9px] font-black">{d.dayShort}</span>
-                  <span className={`text-[8px] font-bold mt-0.5 px-1.5 py-0.5 rounded-full ${INTENSITY_STYLE[d.workoutIntensity]}`}>
-                    {d.workoutIntensity}
-                  </span>
-                </button>
-              ))}
+              {WEEKLY_PLAN.map((d, i) => {
+                const isRealToday = i === dayMapIndex;
+                return (
+                  <button
+                    key={d.day}
+                    onClick={() => setSelectedDay(i)}
+                    className={`flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-2xl transition-all ${
+                      selectedDay === i
+                        ? 'text-white shadow-md'
+                        : 'bg-white border border-[#E8EEF5] text-[#64748B]'
+                    }`}
+                    style={selectedDay === i ? { background: 'linear-gradient(135deg, #B45309, #7C3A00)' } : {}}
+                  >
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] font-black">{d.dayShort}</span>
+                      {isRealToday && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" title="Today" />
+                      )}
+                    </div>
+                    <span className={`text-[8px] font-bold mt-0.5 px-1.5 py-0.5 rounded-full ${INTENSITY_STYLE[d.workoutIntensity]}`}>
+                      {d.workoutIntensity}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* WORKOUT CONTEXT CARD */}
