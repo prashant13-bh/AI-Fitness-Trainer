@@ -19,24 +19,24 @@ export interface ChallengeProfile {
 }
 
 export const DEFAULT_PROFILE: ChallengeProfile = {
-  name: '',
+  name: 'Bruce',
   email: '',
-  identity: 'disciplined, strong and focused.',
-  duration: 90,
-  startDate: new Date().toISOString().split('T')[0],
-  focusAreas: ['Body', 'Mind', 'Career', 'Knowledge'],
+  identity: 'Skinny-fat to Greek God. Reversing Betnovate-N damage. 100% disciplined.',
+  duration: 457,
+  startDate: '2026-10-01',
+  focusAreas: ['Body Recomp', 'Skin Healing', 'NK Veg Nutrition', 'Deep Work'],
   habits: [
-    { id: '1', title: 'Morning Cold Shower & Hydration', category: 'BODY', target: '1 cold shower' },
-    { id: '2', title: 'Strength Workout / Conditioning', category: 'BODY', target: '45 min' },
-    { id: '3', title: 'Deep Work / High Output', category: 'CAREER', target: '90 min' },
-    { id: '4', title: 'Read Non-Fiction', category: 'KNOWLEDGE', target: '15 pages' },
-    { id: '5', title: 'Clean Nutrition & No Sugar', category: 'BODY', target: 'Zero refined sugar' },
+    { id: '1', title: '5:30 AM Wake Up & 500ml Water', category: 'BODY', target: '5:30 AM' },
+    { id: '2', title: 'AM Barrier Skin Routine & SPF 50+', category: 'SKIN', target: '10 min' },
+    { id: '3', title: 'Progressive Overload Gym Workout', category: 'BODY', target: '60 min' },
+    { id: '4', title: 'North Karnataka Veg Diet (140g Protein)', category: 'NUTRITION', target: '1,750 kcal' },
+    { id: '5', title: 'PM Skin Healing (Azelaic & Rosehip)', category: 'SKIN', target: '15 min' },
   ],
-  morningAlarm: '07:00 AM',
-  eveningReview: '09:30 PM',
+  morningAlarm: '05:30 AM',
+  eveningReview: '09:00 PM',
   quietHours: true,
-  signature: '',
-  isSetupComplete: false,
+  signature: 'Bruce',
+  isSetupComplete: true,
 };
 
 const STORAGE_KEY = 'winter_arc_challenge_profile';

@@ -19,14 +19,12 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
 
   const navLinks = [
     { label: '🔥 Glow-Up 2027', href: '/glowup', icon: Star },
-    { label: 'Today', href: '/today', icon: Flame },
     { label: '📅 Arc Day Planner', href: '/arc', icon: Calendar },
-    { label: 'Lock In', href: '/lock-in', icon: Zap, isSpecial: true },
     { label: '🌾 NK Veg Diet (Bruce)', href: '/nk-diet', icon: Apple },
-    { label: 'Progress & Analytics', href: '/progress', icon: BarChart3 },
-    { label: 'AI Coach', href: '/coach', icon: Bot },
-    { label: 'Weekly Review', href: '/review', icon: Sparkles },
-    { label: 'Settings', href: '/profile', icon: User },
+    { label: '📊 Progress & Photos', href: '/progress', icon: BarChart3 },
+    { label: '🤖 AI Coach & Mentor', href: '/coach', icon: Bot },
+    { label: '⚡ Lock In Session', href: '/lock-in', icon: Zap, isSpecial: true },
+    { label: '⚙️ Settings', href: '/profile', icon: User },
   ];
 
   return (
@@ -43,10 +41,10 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
             </div>
             <div>
               <span className="text-xs font-black tracking-widest text-[#0085FF] uppercase block leading-none">
-                MAXXDADDY.AI
+                BRUCE ARC 2027
               </span>
               <span className="text-[10px] text-[#64748B] font-semibold mt-1 block">
-                Discipline & Performance
+                Winter Arc & Glow-Up
               </span>
             </div>
           </div>
@@ -54,14 +52,14 @@ export default function ResponsiveShell({ children }: ResponsiveShellProps) {
           {/* User Quick Info */}
           <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 mt-4">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-blue-100 text-[#0085FF] flex items-center justify-center text-xs font-black shrink-0">
-                {initial}
+              <div className="w-8 h-8 rounded-xl bg-orange-100 text-[#FF7A00] flex items-center justify-center text-xs font-black shrink-0">
+                B
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-bold text-[#0A192F] truncate">
-                  {profile.name || 'Athlete'}
+                  Bruce
                 </div>
-                <div className="text-[10px] text-[#64748B]">Day {dayInfo.currentDay} / {profile.duration}</div>
+                <div className="text-[10px] text-[#64748B]">Day {dayInfo.currentDay} / 457</div>
               </div>
             </div>
             <div className="flex items-center gap-1 text-[10px] font-black text-[#FF7A00] bg-orange-50 px-2 py-0.5 rounded-full shrink-0">
