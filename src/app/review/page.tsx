@@ -73,9 +73,9 @@ export default function ReviewPage() {
         {/* ── RESPONSIVE DUAL COLUMN (lg:grid-cols-12) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-6">
           {/* ── LEFT COLUMN: WEEK SCORECARD & METRICS (lg:col-span-5) ── */}
-          <div className="lg:col-span-5 space-y-5">
+          <div className="lg:col-span-5 space-y-4 sm:space-y-5">
             {/* Main Scorecard */}
-            <div className="arc-card p-6 bg-white border border-[#E8EEF5] space-y-4">
+            <div className="arc-card p-4 sm:p-6 bg-white border border-[#E8EEF5] space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase text-[#94A3B8]">
                   WEEK 2 DISCIPLINE SCORE
@@ -86,12 +86,12 @@ export default function ReviewPage() {
               </div>
 
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-black font-display gradient-text">88%</span>
-                <span className="text-sm font-bold text-[#64748B]">Execution standard met</span>
+                <span className="text-4xl sm:text-5xl font-black font-display gradient-text">88%</span>
+                <span className="text-xs sm:text-sm font-bold text-[#64748B]">Execution standard met</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-start gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-2">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-100 flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[10px] font-bold text-emerald-700 block">Best Day</span>
@@ -99,7 +99,7 @@ export default function ReviewPage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100 flex items-start gap-2.5">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-amber-50/70 border border-amber-100 flex items-start gap-2.5">
                   <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[10px] font-bold text-amber-700 block">Bottleneck</span>
@@ -110,9 +110,9 @@ export default function ReviewPage() {
             </div>
 
             {/* Streak & Momentum Card */}
-            <div className="arc-card p-5 bg-white border border-[#E8EEF5] flex items-center justify-between">
+            <div className="arc-card p-4 sm:p-5 bg-white border border-[#E8EEF5] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-[#FF7A00] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-orange-50 text-[#FF7A00] flex items-center justify-center shrink-0">
                   <Flame className="w-5 h-5 fill-[#FF7A00]" />
                 </div>
                 <div>
@@ -120,7 +120,7 @@ export default function ReviewPage() {
                   <div className="text-[10px] text-[#64748B]">Earned &ldquo;7-Day Iron Will&rdquo; Badge</div>
                 </div>
               </div>
-              <span className="text-xs font-extrabold text-[#FF7A00] bg-orange-50 px-3 py-1 rounded-full">
+              <span className="text-xs font-extrabold text-[#FF7A00] bg-orange-50 px-2.5 sm:px-3 py-1 rounded-full shrink-0">
                 +150 XP
               </span>
             </div>
@@ -138,7 +138,7 @@ export default function ReviewPage() {
 
           {/* ── RIGHT COLUMN: 3-STEP GUIDED REFLECTION (lg:col-span-7) ── */}
           <div className="lg:col-span-7 space-y-5">
-            <div className="arc-card p-6 bg-white border border-[#E8EEF5] space-y-4">
+            <div className="arc-card p-4 sm:p-6 bg-white border border-[#E8EEF5] space-y-4">
               <h3 className="text-sm font-black uppercase tracking-wider text-[#0A192F]">
                 3-Step Guided Reflection
               </h3>

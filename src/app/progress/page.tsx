@@ -406,17 +406,17 @@ export default function ProgressPage() {
             </div>
 
             {/* Key stats */}
-            <div className="grid grid-cols-4 gap-2 mt-3">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mt-3">
               {[
                 { label: 'Days In', val: currentDay, color: '#FF7A00', emoji: '📅' },
                 { label: 'Logged', val: loggedDays, color: '#10B981', emoji: '✅' },
                 { label: 'Streak', val: `${currentStreak}d`, color: '#0085FF', emoji: '🔥' },
                 { label: 'Photos', val: totalPhotos, color: '#7B61FF', emoji: '📸' },
               ].map(s => (
-                <div key={s.label} className="bg-white/10 rounded-2xl p-2.5 text-center">
-                  <div className="text-base">{s.emoji}</div>
-                  <div className="text-base font-black text-white">{s.val}</div>
-                  <div className="text-[8px] font-bold" style={{ color: s.color }}>{s.label}</div>
+                <div key={s.label} className="bg-white/10 rounded-2xl p-1.5 sm:p-2.5 text-center min-w-0">
+                  <div className="text-sm sm:text-base">{s.emoji}</div>
+                  <div className="text-sm sm:text-base font-black text-white">{s.val}</div>
+                  <div className="text-[8px] font-bold truncate" style={{ color: s.color }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -861,7 +861,7 @@ export default function ProgressPage() {
             </div>
 
             {/* Photo stats */}
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
               {[
                 { type: 'body', emoji: '💪', label: 'Body' },
                 { type: 'face', emoji: '✨', label: 'Face' },
@@ -871,10 +871,10 @@ export default function ProgressPage() {
               ].map(pt => {
                 const count = allPhotos.filter(p => p.type === pt.type).length;
                 return (
-                  <div key={pt.type} className="arc-card p-2.5 bg-white text-center">
-                    <div className="text-lg">{pt.emoji}</div>
-                    <div className="text-sm font-black text-[#0085FF]">{count}</div>
-                    <div className="text-[8px] text-[#94A3B8] font-bold">{pt.label}</div>
+                  <div key={pt.type} className="arc-card p-1.5 sm:p-2.5 bg-white text-center min-w-0">
+                    <div className="text-base sm:text-lg">{pt.emoji}</div>
+                    <div className="text-xs sm:text-sm font-black text-[#0085FF]">{count}</div>
+                    <div className="text-[8px] text-[#94A3B8] font-bold truncate">{pt.label}</div>
                   </div>
                 );
               })}

@@ -288,7 +288,7 @@ export default function LockInPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
                 {ACTIVITIES.map((act) => {
                   const isSelected = selectedActivity === act.id;
                   return (
@@ -603,11 +603,11 @@ export default function LockInPage() {
                 </div>
 
                 {/* COUNTDOWN TIMER DIAL */}
-                <div className="arc-card p-8 bg-white text-center relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
+                <div className="arc-card p-6 sm:p-8 bg-white text-center relative overflow-hidden flex flex-col items-center justify-center shadow-lg">
                   <div className="absolute inset-0 bg-gradient-to-b from-blue-50/20 via-transparent to-orange-50/30 opacity-70 pointer-events-none" />
 
                   <div className="relative z-10 w-full">
-                    <div className="font-mono text-6xl sm:text-7xl font-black tracking-tighter text-[#0A192F] py-2">
+                    <div className="font-mono text-5xl sm:text-7xl font-black tracking-tighter text-[#0A192F] py-2">
                       {formatTime(secondsLeft)}
                     </div>
 

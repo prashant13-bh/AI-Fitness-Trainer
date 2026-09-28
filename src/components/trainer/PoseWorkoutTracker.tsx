@@ -634,18 +634,18 @@ export default function PoseWorkoutTracker({
       </div>
 
       {/* ── Control Console ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
         {/* Pause / Resume */}
         <button
           onClick={() => setIsPaused(!isPaused)}
-          className={`p-3.5 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition ${
+          className={`p-2.5 sm:p-3.5 rounded-2xl font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition ${
             isPaused
               ? 'bg-emerald-500 text-white shadow-md hover:bg-emerald-600'
               : 'bg-white border border-[#E8EEF5] text-[#0A192F] hover:bg-slate-50'
           }`}
         >
-          {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-          <span>{isPaused ? 'Resume Session' : 'Pause Workout'}</span>
+          {isPaused ? <Play className="w-4 h-4 shrink-0" /> : <Pause className="w-4 h-4 shrink-0" />}
+          <span className="truncate">{isPaused ? 'Resume' : 'Pause'}</span>
         </button>
 
         {/* Start Rest Period */}
@@ -659,10 +659,10 @@ export default function PoseWorkoutTracker({
             }
           }}
           disabled={isResting}
-          className="p-3.5 rounded-2xl bg-white border border-[#E8EEF5] hover:border-[#0085FF] text-[#0085FF] font-bold text-xs flex items-center justify-center gap-2 transition disabled:opacity-50"
+          className="p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#E8EEF5] hover:border-[#0085FF] text-[#0085FF] font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition disabled:opacity-50"
         >
-          <Timer className="w-4 h-4" />
-          <span>Rest / Next Set</span>
+          <Timer className="w-4 h-4 shrink-0" />
+          <span className="truncate">Rest / Next Set</span>
         </button>
 
         {/* Reset Counter */}
@@ -677,19 +677,19 @@ export default function PoseWorkoutTracker({
               holdSeconds: 0,
             });
           }}
-          className="p-3.5 rounded-2xl bg-white border border-[#E8EEF5] text-[#64748B] hover:text-[#0A192F] font-bold text-xs flex items-center justify-center gap-2 transition"
+          className="p-2.5 sm:p-3.5 rounded-2xl bg-white border border-[#E8EEF5] text-[#64748B] hover:text-[#0A192F] font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 sm:gap-2 transition"
         >
-          <RotateCcw className="w-4 h-4" />
-          <span>Reset Reps</span>
+          <RotateCcw className="w-4 h-4 shrink-0" />
+          <span className="truncate">Reset Reps</span>
         </button>
 
         {/* Finish & Save Workout */}
         <button
           onClick={handleFinishWorkout}
-          className="p-3.5 rounded-2xl btn-sunset text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition"
+          className="p-2.5 sm:p-3.5 rounded-2xl btn-sunset text-white font-bold text-[11px] sm:text-xs flex items-center justify-center gap-1.5 sm:gap-2 shadow-md hover:shadow-lg transition"
         >
-          <Award className="w-4 h-4" />
-          <span>Finish Workout →</span>
+          <Award className="w-4 h-4 shrink-0" />
+          <span className="truncate">Finish Session →</span>
         </button>
       </div>
 

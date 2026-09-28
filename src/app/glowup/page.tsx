@@ -1247,23 +1247,23 @@ export default function GlowUpPage() {
     <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
       {/* ── FULLSCREEN WAKE-UP ALARM MODAL ── */}
       {isAlarmRinging && (
-        <div className="fixed inset-0 z-[9999] bg-[#0A192F]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
-          <div className="relative mb-6">
-            <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#FF4500] flex items-center justify-center text-5xl shadow-[0_0_70px_rgba(255,122,0,0.6)] animate-bounce">
+        <div className="fixed inset-0 z-[9999] bg-[#0A192F]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-4 sm:p-6 text-center select-none animate-fade-in max-h-screen overflow-y-auto">
+          <div className="relative mb-4 sm:mb-6 shrink-0">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#FF4500] flex items-center justify-center text-4xl sm:text-5xl shadow-[0_0_70px_rgba(255,122,0,0.6)] animate-bounce">
               ⏰
             </div>
             <div className="absolute -inset-2 rounded-full border-4 border-orange-400 animate-ping opacity-75 pointer-events-none" />
           </div>
 
-          <span className="text-[11px] font-black uppercase tracking-widest text-[#FF7A00] bg-orange-950/60 px-4 py-1.5 rounded-full border border-orange-500/40 mb-3">
+          <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-[#FF7A00] bg-orange-950/60 px-3.5 py-1 rounded-full border border-orange-500/40 mb-2 sm:mb-3">
             WINTER ARC 2026 WAKE-UP ALARM
           </span>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-2">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
             05:30 AM — TIME TO RISE, BRUCE! 🔥
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed mb-8">
+          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed mb-6 sm:mb-8">
             The winter arc begins in the dark. No snooze allowed. Down 500ml water immediately, lock in AM skin recovery, and conquer Day {getDaysSinceOct1()}!
           </p>
 
@@ -1273,7 +1273,7 @@ export default function GlowUpPage() {
               toggleTask('m1'); // Automatically marks 5:30 AM Wake Up as done!
               setActiveTab('routine');
             }}
-            className="w-full max-w-sm py-4 px-6 rounded-2xl bg-gradient-to-r from-[#FF7A00] via-[#FF4500] to-[#CC0000] text-white text-sm sm:text-base font-black shadow-2xl shadow-orange-500/50 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2"
+            className="w-full max-w-sm py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-[#FF7A00] via-[#FF4500] to-[#CC0000] text-white text-xs sm:text-base font-black shadow-2xl shadow-orange-500/50 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2"
           >
             <span>🔥 I'M AWAKE — START PROTOCOL</span>
           </button>
@@ -1312,7 +1312,7 @@ export default function GlowUpPage() {
       </header>
 
       {/* ── CONTENT ── */}
-      <main className="px-4 pt-4 pb-28 max-w-2xl mx-auto">
+      <main className="px-4 pt-4 pb-32 sm:pb-28 max-w-2xl mx-auto">
         {activeTab === 'dashboard'  && <DashboardTab completed={completed} onToggle={toggleTask} />}
         {activeTab === 'routine'    && <RoutineTab   completed={completed} onToggle={toggleTask} />}
         {activeTab === 'skin'       && <SkinTab />}
@@ -1324,7 +1324,7 @@ export default function GlowUpPage() {
 
       {/* ── BOTTOM NAV ── */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-50 px-4 py-2"
+        className="fixed bottom-0 left-0 right-0 z-50 px-1 sm:px-4 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))]"
         style={{
           background: 'rgba(255,255,255,0.95)',
           backdropFilter: 'blur(20px)',
@@ -1332,20 +1332,20 @@ export default function GlowUpPage() {
           boxShadow: '0 -4px 20px rgba(0,0,0,0.04)',
         }}
       >
-        <div className="max-w-2xl mx-auto flex items-center justify-around">
+        <div className="max-w-2xl mx-auto flex items-center justify-around gap-0.5 sm:gap-1">
           {tabs.map(tab => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-xl transition-all ${
-                  isActive ? 'scale-110' : 'opacity-60 hover:opacity-80'
+                className={`flex flex-col items-center gap-0.5 py-1 px-1 sm:px-2.5 rounded-xl transition-all min-w-0 flex-1 ${
+                  isActive ? 'scale-105' : 'opacity-60 hover:opacity-80'
                 }`}
               >
-                <span className="text-lg leading-none">{tab.icon}</span>
+                <span className="text-base sm:text-lg leading-none">{tab.icon}</span>
                 <span
-                  className="text-[9px] font-black"
+                  className="text-[8px] sm:text-[9px] font-black truncate max-w-full"
                   style={{ color: isActive ? '#0085FF' : '#94A3B8' }}
                 >
                   {tab.label}

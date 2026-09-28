@@ -17,7 +17,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-[#E8EEF5] px-4 py-2 select-none shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-[#E8EEF5] px-2 sm:px-4 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] select-none shadow-[0_-4px_20px_rgba(0,0,0,0.04)]">
       <div className="max-w-md mx-auto flex items-center justify-around relative">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href === '/glowup' && pathname === '/');

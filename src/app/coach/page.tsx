@@ -361,7 +361,7 @@ export default function CoachPage() {
                   e.preventDefault();
                   handleSend();
                 }}
-                className="flex items-center gap-2 p-3 sm:p-4"
+                className="flex items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4"
               >
                 <input
                   type="text"
@@ -370,9 +370,9 @@ export default function CoachPage() {
                   placeholder={
                     isListening
                       ? 'Listening to your voice, Bruce...'
-                      : 'Ask workouts, NK veg meals, Betnovate-N skin healing...'
+                      : 'Ask workouts, NK veg meals, skin healing...'
                   }
-                  className={`flex-1 px-4 py-3 rounded-2xl border text-xs sm:text-sm focus:outline-none transition-all ${
+                  className={`flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl border text-xs sm:text-sm focus:outline-none transition-all ${
                     isListening
                       ? 'border-rose-400 bg-rose-50/30 ring-2 ring-rose-200'
                       : 'border-slate-200 bg-slate-50/50 focus:border-[#0085FF]'
@@ -384,7 +384,7 @@ export default function CoachPage() {
                   <button
                     type="button"
                     onClick={toggleListening}
-                    className={`p-3 rounded-2xl transition shrink-0 flex items-center justify-center ${
+                    className={`p-2.5 sm:p-3 rounded-2xl transition shrink-0 flex items-center justify-center ${
                       isListening
                         ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse ring-2 ring-rose-300'
                         : 'bg-slate-100 text-[#64748B] hover:text-[#0085FF] hover:bg-blue-50 border border-slate-200'
@@ -399,7 +399,7 @@ export default function CoachPage() {
                 <button
                   type="submit"
                   disabled={!inputText.trim()}
-                  className="btn-sunset px-4 sm:px-6 py-3 rounded-2xl text-xs font-bold disabled:opacity-40 shadow-sm shrink-0 flex items-center gap-1.5"
+                  className="btn-sunset px-3.5 sm:px-6 py-2.5 sm:py-3 rounded-2xl text-xs font-bold disabled:opacity-40 shadow-sm shrink-0 flex items-center gap-1.5"
                 >
                   <Send className="w-4 h-4" />
                 </button>

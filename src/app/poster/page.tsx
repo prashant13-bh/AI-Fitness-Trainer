@@ -12,9 +12,9 @@ export default function PosterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-4 sm:p-8 print:p-0 print:bg-white print:text-black">
+    <div className="min-h-screen bg-slate-900 text-slate-100 p-3 sm:p-8 print:p-0 print:bg-white print:text-black">
       {/* Screen-Only Header Bar */}
-      <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
+      <div className="max-w-4xl mx-auto mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Link
           href="/glowup"
           className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 px-3.5 py-2 rounded-xl border border-slate-700 transition"
@@ -25,7 +25,7 @@ export default function PosterPage() {
 
         <button
           onClick={handlePrint}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF7A00] to-[#0085FF] text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg hover:opacity-95 transition"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF7A00] to-[#0085FF] text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-black shadow-lg hover:opacity-95 transition"
         >
           <Printer className="w-4 h-4" />
           <span>Print A4 Wall Poster</span>
@@ -33,7 +33,7 @@ export default function PosterPage() {
       </div>
 
       {/* ── PRINTABLE POSTER CONTAINER (A4 Formatted) ── */}
-      <div className="max-w-4xl mx-auto bg-white text-slate-950 p-6 sm:p-10 rounded-3xl shadow-2xl print:shadow-none print:p-6 print:rounded-none border border-slate-200">
+      <div className="max-w-4xl mx-auto bg-white text-slate-950 p-4 sm:p-10 rounded-3xl shadow-2xl print:shadow-none print:p-6 print:rounded-none border border-slate-200">
         {/* Poster Top Banner */}
         <div className="border-b-4 border-slate-950 pb-4 mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>

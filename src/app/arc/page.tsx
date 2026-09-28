@@ -1019,7 +1019,7 @@ function PhotoSection({ dayData, updateData }: { dayData: DayData; updateData: (
                 </div>
               </div>
               {existing.length > 0 ? (
-                <div className="p-3 grid grid-cols-4 gap-2">
+                <div className="p-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {existing.map((photo, i) => {
                     const globalIndex = dayData.photos.indexOf(photo);
                     return (
@@ -1071,35 +1071,39 @@ function DiarySection({ dayData, updateData }: { dayData: DayData; updateData: (
         </div>
       </div>
 
-      {/* Mood + Energy + Skin */}
-      <div className="grid grid-cols-3 gap-2">
+      {/* Mood + Energy + Skin (Mobile-Optimized Horizontal Touch Rows) */}
+      <div className="arc-card p-4 bg-white space-y-3">
         {[
-          { label: 'Mood', emoji: MOODS, key: 'mood' as const, color: '#FF7A00' },
-          { label: 'Energy', emoji: ENERGY_LEVELS, key: 'energyLevel' as const, color: '#7B61FF' },
-        ].map(item => (
-          <div key={item.key} className="arc-card p-3 bg-white col-span-1">
-            <p className="text-[9px] font-black uppercase mb-1" style={{ color: item.color }}>{item.label}</p>
-            <div className="flex flex-col gap-1">
-              {item.emoji.map((e, i) => (
-                <button key={i} onClick={() => updateData({ [item.key]: i + 1 })}
-                  className={`text-base transition-transform text-left ${dayData[item.key] === i + 1 ? 'scale-125' : 'opacity-40'}`}>
-                  {e}
-                </button>
-              ))}
+          { label: '😊 Daily Mood', emoji: MOODS, key: 'mood' as const, color: '#FF7A00' },
+          { label: '⚡ Energy Level', emoji: ENERGY_LEVELS, key: 'energyLevel' as const, color: '#0085FF' },
+          { label: '✨ Skin Condition', emoji: ['😰', '😟', '😐', '🙂', '✨'], key: 'skinCondition' as const, color: '#A855F7' },
+        ].map((item) => (
+          <div key={item.key} className="flex items-center justify-between gap-2 border-b border-slate-100 last:border-0 pb-2.5 last:pb-0">
+            <span className="text-[11px] font-bold text-[#0A192F] shrink-0">{item.label}</span>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {item.emoji.map((e, i) => {
+                const isSelected = dayData[item.key] === i + 1;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => {
+                      soundEffects.playTick();
+                      updateData({ [item.key]: i + 1 });
+                    }}
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center text-base transition-all ${
+                      isSelected
+                        ? 'bg-slate-100 scale-125 shadow-sm border border-slate-300'
+                        : 'opacity-40 hover:opacity-100'
+                    }`}
+                  >
+                    {e}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
-        <div className="arc-card p-3 bg-white col-span-1">
-          <p className="text-[9px] font-black text-[#A855F7] uppercase mb-1">Skin</p>
-          <div className="flex flex-col gap-1">
-            {['😰','😟','😐','🙂','✨'].map((e, i) => (
-              <button key={i} onClick={() => updateData({ skinCondition: i + 1 })}
-                className={`text-base transition-transform text-left ${dayData.skinCondition === i + 1 ? 'scale-125' : 'opacity-40'}`}>
-                {e}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Journal */}
@@ -1237,16 +1241,16 @@ export default function ArcDayPage() {
             </div>
 
             {/* Quick stats */}
-            <div className="grid grid-cols-4 gap-2 mt-3">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2 mt-3">
               {[
                 { label: 'Workout', val: `${exDone}/${workout.exercises.length}`, color: '#FF7A00' },
                 { label: 'Meals', val: `${mealDone}/${meals.length}`, color: '#10B981' },
                 { label: 'Skin', val: `${skinDone}/${AM_SKIN_STEPS.length + PM_SKIN_STEPS.length}`, color: '#A855F7' },
                 { label: 'Photos', val: dayData.photos.length, color: '#0085FF' },
               ].map(s => (
-                <div key={s.label} className="bg-white/10 rounded-xl p-2 text-center">
-                  <div className="text-sm font-black text-white">{s.val}</div>
-                  <div className="text-[8px] font-bold" style={{ color: s.color }}>{s.label}</div>
+                <div key={s.label} className="bg-white/10 rounded-xl p-1.5 sm:p-2 text-center min-w-0">
+                  <div className="text-xs sm:text-sm font-black text-white">{s.val}</div>
+                  <div className="text-[8px] font-bold truncate" style={{ color: s.color }}>{s.label}</div>
                 </div>
               ))}
             </div>

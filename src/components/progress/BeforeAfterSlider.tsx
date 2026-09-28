@@ -210,8 +210,10 @@ export default function BeforeAfterSlider({ photos }: BeforeAfterSliderProps) {
               onMouseUp={() => setIsDragging(false)}
               onMouseLeave={() => setIsDragging(false)}
               onMouseMove={handleMouseMove}
+              onTouchStart={() => setIsDragging(true)}
+              onTouchEnd={() => setIsDragging(false)}
               onTouchMove={handleTouchMove}
-              className="relative w-full aspect-[4/5] sm:aspect-[3/4] max-h-[500px] rounded-2xl overflow-hidden shadow-inner bg-slate-900 cursor-ew-resize select-none border border-slate-200"
+              className="relative w-full aspect-[4/5] sm:aspect-[3/4] max-h-[500px] rounded-2xl overflow-hidden shadow-inner bg-slate-900 cursor-ew-resize select-none border border-slate-200 touch-pan-y"
             >
               {/* AFTER IMAGE (Bottom Layer) */}
               <img
@@ -322,19 +324,19 @@ export default function BeforeAfterSlider({ photos }: BeforeAfterSliderProps) {
 
                 <div className="grid grid-cols-2 gap-2 my-2">
                   {/* Before */}
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10">
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-white/5 border border-white/10">
                     <span className="text-[9px] font-black text-amber-400 block">{demo.before.tag}</span>
-                    <p className="text-sm font-black text-white mt-1">{demo.before.weight}</p>
+                    <p className="text-xs sm:text-sm font-black text-white mt-1">{demo.before.weight}</p>
                     <p className="text-[10px] text-white/60 font-medium">{demo.before.bf}</p>
-                    <p className="text-[9px] text-white/40 mt-1.5 leading-snug">{demo.before.metrics}</p>
+                    <p className="text-[9px] text-white/40 mt-1.5 leading-snug line-clamp-2">{demo.before.metrics}</p>
                   </div>
 
                   {/* After */}
-                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                  <div className="p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
                     <span className="text-[9px] font-black text-emerald-400 block">{demo.after.tag}</span>
-                    <p className="text-sm font-black text-white mt-1">{demo.after.weight}</p>
+                    <p className="text-xs sm:text-sm font-black text-white mt-1">{demo.after.weight}</p>
                     <p className="text-[10px] text-emerald-300 font-medium">{demo.after.bf}</p>
-                    <p className="text-[9px] text-white/60 mt-1.5 leading-snug">{demo.after.metrics}</p>
+                    <p className="text-[9px] text-white/60 mt-1.5 leading-snug line-clamp-2">{demo.after.metrics}</p>
                   </div>
                 </div>
 
