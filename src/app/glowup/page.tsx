@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────────
-type TabId = 'dashboard' | 'routine' | 'skin' | 'workout' | 'nutrition' | 'goals';
+type TabId = 'dashboard' | 'routine' | 'skin' | 'workout' | 'nutrition' | 'goals' | 'reminders';
 
 interface CompletedTasks {
   [key: string]: boolean;
@@ -46,6 +46,27 @@ function getAge() {
   const today = new Date();
   const age = Math.floor((today.getTime() - dob.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
   return age;
+}
+
+function playGlobalAlarmChime() {
+  try {
+    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50, 1318.51];
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.16);
+      gain.gain.setValueAtTime(0.35, ctx.currentTime + idx * 0.16);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.32);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + idx * 0.16);
+      osc.stop(ctx.currentTime + idx * 0.16 + 0.33);
+    });
+  } catch {}
 }
 
 function getCurrentPhase(): number {
@@ -865,7 +886,7 @@ function GoalsTab() {
 }
 
 // ── REMINDERS TAB ─────────────────────────────────────────────
-function RemindersTab() {
+function RemindersTab({ onTriggerAlarm }: { onTriggerAlarm?: () => void }) {
   const [notifGranted, setNotifGranted] = useState(false);
   const [activeReminders, setActiveReminders] = useState<Set<string>>(new Set());
   const [alarmActive, setAlarmActive] = useState(false);
@@ -882,29 +903,6 @@ function RemindersTab() {
       setAlarmActive(localStorage.getItem('prashant_alarm_active') === 'true');
     } catch {}
   }, []);
-
-  // Audio alarm synthesizer for morning wake-up
-  const playAlarmChime = () => {
-    try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      // Upbeat motivating 6-note wake-up chime
-      const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50, 1318.51];
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.16);
-        gain.gain.setValueAtTime(0.35, ctx.currentTime + idx * 0.16);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.32);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + idx * 0.16);
-        osc.stop(ctx.currentTime + idx * 0.16 + 0.33);
-      });
-    } catch {}
-  };
 
   // Poll for reminders every minute
   useEffect(() => {
@@ -923,9 +921,10 @@ function RemindersTab() {
           } catch {}
         }
       });
-      // Morning alarm: rings audio chime + push notification
+      // Morning alarm: rings audio chime + push notification + triggers full modal
       if (alarmActive && currentTime === '05:30') {
-        playAlarmChime();
+        if (onTriggerAlarm) onTriggerAlarm();
+        else playGlobalAlarmChime();
         try {
           new Notification('⏰ WAKE UP BRUCE!', {
             body: '5:30 AM — Rise & Shine! Your Winter Arc routine starts NOW. No snooze allowed! 🔥',
@@ -936,7 +935,7 @@ function RemindersTab() {
       }
     }, 30000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [notifGranted, activeReminders, alarmActive]);
+  }, [notifGranted, activeReminders, alarmActive, onTriggerAlarm]);
 
   const requestPermission = async () => {
     if ('Notification' in window) {
@@ -970,7 +969,7 @@ function RemindersTab() {
     setAlarmActive(next);
     localStorage.setItem('prashant_alarm_active', String(next));
     if (next && notifGranted) {
-      playAlarmChime();
+      playGlobalAlarmChime();
       new Notification('✅ Morning Alarm Set!', {
         body: 'Your 5:30 AM wake-up alarm is active. Sleep well, Bruce! 🌙',
       });
@@ -1054,7 +1053,7 @@ function RemindersTab() {
         <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
           <span className="text-[11px] font-bold text-slate-500">Wake-up audio chime</span>
           <button
-            onClick={playAlarmChime}
+            onClick={playGlobalAlarmChime}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#FF7A00] text-xs font-black transition"
           >
             <span>🔊</span>
@@ -1122,23 +1121,31 @@ function RemindersTab() {
 
       {/* TEST NOTIFICATION & AUDIO */}
       {notifGranted && (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-2.5">
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => {
+                new Notification('🔥 Test — Bruce Glow-Up!', {
+                  body: 'Notifications are working! You\'ll never miss a routine again.',
+                  icon: '/favicon.ico',
+                });
+              }}
+              className="py-3 px-2 rounded-2xl border-2 border-dashed border-[#0085FF] text-[#0085FF] text-xs font-black text-center hover:bg-blue-50 transition"
+            >
+              🔔 Test Notification
+            </button>
+            <button
+              onClick={playGlobalAlarmChime}
+              className="py-3 px-2 rounded-2xl border-2 border-dashed border-[#FF7A00] text-[#FF7A00] text-xs font-black text-center hover:bg-orange-50 transition"
+            >
+              🔊 Test Chime
+            </button>
+          </div>
           <button
-            onClick={() => {
-              new Notification('🔥 Test — Bruce Glow-Up!', {
-                body: 'Notifications are working! You\'ll never miss a routine again.',
-                icon: '/favicon.ico',
-              });
-            }}
-            className="py-3 px-2 rounded-2xl border-2 border-dashed border-[#0085FF] text-[#0085FF] text-xs font-black text-center"
+            onClick={() => onTriggerAlarm && onTriggerAlarm()}
+            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#FF7A00] via-[#FF4500] to-[#CC0000] text-white text-xs font-black shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 hover:opacity-95 active:scale-98 transition"
           >
-            🔔 Test Notification
-          </button>
-          <button
-            onClick={playAlarmChime}
-            className="py-3 px-2 rounded-2xl border-2 border-dashed border-[#FF7A00] text-[#FF7A00] text-xs font-black text-center"
-          >
-            🔊 Test Wake Chime
+            <span>🚨 Test Full Looping Alarm & Wake-Up Screen</span>
           </button>
         </div>
       )}
@@ -1150,6 +1157,31 @@ function RemindersTab() {
 export default function GlowUpPage() {
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
   const [completed, setCompleted] = useState<CompletedTasks>({});
+  const [isAlarmRinging, setIsAlarmRinging] = useState(false);
+  const alarmLoopRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startAlarmRinging = useCallback(() => {
+    setIsAlarmRinging(true);
+    playGlobalAlarmChime();
+    if (alarmLoopRef.current) clearInterval(alarmLoopRef.current);
+    alarmLoopRef.current = setInterval(() => {
+      playGlobalAlarmChime();
+    }, 1500);
+  }, []);
+
+  const stopAlarmRinging = useCallback(() => {
+    if (alarmLoopRef.current) {
+      clearInterval(alarmLoopRef.current);
+      alarmLoopRef.current = null;
+    }
+    setIsAlarmRinging(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (alarmLoopRef.current) clearInterval(alarmLoopRef.current);
+    };
+  }, []);
 
   // Load completed tasks from localStorage
   useEffect(() => {
@@ -1168,16 +1200,52 @@ export default function GlowUpPage() {
   }, []);
 
   const tabs: { id: TabId; label: string; icon: string }[] = [
-    { id: 'dashboard', label: 'Home',     icon: '🏠' },
-    { id: 'routine',   label: 'Routine',  icon: '📋' },
-    { id: 'skin',      label: 'Skin',     icon: '✨' },
-    { id: 'workout',   label: 'Workout',  icon: '💪' },
-    { id: 'nutrition', label: 'Diet',     icon: '🥗' },
-    { id: 'goals',     label: 'Goals',    icon: '🏆' },
+    { id: 'dashboard', label: 'Home',      icon: '🏠' },
+    { id: 'routine',   label: 'Routine',   icon: '📋' },
+    { id: 'skin',      label: 'Skin',      icon: '✨' },
+    { id: 'workout',   label: 'Workout',   icon: '💪' },
+    { id: 'nutrition', label: 'Diet',      icon: '🥗' },
+    { id: 'reminders', label: 'Alarms',    icon: '⏰' },
+    { id: 'goals',     label: 'Goals',     icon: '🏆' },
   ];
 
   return (
     <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+      {/* ── FULLSCREEN WAKE-UP ALARM MODAL ── */}
+      {isAlarmRinging && (
+        <div className="fixed inset-0 z-[9999] bg-[#0A192F]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center select-none animate-fade-in">
+          <div className="relative mb-6">
+            <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#FF7A00] to-[#FF4500] flex items-center justify-center text-5xl shadow-[0_0_70px_rgba(255,122,0,0.6)] animate-bounce">
+              ⏰
+            </div>
+            <div className="absolute -inset-2 rounded-full border-4 border-orange-400 animate-ping opacity-75 pointer-events-none" />
+          </div>
+
+          <span className="text-[11px] font-black uppercase tracking-widest text-[#FF7A00] bg-orange-950/60 px-4 py-1.5 rounded-full border border-orange-500/40 mb-3">
+            WINTER ARC 2026 WAKE-UP ALARM
+          </span>
+
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-2">
+            05:30 AM — TIME TO RISE, BRUCE! 🔥
+          </h1>
+
+          <p className="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed mb-8">
+            The winter arc begins in the dark. No snooze allowed. Down 500ml water immediately, lock in AM skin recovery, and conquer Day {getDaysSinceOct1()}!
+          </p>
+
+          <button
+            onClick={() => {
+              stopAlarmRinging();
+              toggleTask('m1'); // Automatically marks 5:30 AM Wake Up as done!
+              setActiveTab('routine');
+            }}
+            className="w-full max-w-sm py-4 px-6 rounded-2xl bg-gradient-to-r from-[#FF7A00] via-[#FF4500] to-[#CC0000] text-white text-sm sm:text-base font-black shadow-2xl shadow-orange-500/50 hover:scale-105 active:scale-95 transition-transform flex items-center justify-center gap-2"
+          >
+            <span>🔥 I'M AWAKE — START PROTOCOL</span>
+          </button>
+        </div>
+      )}
+
       {/* ── HEADER ── */}
       <header
         className="sticky top-0 z-50 px-4 py-3 flex items-center justify-between"
@@ -1216,6 +1284,7 @@ export default function GlowUpPage() {
         {activeTab === 'skin'       && <SkinTab />}
         {activeTab === 'workout'    && <WorkoutTab />}
         {activeTab === 'nutrition'  && <NutritionTab />}
+        {activeTab === 'reminders'  && <RemindersTab onTriggerAlarm={startAlarmRinging} />}
         {activeTab === 'goals'      && <GoalsTab />}
       </main>
 

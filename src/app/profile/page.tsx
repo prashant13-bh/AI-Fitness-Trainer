@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import {
   getUserProfile,
@@ -15,6 +15,7 @@ import {
   Shield,
   Moon,
   Download,
+  Upload,
   RotateCcw,
   Check,
   Edit3,
@@ -28,6 +29,7 @@ import {
   Mail,
   FileCheck,
 } from 'lucide-react';
+import { exportAllDataBackup, importDataBackup } from '@/lib/backupEngine';
 
 export default function ProfilePage() {
   const { user, userData, updateUserData } = useAuth();
@@ -126,23 +128,35 @@ export default function ProfilePage() {
     }
   };
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleExportData = () => {
-    try {
-      const data = {
-        profile,
-        exportedAt: new Date().toISOString(),
-        system: 'MaxxDaddy.ai Winter Arc Protocol v1.0.0',
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `maxxdaddy_profile_${(profile.name || 'athlete').toLowerCase().replace(/\s+/g, '_')}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.warn('Failed to export data', e);
-    }
+    exportAllDataBackup();
+    setToastMessage('✓ Complete Arc Backup Exported!');
+    setSaveToast(true);
+    setTimeout(() => setSaveToast(false), 2500);
+  };
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (!content) return;
+      const res = importDataBackup(content);
+      if (res.success) {
+        setToastMessage(`✓ Restored ${res.count} items successfully!`);
+        setSaveToast(true);
+        setTimeout(() => {
+          setSaveToast(false);
+          window.location.reload();
+        }, 1500);
+      } else {
+        alert(res.error || 'Failed to restore backup.');
+      }
+    };
+    reader.readAsText(file);
   };
 
   // Add habit in modal
@@ -399,25 +413,46 @@ export default function ProfilePage() {
             {/* Data Management & Recalibrate */}
             <div className="arc-card p-5 bg-white border border-[#E8EEF5] space-y-3">
               <h3 className="text-xs font-black uppercase tracking-wider text-[#0A192F]">
-                Protocol Recalibration & Export
+                457-Day Arc Backup & Restore
               </h3>
               <p className="text-xs text-[#64748B]">
-                Need to adjust your habits or restart the arc setup? You can re-run the challenge registration wizard or export your protocol data.
+                Export all your daily workouts, North Karnataka meal records, Betnovate-N skin healing logs, and photos to a secure JSON file. You can restore this backup anytime on any device.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button
-                  onClick={handleRecalibrate}
-                  className="flex-1 py-3 rounded-2xl border border-red-200 text-red-600 bg-red-50/50 hover:bg-red-50 text-xs font-bold flex items-center justify-center gap-2 transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Recalibrate Challenge</span>
-                </button>
+              
+              {/* Hidden file input for import */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImportFile}
+                accept=".json"
+                className="hidden"
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                 <button
                   onClick={handleExportData}
-                  className="flex-1 py-3 rounded-2xl border border-slate-200 text-[#475569] hover:bg-slate-50 text-xs font-bold flex items-center justify-center gap-2 transition"
+                  className="py-3 px-3 rounded-2xl bg-gradient-to-r from-[#0085FF] to-[#7B61FF] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm hover:opacity-95 transition active:scale-95"
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Export JSON Data</span>
+                  <Download className="w-4 h-4" />
+                  <span>📥 Export Complete Backup</span>
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="py-3 px-3 rounded-2xl border-2 border-dashed border-[#0085FF] text-[#0085FF] hover:bg-blue-50 text-xs font-black flex items-center justify-center gap-2 transition active:scale-95"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>📤 Restore From Backup</span>
+                </button>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex justify-between items-center">
+                <span className="text-[10px] text-slate-400 font-semibold">Need to reset settings?</span>
+                <button
+                  onClick={handleRecalibrate}
+                  className="text-[10px] font-bold text-red-500 hover:text-red-700 flex items-center gap-1 transition"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Recalibrate Protocol</span>
                 </button>
               </div>
             </div>

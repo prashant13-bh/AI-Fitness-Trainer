@@ -3,13 +3,13 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 
 export const metadata: Metadata = {
-  title: 'MaxxDaddy.ai — LooksMaxx, BodyMaxx & Winter Arc Protocol',
-  description: 'MaxxDaddy.ai: Real-time AI pose coaching, looksmax ratio scans, body transformation, and 90-day winter arc protocols.',
+  title: 'Bruce Glow-Up 2027 — Winter Arc & Transformation Protocol',
+  description: "Bruce's 2027 Transformation Protocol: 167cm, 70kg to 63kg Greek God cut, North Karnataka vegetarian nutrition, and Betnovate-N skin healing.",
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'MaxxDaddy.ai',
+    title: 'Bruce Arc 2027',
   },
 };
 

@@ -7,8 +7,9 @@ import {
   Trash2, ZoomIn, X, BookOpen, Flame, Dumbbell,
   Apple, Sparkles, Moon, Sun, Wind, Brain, Droplets,
   Coffee, Clock, Eye, ChevronDown, ChevronUp, Star,
-  BarChart3, Share2,
+  BarChart3, Share2, Play, Pause, RotateCcw, Download,
 } from 'lucide-react';
+import { exportAllDataBackup } from '@/lib/backupEngine';
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -447,6 +448,14 @@ function PhotoViewer({ photo, onClose }: { photo: DayPhoto; onClose: () => void 
 // SECTION COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
+function parseRestSeconds(restStr: string): number {
+  const match = restStr.match(/(\d+)/);
+  if (!match) return 60;
+  const num = parseInt(match[1], 10);
+  if (restStr.toLowerCase().includes('min')) return num * 60;
+  return num;
+}
+
 function WorkoutSection({ workout, dayData, updateData }: {
   workout: WorkoutDay;
   dayData: DayData;
@@ -454,6 +463,57 @@ function WorkoutSection({ workout, dayData, updateData }: {
 }) {
   const [showAll, setShowAll] = useState(false);
   const doneCount = workout.exercises.filter((_, i) => dayData.completedExercises[`ex_${i}`]).length;
+
+  // Rest Timer State
+  const [restSecondsLeft, setRestSecondsLeft] = useState<number | null>(null);
+  const [initialRest, setInitialRest] = useState<number>(60);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const playRestAlert = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof window.AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      // Upbeat gym rest done alert beep
+      [880, 880, 1174.66].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.14);
+        gain.gain.setValueAtTime(0.4, ctx.currentTime + idx * 0.14);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.14 + 0.25);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.14);
+        osc.stop(ctx.currentTime + idx * 0.14 + 0.26);
+      });
+    } catch {}
+  };
+
+  const startRestTimer = (seconds: number) => {
+    setInitialRest(seconds);
+    setRestSecondsLeft(seconds);
+    setIsTimerRunning(true);
+  };
+
+  useEffect(() => {
+    if (isTimerRunning && restSecondsLeft !== null && restSecondsLeft > 0) {
+      timerIntervalRef.current = setInterval(() => {
+        setRestSecondsLeft(prev => {
+          if (prev === null || prev <= 1) {
+            setIsTimerRunning(false);
+            playRestAlert();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    };
+  }, [isTimerRunning, restSecondsLeft]);
 
   const toggleEx = (i: number) => {
     updateData({ completedExercises: { ...dayData.completedExercises, [`ex_${i}`]: !dayData.completedExercises[`ex_${i}`] } });
@@ -489,6 +549,82 @@ function WorkoutSection({ workout, dayData, updateData }: {
         </div>
       </div>
 
+      {/* ── GYM REST TIMER WIDGET ── */}
+      <div className={`rounded-2xl p-3.5 border transition-all ${restSecondsLeft !== null && restSecondsLeft > 0 ? 'bg-orange-50 border-orange-300 shadow-md' : 'bg-white border-[#E8EEF5]'}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⏱️</span>
+            <div>
+              <p className="text-[10px] font-black uppercase text-[#0A192F]">Gym Rest Timer</p>
+              <p className="text-[9px] text-[#64748B]">Tap "Rest" on any exercise or pick a preset</p>
+            </div>
+          </div>
+          {restSecondsLeft !== null && (
+            <div className="text-right">
+              <span className={`text-xl font-black font-mono ${restSecondsLeft === 0 ? 'text-emerald-600 animate-bounce' : 'text-[#FF7A00]'}`}>
+                {Math.floor(restSecondsLeft / 60).toString().padStart(2, '0')}:{(restSecondsLeft % 60).toString().padStart(2, '0')}
+              </span>
+              {restSecondsLeft === 0 && <span className="text-[9px] font-black text-emerald-600 block">HIT NEXT SET! 🔥</span>}
+            </div>
+          )}
+        </div>
+
+        {/* Progress line */}
+        {restSecondsLeft !== null && initialRest > 0 && (
+          <div className="h-1.5 bg-orange-100 rounded-full mt-2 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-1000"
+              style={{ width: `${Math.round(((initialRest - (restSecondsLeft || 0)) / initialRest) * 100)}%` }}
+            />
+          </div>
+        )}
+
+        {/* Timer controls */}
+        <div className="flex items-center justify-between gap-1.5 mt-2.5 pt-2 border-t border-slate-100 flex-wrap">
+          <div className="flex items-center gap-1">
+            {[30, 60, 90, 120].map(s => (
+              <button
+                key={s}
+                onClick={() => startRestTimer(s)}
+                className={`px-2 py-1 rounded-lg text-[10px] font-black transition ${initialRest === s && isTimerRunning ? 'bg-[#FF7A00] text-white shadow-sm' : 'bg-slate-100 hover:bg-orange-100 text-[#475569]'}`}
+              >
+                {s}s
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-1.5 ml-auto">
+            {restSecondsLeft !== null && (
+              <>
+                <button
+                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  className="px-2.5 py-1 rounded-lg bg-orange-500 text-white text-[10px] font-black flex items-center gap-1"
+                >
+                  {isTimerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                  <span>{isTimerRunning ? 'Pause' : 'Resume'}</span>
+                </button>
+                <button
+                  onClick={() => setRestSecondsLeft(prev => (prev || 0) + 15)}
+                  className="px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[#475569] text-[10px] font-bold"
+                >
+                  +15s
+                </button>
+                <button
+                  onClick={() => {
+                    setIsTimerRunning(false);
+                    setRestSecondsLeft(null);
+                  }}
+                  className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500"
+                  title="Reset"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Warm-up */}
       <div className="arc-card p-4 bg-white">
         <p className="text-[10px] font-black text-[#FF9500] uppercase mb-2">🔥 Warm-Up ({workout.warmup.length} steps)</p>
@@ -517,10 +653,16 @@ function WorkoutSection({ workout, dayData, updateData }: {
                 </button>
                 <div className="flex-1 min-w-0">
                   <p className={`text-xs font-black ${done ? 'line-through text-[#94A3B8]' : 'text-[#0A192F]'}`}>{ex.name}</p>
-                  <div className="flex gap-2 mt-1 flex-wrap">
+                  <div className="flex gap-2 mt-1 flex-wrap items-center">
                     <span className="text-[9px] font-black bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{ex.sets} sets</span>
                     <span className="text-[9px] font-black bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{ex.reps}</span>
-                    <span className="text-[9px] font-bold bg-slate-100 text-[#64748B] px-2 py-0.5 rounded-full">Rest: {ex.rest}</span>
+                    <button
+                      onClick={() => startRestTimer(parseRestSeconds(ex.rest))}
+                      className="text-[9px] font-bold bg-slate-100 hover:bg-orange-100 hover:text-[#FF7A00] text-[#64748B] px-2 py-0.5 rounded-full transition flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>⏱️</span>
+                      <span>Rest: {ex.rest}</span>
+                    </button>
                   </div>
                   <p className="text-[10px] text-[#64748B] mt-1.5 italic">💡 {ex.tip}</p>
                 </div>
@@ -598,19 +740,71 @@ function MealSection({ meals, dayData, updateData }: {
         ))}
       </div>
 
-      {/* Water tracker */}
-      <div className="arc-card p-4 bg-white">
-        <p className="text-[10px] font-black text-[#0085FF] uppercase mb-2">💧 Water Tracker (target: 8+ glasses = 3L+)</p>
-        <div className="flex gap-1.5 flex-wrap">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <button key={i}
-              onClick={() => updateData({ waterGlasses: i < dayData.waterGlasses ? i : i + 1 })}
-              className={`w-8 h-8 rounded-xl text-base transition-all ${i < dayData.waterGlasses ? 'bg-blue-500 shadow-md scale-105' : 'bg-slate-100 opacity-50'}`}>
-              💧
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* ── INTERACTIVE 4L HYDRATION STATION ── */}
+      {(() => {
+        const totalMl = (dayData.waterGlasses || 0) * 250;
+        const targetMl = 3500;
+        const pct = Math.min(100, Math.round((totalMl / targetMl) * 100));
+
+        let statusText = '🌅 Kickstart morning hydration with 500ml';
+        if (totalMl >= 3500) statusText = '👑 100% Skin Barrier Flush Complete!';
+        else if (totalMl >= 2500) statusText = '⚡ Cellular muscle hydration locked in!';
+        else if (totalMl >= 1500) statusText = '💧 On track! Keep sipping throughout the afternoon';
+
+        return (
+          <div className="arc-card p-4 bg-white border border-[#E8EEF5]">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">💧</span>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-[#0085FF] tracking-wider">Hydration Engine</p>
+                  <p className="text-[11px] font-black text-[#0A192F]">
+                    {totalMl} ml <span className="text-slate-400 font-normal">/ {targetMl} ml target</span>
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-base font-black text-[#0085FF]">{pct}%</span>
+                <span className="text-[9px] text-slate-400 block font-bold">{dayData.waterGlasses} glasses</span>
+              </div>
+            </div>
+
+            {/* Visual Fluid Progress Bar */}
+            <div className="h-3 bg-blue-50 rounded-full overflow-hidden p-0.5 border border-blue-100">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#0085FF] via-[#00C0FF] to-[#10B981] transition-all duration-500 shadow-sm"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+
+            <p className="text-[10px] text-[#475569] font-semibold mt-2">{statusText}</p>
+
+            {/* Quick Action Buttons */}
+            <div className="grid grid-cols-3 gap-2 mt-3 pt-2 border-t border-slate-100">
+              <button
+                onClick={() => updateData({ waterGlasses: (dayData.waterGlasses || 0) + 1 })}
+                className="py-2 px-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#0085FF] text-[11px] font-black transition flex items-center justify-center gap-1 active:scale-95"
+              >
+                <span>+250ml</span>
+                <span className="text-[9px] font-bold text-blue-400">(Glass)</span>
+              </button>
+              <button
+                onClick={() => updateData({ waterGlasses: (dayData.waterGlasses || 0) + 2 })}
+                className="py-2 px-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-black transition flex items-center justify-center gap-1 active:scale-95"
+              >
+                <span>+500ml</span>
+                <span className="text-[9px] font-bold text-emerald-500">(Bottle)</span>
+              </button>
+              <button
+                onClick={() => updateData({ waterGlasses: Math.max(0, (dayData.waterGlasses || 0) - 1) })}
+                className="py-2 px-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-black transition flex items-center justify-center gap-1 active:scale-95"
+              >
+                <span>-250ml</span>
+              </button>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Meals */}
       <div className="space-y-2">
@@ -976,6 +1170,20 @@ export default function ArcDayPage() {
         {/* ── DAY NAVIGATOR ── */}
         <div className="rounded-3xl overflow-hidden mb-4" style={{ background: 'linear-gradient(135deg, #0A192F, #1E3A5F, #2D1B4E)' }}>
           <div className="p-5">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[10px] font-black uppercase text-[#FF7A00] tracking-widest">
+                WINTER ARC 2026 → 2027
+              </span>
+              <button
+                onClick={exportAllDataBackup}
+                title="Download JSON backup of all logged days & photos"
+                className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[10px] font-black transition border border-white/10 active:scale-95"
+              >
+                <Download className="w-3 h-3 text-[#FF7A00]" />
+                <span>Backup Data</span>
+              </button>
+            </div>
+
             <div className="flex items-center justify-between mb-3">
               <button onClick={() => setViewDay(d => Math.max(1, d - 1))} disabled={viewDay <= 1}
                 className="w-10 h-10 rounded-2xl bg-white/15 flex items-center justify-center text-white disabled:opacity-30 hover:bg-white/25">

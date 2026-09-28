@@ -7,9 +7,9 @@ import { getUserProfile } from '@/lib/userProfile';
 
 export default function ReviewPage() {
   const profile = getUserProfile();
-  const [winsText, setWinsText] = useState('Kept cold showers every single morning. Workouts were consistent.');
-  const [leaksText, setLeaksText] = useState('Got pulled into phone browsing after lunch on Wednesday.');
-  const [adjustmentText, setAdjustmentText] = useState('Leave phone in another room starting at 1:00 PM.');
+  const [winsText, setWinsText] = useState('100% adherence to 5:30 AM wake up & morning water. North Karnataka veg meals hit 140g protein without fail.');
+  const [leaksText, setLeaksText] = useState('Need to be more prompt with 3:00 PM sunscreen re-application on busy days.');
+  const [adjustmentText, setAdjustmentText] = useState('Keep sunscreen bottle on my desk and prepare sprouted moong the night before.');
   const [isLockedIn, setIsLockedIn] = useState(false);
 
   React.useEffect(() => {
@@ -55,17 +55,17 @@ export default function ReviewPage() {
               SUNDAY CALIBRATION RITUAL
             </span>
             <h1 className="text-2xl sm:text-3xl font-black font-display text-[#0A192F] tracking-tight mt-0.5">
-              Weekly Arc Review · {profile.name ? profile.name.split(' ')[0] : 'Athlete'}
+              Weekly Arc Calibration · Bruce
             </h1>
             <p className="text-xs sm:text-sm font-semibold text-[#64748B] mt-0.5">
-              Reflect honestly. Optimize relentlessly. Lock in week 3.
+              Audit workouts, North Karnataka veg nutrition, and skin healing progression.
             </p>
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold border border-emerald-100">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Week 2 of 13 Complete</span>
+            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Sunday Protocol Check</span>
             </div>
           </div>
         </header>
