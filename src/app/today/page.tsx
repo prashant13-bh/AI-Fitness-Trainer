@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import ResponsiveShell from '@/components/layout/ResponsiveShell';
 import { Flame, Check, Zap, Droplets, Dumbbell, Brain, BookOpen, Apple, ArrowRight } from 'lucide-react';
 
@@ -20,12 +19,8 @@ interface HabitItem {
 }
 
 export default function TodayPage() {
-  const router = useRouter();
   const [profile, setProfile] = useState<ChallengeProfile>(DEFAULT_PROFILE);
 
-  useEffect(() => {
-    router.replace('/glowup');
-  }, [router]);
   const dayInfo = calculateChallengeDay(profile.startDate, profile.duration);
 
   const [habits, setHabits] = useState<HabitItem[]>([

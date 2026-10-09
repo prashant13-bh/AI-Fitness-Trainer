@@ -6,6 +6,10 @@ export interface ChallengeProfile {
   identity: string;
   duration: number; // 30, 60, 90
   startDate: string;
+  currentWeight?: number;
+  targetWeight?: number;
+  primaryGoal?: 'fatloss' | 'muscle' | 'recomp' | 'discipline' | 'custom';
+  dietPreference?: 'pure_veg' | 'nk_veg' | 'eggetarian' | 'non_veg';
   focusAreas: string[];
   habits: {
     id: string;
@@ -21,24 +25,28 @@ export interface ChallengeProfile {
 }
 
 export const DEFAULT_PROFILE: ChallengeProfile = {
-  name: 'Bruce',
+  name: '',
   email: '',
-  identity: 'Skinny-fat to Greek God. Reversing Betnovate-N damage. 100% disciplined.',
-  duration: 457,
-  startDate: '2026-10-01',
-  focusAreas: ['Body Recomp', 'Skin Healing', 'NK Veg Nutrition', 'Deep Work'],
+  identity: 'Discipline today, a different tomorrow.',
+  duration: 90,
+  startDate: getLocalISODate(),
+  currentWeight: 70,
+  targetWeight: 65,
+  primaryGoal: 'recomp',
+  dietPreference: 'pure_veg',
+  focusAreas: ['Body Recomp', 'Mindset', 'Clean Nutrition', 'Deep Work'],
   habits: [
-    { id: '1', title: '5:30 AM Wake Up & 500ml Water', category: 'BODY', target: '5:30 AM' },
-    { id: '2', title: 'AM Barrier Skin Routine & SPF 50+', category: 'SKIN', target: '10 min' },
-    { id: '3', title: 'Progressive Overload Gym Workout', category: 'BODY', target: '60 min' },
-    { id: '4', title: 'North Karnataka Veg Diet (140g Protein)', category: 'NUTRITION', target: '1,750 kcal' },
-    { id: '5', title: 'PM Skin Healing (Azelaic & Rosehip)', category: 'SKIN', target: '15 min' },
+    { id: '1', title: '5:30 AM Rise & 500ml Water', category: 'BODY', target: '5:30 AM' },
+    { id: '2', title: 'Strength Workout / Conditioning', category: 'BODY', target: '45 min' },
+    { id: '3', title: 'Clean High-Protein Fuel', category: 'NUTRITION', target: 'Daily targets' },
+    { id: '4', title: 'Deep Work Focus Block', category: 'CAREER', target: '90 min' },
+    { id: '5', title: 'Evening Habit & Recovery Review', category: 'MIND', target: '15 min' },
   ],
   morningAlarm: '05:30 AM',
   eveningReview: '09:00 PM',
   quietHours: true,
-  signature: 'Bruce',
-  isSetupComplete: true,
+  signature: '',
+  isSetupComplete: false,
 };
 
 const STORAGE_KEY = 'winter_arc_challenge_profile';
