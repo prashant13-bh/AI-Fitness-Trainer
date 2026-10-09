@@ -49,3 +49,11 @@ next-env.d.ts
 
 # android binaries
 *.apk
+*.aab
+
+# java
+target/
+*.class
+*.jar
+*.war
+.m2/

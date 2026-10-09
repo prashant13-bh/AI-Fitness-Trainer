@@ -23,15 +23,15 @@ const PoseWorkoutTracker = dynamic(
   }
 );
 
-// Dynamically import PythonStreamView for MediaPipe bridge
-const PythonStreamView = dynamic(
-  () => import('@/components/trainer/PythonStreamView'),
+// Dynamically import JavaStreamView for Java Spring Boot backend
+const JavaStreamView = dynamic(
+  () => import('@/components/trainer/JavaStreamView'),
   {
     ssr: false,
     loading: () => (
       <div className="arc-card p-12 bg-white flex flex-col items-center justify-center space-y-3 text-center">
         <div className="w-10 h-10 rounded-full border-3 border-[#0085FF] border-t-transparent animate-spin" />
-        <p className="text-xs font-bold text-[#64748B]">Connecting to Python MediaPipe Engine...</p>
+        <p className="text-xs font-bold text-[#64748B]">Connecting to Java Spring Boot Engine (:8080)...</p>
       </div>
     ),
   }
@@ -78,8 +78,8 @@ export default function LockInPage() {
 
   // Launcher Config
   const [selectedActivity, setSelectedActivity] = useState<FocusActivity>('deepwork');
-  // Default to in-app camera (works seamlessly on mobile Android & web without Python)
-  const [workoutMode, setWorkoutMode] = useState<'python' | 'camera' | 'timer'>('camera');
+  // Default to in-app camera (works seamlessly on mobile Android & web without backend)
+  const [workoutMode, setWorkoutMode] = useState<'java' | 'camera' | 'timer'>('camera');
   const [selectedExercise, setSelectedExercise] = useState<ExerciseType>('pushups');
   const [customName, setCustomName] = useState('');
   const [durationMins, setDurationMins] = useState(45);
@@ -367,27 +367,27 @@ export default function LockInPage() {
                     </div>
                   </button>
 
-                  {/* Option 2: Desktop Python MediaPipe Companion */}
+                  {/* Option 2: Java Spring Boot Companion */}
                   <button
-                    onClick={() => setWorkoutMode('python')}
+                    onClick={() => setWorkoutMode('java')}
                     className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between gap-3 ${
-                      workoutMode === 'python'
-                        ? 'border-2 border-[#0085FF] bg-blue-50/50 shadow-sm'
+                      workoutMode === 'java'
+                        ? 'border-2 border-[#FF7A00] bg-orange-50/40 shadow-sm'
                         : 'border-[#E8EEF5] hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center text-xl shrink-0 shadow-sm">
-                        🐍
+                      <div className="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-500 flex items-center justify-center text-xl shrink-0 shadow-sm border border-orange-500/30">
+                        ☕
                       </div>
-                      <span className="text-[9px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-black uppercase">
-                        DESKTOP PC ONLY
+                      <span className="text-[9px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-black uppercase">
+                        JAVA BACKEND
                       </span>
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-[#0A192F]">Desktop Python Engine</div>
+                      <div className="text-xs font-bold text-[#0A192F]">Java Spring Boot Engine</div>
                       <p className="text-[11px] text-[#64748B] mt-1 leading-snug">
-                        Connects to local PC MediaPipe server (<code className="text-[10px]">python server.py</code>) via WebSocket.
+                        Connects to local Java Spring Boot server on <code className="text-[10px]">:8080</code> via WebSocket.
                       </p>
                     </div>
                   </button>
@@ -545,8 +545,8 @@ export default function LockInPage() {
               >
                 <span>🔒</span>
                 <span>
-                  {selectedActivity === 'workout' && workoutMode === 'python'
-                    ? 'Launch Desktop Python Coach (PC Only) →'
+                  {selectedActivity === 'workout' && workoutMode === 'java'
+                    ? 'Launch Java Engine (Port 8080) →'
                     : selectedActivity === 'workout' && workoutMode === 'camera'
                     ? 'Launch In-App AI Coach (Mobile Ready) →'
                     : `Lock In Now (${isCustomDuration ? customDurationInput : durationMins} min) →`}
@@ -561,9 +561,9 @@ export default function LockInPage() {
            ========================================================================= */}
         {sessionState === 'active' && (
           <div className="py-2 animate-fade-in">
-            {selectedActivity === 'workout' && workoutMode === 'python' ? (
-              /* Python MediaPipe Video & WebSocket Tracker */
-              <PythonStreamView
+            {selectedActivity === 'workout' && workoutMode === 'java' ? (
+              /* Java Spring Boot Video & WebSocket Tracker */
+              <JavaStreamView
                 initialExercise={selectedExercise}
                 onComplete={handleWorkoutComplete}
                 onClose={() => setSessionState('launcher')}

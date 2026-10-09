@@ -743,6 +743,7 @@ function MealSection({ meals, dayData, updateData }: {
   dayData: DayData;
   updateData: (u: Partial<DayData>) => void;
 }) {
+  const [openMealId, setOpenMealId] = useState<number | null>(null);
   const doneMeals = meals.filter((_, i) => dayData.completedMeals[`meal_${i}`]).length;
   const totalProtein = meals.filter((_, i) => dayData.completedMeals[`meal_${i}`]).reduce((a, m) => a + m.protein, 0);
   const targetProtein = meals.reduce((a, m) => a + m.protein, 0);
@@ -848,7 +849,7 @@ function MealSection({ meals, dayData, updateData }: {
       <div className="space-y-2">
         {meals.map((meal, i) => {
           const done = !!dayData.completedMeals[`meal_${i}`];
-          const [open, setOpen] = useState(false);
+          const open = openMealId === i;
           return (
             <div key={i} className={`rounded-2xl border overflow-hidden transition-all ${done ? 'border-emerald-300' : 'border-[#E8EEF5]'}`}>
               <div className={`flex items-center gap-3 p-3.5 ${done ? 'bg-emerald-50/70' : 'bg-white'}`}>
@@ -862,7 +863,7 @@ function MealSection({ meals, dayData, updateData }: {
                   <p className="text-[10px] text-[#94A3B8]">{meal.protein}g protein · {meal.kcal} kcal</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button onClick={() => setOpen(!open)} className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <button onClick={() => setOpenMealId(open ? null : i)} className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center">
                     <Eye className="w-3.5 h-3.5 text-[#64748B]" />
                   </button>
                   <button onClick={() => toggleMeal(i)}
@@ -899,6 +900,7 @@ function SkinSection({ dayData, updateData }: {
   dayData: DayData;
   updateData: (u: Partial<DayData>) => void;
 }) {
+  const [openSkinStepId, setOpenSkinStepId] = useState<string | null>(null);
   const [protocol, setProtocol] = useState<'AM' | 'PM'>('AM');
   const steps = protocol === 'AM' ? AM_SKIN_STEPS : PM_SKIN_STEPS;
   const amDone = AM_SKIN_STEPS.filter(s => dayData.completedSkinSteps[s.id]).length;
@@ -942,7 +944,7 @@ function SkinSection({ dayData, updateData }: {
       <div className="space-y-2">
         {steps.map(step => {
           const done = !!dayData.completedSkinSteps[step.id];
-          const [open, setOpen] = useState(false);
+          const open = openSkinStepId === step.id;
           return (
             <div key={step.id} className={`rounded-2xl border overflow-hidden ${done ? 'border-emerald-300 bg-emerald-50/50' : 'border-[#E8EEF5] bg-white'}`}>
               <div className="flex items-center gap-3 p-3.5">
@@ -953,7 +955,7 @@ function SkinSection({ dayData, updateData }: {
                   <p className={`text-xs font-black ${done ? 'line-through text-[#94A3B8]' : 'text-[#0A192F]'}`}>{step.emoji} {step.product}</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button onClick={() => setOpen(!open)} className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <button onClick={() => setOpenSkinStepId(open ? null : step.id)} className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center">
                     <Eye className="w-3.5 h-3.5 text-[#64748B]" />
                   </button>
                   <button onClick={() => toggleStep(step.id)}

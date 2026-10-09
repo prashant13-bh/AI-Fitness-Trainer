@@ -154,30 +154,39 @@ ALTER TABLE public.progress_photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.contracts ENABLE ROW LEVEL SECURITY;
 
 -- Users: own data only
+DROP POLICY IF EXISTS "users_own" ON public.users;
 CREATE POLICY "users_own" ON public.users FOR ALL USING (auth.uid() = id);
 
 -- Arcs: own data only
+DROP POLICY IF EXISTS "arcs_own" ON public.arcs;
 CREATE POLICY "arcs_own" ON public.arcs FOR ALL USING (auth.uid() = user_id);
 
 -- Habits: own data only
+DROP POLICY IF EXISTS "habits_own" ON public.habits;
 CREATE POLICY "habits_own" ON public.habits FOR ALL USING (auth.uid() = user_id);
 
 -- Habit logs: own data only
+DROP POLICY IF EXISTS "habit_logs_own" ON public.habit_logs;
 CREATE POLICY "habit_logs_own" ON public.habit_logs FOR ALL USING (auth.uid() = user_id);
 
 -- Goals: own data only
+DROP POLICY IF EXISTS "goals_own" ON public.goals;
 CREATE POLICY "goals_own" ON public.goals FOR ALL USING (auth.uid() = user_id);
 
 -- Daily checkins: own data only
+DROP POLICY IF EXISTS "daily_checkins_own" ON public.daily_checkins;
 CREATE POLICY "daily_checkins_own" ON public.daily_checkins FOR ALL USING (auth.uid() = user_id);
 
 -- Achievements: own data only
+DROP POLICY IF EXISTS "achievements_own" ON public.achievements;
 CREATE POLICY "achievements_own" ON public.achievements FOR ALL USING (auth.uid() = user_id);
 
 -- Progress photos: own data only
+DROP POLICY IF EXISTS "progress_photos_own" ON public.progress_photos;
 CREATE POLICY "progress_photos_own" ON public.progress_photos FOR ALL USING (auth.uid() = user_id);
 
 -- Contracts: own data only
+DROP POLICY IF EXISTS "contracts_own" ON public.contracts;
 CREATE POLICY "contracts_own" ON public.contracts FOR ALL USING (auth.uid() = user_id);
 
 -- ============================================================
@@ -190,6 +199,7 @@ VALUES ('progress-photos', 'progress-photos', false)
 ON CONFLICT DO NOTHING;
 
 -- Storage RLS: users can only access their own folder
+DROP POLICY IF EXISTS "progress_photos_storage_own" ON storage.objects;
 CREATE POLICY "progress_photos_storage_own"
 ON storage.objects FOR ALL
 USING (
@@ -209,18 +219,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS users_updated_at ON public.users;
 CREATE TRIGGER users_updated_at BEFORE UPDATE ON public.users
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS arcs_updated_at ON public.arcs;
 CREATE TRIGGER arcs_updated_at BEFORE UPDATE ON public.arcs
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS habits_updated_at ON public.habits;
 CREATE TRIGGER habits_updated_at BEFORE UPDATE ON public.habits
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS goals_updated_at ON public.goals;
 CREATE TRIGGER goals_updated_at BEFORE UPDATE ON public.goals
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+DROP TRIGGER IF EXISTS daily_checkins_updated_at ON public.daily_checkins;
 CREATE TRIGGER daily_checkins_updated_at BEFORE UPDATE ON public.daily_checkins
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -242,6 +257,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();

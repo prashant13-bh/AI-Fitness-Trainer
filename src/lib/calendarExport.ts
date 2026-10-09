@@ -73,7 +73,7 @@ export function downloadBruceCalendarIcs() {
   const now = new Date();
   const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  let icsContent = [
+  const icsContent = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
     'PRODID:-//Bruce Glow-Up 2027//Winter Arc Protocol//EN',
